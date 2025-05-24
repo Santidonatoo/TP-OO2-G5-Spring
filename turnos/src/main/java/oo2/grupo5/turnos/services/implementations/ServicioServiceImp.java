@@ -21,14 +21,14 @@ public class ServicioServiceImp implements IServicioService {
 	private final IServicioRepository servicioRepository;
     private final ModelMapper modelMapper;
     
-    public ServicioServiceImp(IServicioRepository exampleRepository, ModelMapper modelMapper) {
-        this.servicioRepository = exampleRepository;
+    public ServicioServiceImp(IServicioRepository servicioRepository, ModelMapper modelMapper) {
+        this.servicioRepository = servicioRepository;
         this.modelMapper = modelMapper;
     }
     
     @Override
-    public ServicioResponseDTO save(ServicioRequestDTO exampleRequestDTO) {
-    	Servicio servicio = modelMapper.map(exampleRequestDTO, Servicio.class);
+    public ServicioResponseDTO save(ServicioRequestDTO servicioRequestDTO) {
+    	Servicio servicio = modelMapper.map(servicioRequestDTO, Servicio.class);
     	Servicio saved = servicioRepository.save(servicio);
         return modelMapper.map(saved, ServicioResponseDTO.class);
     }
@@ -42,9 +42,9 @@ public class ServicioServiceImp implements IServicioService {
     
     @Override
 	public ServicioResponseDTO findByIdNotDeleted(Integer idServicio) {
-		Servicio example = servicioRepository.findByIdServicioAndSoftDeletedFalse(idServicio)
+		Servicio servicio = servicioRepository.findByIdServicioAndSoftDeletedFalse(idServicio)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",idServicio)));
-        return modelMapper.map(example, ServicioResponseDTO.class);
+        return modelMapper.map(servicio, ServicioResponseDTO.class);
 	}
 
     @Override
@@ -60,9 +60,6 @@ public class ServicioServiceImp implements IServicioService {
 
     }
     
-    
-    
-
     @Override
     public ServicioResponseDTO update(Integer idServicio, ServicioRequestDTO servicioRequestDTO) {
     	Servicio servicio = servicioRepository.findByIdServicioAndSoftDeletedFalse(idServicio)

@@ -30,10 +30,17 @@ public class ServicioController {
     }
     @GetMapping("/list")
     public String listNotDeleted(Model model, @PageableDefault(size = 5) Pageable pageable) {
-        Page<ServicioResponseDTO> servicios = servicioService.findAll(pageable);
+        Page<ServicioResponseDTO> servicios = servicioService.findAllNotDeleted(pageable);
         model.addAttribute("servicios", servicios);
         return ViewRouteHelper.SERVICIO_LIST;
     }
+    @GetMapping("/admin/list")
+    public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {
+        Page<ServicioResponseDTO> servicios = servicioService.findAll(pageable);
+        model.addAttribute("servicios", servicios);
+        return ViewRouteHelper.SERVICIO_ADMIN_LIST;
+    }
+    
     @GetMapping("/form")
     public String createForm(Model model) {
         model.addAttribute("servicioRequestDTO", new ServicioRequestDTO());
@@ -49,9 +56,9 @@ public class ServicioController {
         return "redirect:/servicio/admin/list";
     }
 
-    @GetMapping("/edit/{id}")
-    public String editForm(@PathVariable Integer id, Model model) {
-    	ServicioResponseDTO dto = servicioService.findById(id);
+    @GetMapping("/edit/{idServicio}")
+    public String editForm(@PathVariable Integer idServicio, Model model) {
+    	ServicioResponseDTO dto = servicioService.findById(idServicio);
 
     	ServicioRequestDTO requestDTO = new ServicioRequestDTO();
         requestDTO.setIdServicio(dto.getIdServicio());
@@ -63,24 +70,24 @@ public class ServicioController {
         return ViewRouteHelper.SERVICIO_FORM;
     }
 
-    @PostMapping("/update/{id}")
-    public String update(@PathVariable Integer id, @Valid @ModelAttribute ServicioRequestDTO dto, BindingResult result) {
+    @PostMapping("/update/{idServicio}")
+    public String update(@PathVariable Integer idServicio, @Valid @ModelAttribute ServicioRequestDTO dto, BindingResult result) {
         if (result.hasErrors()) {
             return ViewRouteHelper.SERVICIO_FORM;
         }
-        servicioService.update(id, dto);
+        servicioService.update(idServicio, dto);
         return "redirect:/servicio/admin/list";
     }
 
-    @PostMapping("/delete/{id}")
-    public String softDelete(@PathVariable Integer id) {
-        servicioService.deleteById(id);
+    @PostMapping("/delete/{idServicio}")
+    public String softDelete(@PathVariable Integer idServicio) {
+        servicioService.deleteById(idServicio);
         return "redirect:/servicio/admin/list";
     }
 
-    @PostMapping("/restore/{id}")
-    public String restore(@PathVariable Integer id) {
-    		servicioService.restoreById(id);
+    @PostMapping("/restore/{idServicio}")
+    public String restore(@PathVariable Integer idServicio) {
+    		servicioService.restoreById(idServicio);
         return "redirect:/servicio/admin/list";
     }
 }
