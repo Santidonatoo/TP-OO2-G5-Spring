@@ -18,8 +18,9 @@ public class ServicioRequestDTO {
 	
     @NotBlank(message = "The name cannot be empty")
     private String nombre;
+	
+    private int duracion;
 
 	private boolean requiereEmpleado;
 
-	private int duracion;
 }

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="${servicioRequestDTO.idServicio != null} ? 'Editar' : 'Nuevo'">Formulario</title>
+</head>
+<body>
+<h1 th:text="${servicioRequestDTO.idServicio != null} ? 'Editar Servicio' : 'Nuevo Servicio'"></h1>
+<br>
+<form th:action="${servicioRequestDTO.idServicio != null} ? @{/servicio/update/{idServicio}(idServicio=${servicioRequestDTO.idServicio})} : @{/servicio/save}" method="post" th:object="${servicioRequestDTO}">
+    <input type="hidden" th:if="${servicioRequestDTO.idServicio != null}" th:field="*{idServicio}" />
+
+    <label>Nombre:</label>
+    <input type="text" th:field="*{nombre}" />
+    <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+
+    <label>Duracion:</label>
+    <input type="number" th:field="*{duracion}" />
+    <div th:if="${#fields.hasErrors('duracion')}" th:errors="*{duracion}"></div>
+
+    <label>Requiere Empleado:</label>
+    <input type="checkbox" th:field="*{requiereEmpleado}" />
+    <div th:if="${#fields.hasErrors('requiereEmpleado')}" th:errors="*{requiereEmpleado}"></div>
+
+    <button type="submit">Guardar</button>
+</form>
+<br>
+<a th:href="@{/servicio/list}">Volver</a>
+</body>
+</html>

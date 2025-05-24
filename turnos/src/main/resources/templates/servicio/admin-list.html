@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Lista de Ejemplos para el rol ADMIN</title>
+</head>
+<body>
+<h1>Todos los Ejemplos eliminados o no</h1>
+<br>
+<a th:href="@{/servicio/form}">Nuevo</a>
+<a th:href="@{/servicio/list}">Ver activos</a>
+<br>
+<br>
+<table>
+    <thead>
+    <tr>
+        <th>Nombre</th>
+        <th>Duracion</th>
+		<th>RequiereEmpleado</th>
+        <th>Eliminado</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="servicio : ${servicios}">
+        <td th:text="${servicio.nombre}"></td>
+        <td th:text="${servicio.duracion}"></td>
+        <td th:text="${servicio.softDeleted} ? 'Sí' : 'No'"></td>
+        <td>
+            <a th:href="@{/servicio/edit/{id}(id=${servicio.id})}">Editar</a>
+            <form th:if="!${servicio.softDeleted}" th:action="@{/servicio/delete/{id}(id=${servicio.id})}" method="post" style="display:inline;">
+                <button type="submit">Eliminar</button>
+            </form>
+            <form th:if="${servicio.softDeleted}" th:action="@{/servicio/restore/{id}(id=${servicio.id})}" method="post" style="display:inline;">
+                <button type="submit">Restaurar</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<br>
+
+<br>
+<br>
+<a th:href="@{/index}">Volver al index</a>
+</body>
+</html>

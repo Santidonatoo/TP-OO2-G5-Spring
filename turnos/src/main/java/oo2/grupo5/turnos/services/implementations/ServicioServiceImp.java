@@ -34,16 +34,16 @@ public class ServicioServiceImp implements IServicioService {
     }
     
     @Override
-    public ServicioResponseDTO findById(Integer id) {
-        Servicio servicio = servicioRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",id)));
+    public ServicioResponseDTO findById(Integer idServicio) {
+        Servicio servicio = servicioRepository.findById(idServicio)
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",idServicio)));
         return modelMapper.map(servicio, ServicioResponseDTO.class);
     }
     
     @Override
-	public ServicioResponseDTO findByIdNotDeleted(Integer id) {
-		Servicio example = servicioRepository.findByIdAndSoftDeletedFalse(id)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",id)));
+	public ServicioResponseDTO findByIdNotDeleted(Integer idServicio) {
+		Servicio example = servicioRepository.findByIdServicioAndSoftDeletedFalse(idServicio)
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",idServicio)));
         return modelMapper.map(example, ServicioResponseDTO.class);
 	}
 
@@ -64,9 +64,9 @@ public class ServicioServiceImp implements IServicioService {
     
 
     @Override
-    public ServicioResponseDTO update(Integer id, ServicioRequestDTO servicioRequestDTO) {
-    	Servicio servicio = servicioRepository.findByIdAndSoftDeletedFalse(id)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",id)));
+    public ServicioResponseDTO update(Integer idServicio, ServicioRequestDTO servicioRequestDTO) {
+    	Servicio servicio = servicioRepository.findByIdServicioAndSoftDeletedFalse(idServicio)
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",idServicio)));
 
         servicio.setNombre(servicioRequestDTO.getNombre());
         servicio.setDuracion(servicioRequestDTO.getDuracion());
@@ -77,21 +77,21 @@ public class ServicioServiceImp implements IServicioService {
     }
 
     @Override
-    public void deleteById(Integer id) {
-    	Servicio servicio = servicioRepository.findByIdAndSoftDeletedFalse(id)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",id)));
+    public void deleteById(Integer idServicio) {
+    	Servicio servicio = servicioRepository.findByIdServicioAndSoftDeletedFalse(idServicio)
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",idServicio)));
 
     	servicio.setSoftDeleted(true);
     	servicioRepository.save(servicio);
     }
 
     @Override
-    public ServicioResponseDTO restoreById(Integer id) {
-    	Servicio servicio = servicioRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",id)));
+    public ServicioResponseDTO restoreById(Integer idServicio) {
+    	Servicio servicio = servicioRepository.findById(idServicio)
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",idServicio)));
 
         if (!servicio.isSoftDeleted()) {
-            throw new IllegalStateException(MessageFormat.format("Servicio with id {0} is not deleted",id));
+            throw new IllegalStateException(MessageFormat.format("Servicio with id {0} is not deleted",idServicio));
         }
 
         servicio.setSoftDeleted(false);
