@@ -24,13 +24,14 @@
     <tr th:each="servicio : ${servicios}">
         <td th:text="${servicio.nombre}"></td>
         <td th:text="${servicio.duracion}"></td>
+		<td th:text="${servicio.requiereEmpleado} ? 'Sí' : 'No'"></td>
         <td th:text="${servicio.softDeleted} ? 'Sí' : 'No'"></td>
         <td>
-            <a th:href="@{/servicio/edit/{id}(id=${servicio.id})}">Editar</a>
-            <form th:if="!${servicio.softDeleted}" th:action="@{/servicio/delete/{id}(id=${servicio.id})}" method="post" style="display:inline;">
+            <a th:href="@{/servicio/edit/{idServicio}(idServicio=${servicio.idServicio})}">Editar</a>
+            <form th:if="!${servicio.softDeleted}" th:action="@{/servicio/delete/{idServicio}(idServicio=${servicio.idServicio})}" method="post" style="display:inline;">
                 <button type="submit">Eliminar</button>
             </form>
-            <form th:if="${servicio.softDeleted}" th:action="@{/servicio/restore/{id}(id=${servicio.id})}" method="post" style="display:inline;">
+            <form th:if="${servicio.softDeleted}" th:action="@{/servicio/restore/{idServicio}(idServicio=${servicio.idServicio})}" method="post" style="display:inline;">
                 <button type="submit">Restaurar</button>
             </form>
         </td>
@@ -38,9 +39,5 @@
     </tbody>
 </table>
 <br>
-
-<br>
-<br>
-<a th:href="@{/index}">Volver al index</a>
 </body>
 </html>

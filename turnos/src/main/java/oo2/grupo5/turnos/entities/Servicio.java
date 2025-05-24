@@ -1,6 +1,5 @@
 package oo2.grupo5.turnos.entities;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -38,11 +37,9 @@ public class Servicio {
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
-	@NotBlank(message = "The requiereEmpeado cannot be empty")
 	@Column(name = "requiereEmpleado", nullable = false)
 	private boolean requiereEmpleado;
 	
-	@NotBlank(message = "The duaracion cannot be empty")
 	@Column(name = "duracion", nullable = false)
 	private int duracion;
 	
