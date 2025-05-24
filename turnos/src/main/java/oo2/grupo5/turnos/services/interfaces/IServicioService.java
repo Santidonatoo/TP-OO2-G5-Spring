@@ -11,20 +11,20 @@ public interface IServicioService {
 
 	ServicioResponseDTO save(ServicioRequestDTO servicioRequestDTO);
 
-	//ServicioResponseDTO findById(Integer id);
+	ServicioResponseDTO findById(Integer id);
 
     //Find By ID not deleted
-	//ServicioResponseDTO findByIdNotDeleted(Integer id);
+	ServicioResponseDTO findByIdNotDeleted(Integer id);
 
     // FindAll
-   // Page<ServicioResponseDTO> findAll(Pageable pageable);
+	Page<ServicioResponseDTO> findAll(Pageable pageable);
 
     // FindAll not deleted
-    //Page<ServicioResponseDTO> findAllNotDeleted(Pageable pageable);
+    Page<ServicioResponseDTO> findAllNotDeleted(Pageable pageable);
 
-    //ServicioResponseDTO update(Integer id, ServicioRequestDTO servicioRequestDTO);
+    ServicioResponseDTO update(Integer id, ServicioRequestDTO servicioRequestDTO);
 
-    //void deleteById(Integer id);
+    void deleteById(Integer id);
 
-    //ServicioResponseDTO restoreById(Integer id);
+    ServicioResponseDTO restoreById(Integer id);
 }
