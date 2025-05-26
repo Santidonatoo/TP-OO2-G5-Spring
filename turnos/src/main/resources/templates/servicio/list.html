@@ -13,22 +13,25 @@
 <br>
 <table>
     <thead>
-    <tr>
-        <th>Nombre</th>
-        <th>Duracion</th>
-    </tr>
+        <tr>
+            <th>Nombre</th>
+            <th>Duración</th>
+            <th>Ubicación</th> 
+            <th>Acciones</th>
+        </tr>
     </thead>
     <tbody>
-    <tr th:each="servicio : ${servicios}">
-        <td th:text="${servicio.nombre}"></td>
-        <td th:text="${servicio.duracion}"></td>
-        <td>
-            <a th:href="@{/servicio/edit/{idServicio}(idServicio=${servicio.idServicio})}">Editar</a>
-            <form th:action="@{/servicio/delete/{idServicio}(idServicio=${servicio.idServicio})}" method="post" style="display:inline;">
-                <button type="submit">Eliminar</button>
-            </form>
-        </td>
-    </tr>
+        <tr th:each="servicio : ${servicios}">
+            <td th:text="${servicio.nombre}"></td>
+            <td th:text="${servicio.duracion} + ' min'"></td>
+            <td th:text="${servicio.ubicacion.localidad} + ', ' + ${servicio.ubicacion.calle} + ' ' + ${servicio.ubicacion.numero}"></td> <!-- Mostrar la ubicación -->
+            <td>
+                <a th:href="@{/servicio/edit/{idServicio}(idServicio=${servicio.idServicio})}">Editar</a>
+                <form th:action="@{/servicio/delete/{idServicio}(idServicio=${servicio.idServicio})}" method="post" style="display:inline;">
+                    <button type="submit">Eliminar</button>
+                </form>
+            </td>
+        </tr>
     </tbody>
 </table>
 <br>

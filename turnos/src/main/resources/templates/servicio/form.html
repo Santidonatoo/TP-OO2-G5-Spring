@@ -21,6 +21,15 @@
     <input type="checkbox" th:field="*{requiereEmpleado}" />
     <div th:if="${#fields.hasErrors('requiereEmpleado')}" th:errors="*{requiereEmpleado}"></div>
 
+	<label for="ubicacion">Ubicación:</label>
+	<select name="idUbicacion" id="ubicacion" th:field="*{idUbicacion}" required>
+	    <option value="">Seleccione una ubicación</option>
+	    <th:block th:each="ubicacion : ${ubicaciones}">
+	        <option th:value="${ubicacion.idUbicacion}" th:text="${ubicacion.localidad} + ', ' + ${ubicacion.calle} + ' ' + ${ubicacion.numero}"></option>
+	    </th:block>
+	</select>
+	<div th:if="${#fields.hasErrors('idUbicacion')}" th:errors="*{idUbicacion}"></div>
+
     <button type="submit">Guardar</button>
 </form>
 <br>

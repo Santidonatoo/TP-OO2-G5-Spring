@@ -1,5 +1,6 @@
 package oo2.grupo5.turnos.dtos.responses;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,16 +12,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ServicioResponseDTO {
-	private Integer idServicio;
-	
-    private String nombre;
+public class UbicacionResponseDTO {
 
-	private boolean requiereEmpleado;
-
-	private int duracion;
+	private Integer idUbicacion;
 	
-	private UbicacionResponseDTO ubicacion;
+    private String localidad;
+    
+    private String calle;
 	
+    private int numero;
+    
     private boolean softDeleted;
 }

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="${ubicacionRequestDTO.idUbicacion != null} ? 'Editar Ubicación' : 'Nueva Ubicación'">Formulario Ubicación</title>
+</head>
+<body>
+<h1 th:text="${ubicacionRequestDTO.idUbicacion != null} ? 'Editar Ubicación' : 'Nueva Ubicación'"></h1>
+<br>
+
+<form th:action="${ubicacionRequestDTO.idUbicacion != null} ? @{/ubicacion/update/{idUbicacion}(idUbicacion=${ubicacionRequestDTO.idUbicacion})} : @{/ubicacion/save}" 
+      method="post" th:object="${ubicacionRequestDTO}">
+    
+    <input type="hidden" th:if="${ubicacionRequestDTO.idUbicacion != null}" th:field="*{idUbicacion}" />
+
+    <label>Localidad:</label>
+    <input type="text" th:field="*{localidad}" required />
+    <div th:if="${#fields.hasErrors('localidad')}" th:errors="*{localidad}"></div>
+
+    <label>Calle:</label>
+    <input type="text" th:field="*{calle}" required />
+    <div th:if="${#fields.hasErrors('calle')}" th:errors="*{calle}"></div>
+
+    <label>Número:</label>
+    <input type="number" th:field="*{numero}" required />
+    <div th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></div>
+
+    <button type="submit">Guardar</button>
+</form>
+
+<br>
+<a th:href="@{/ubicacion/list}">Volver</a>
+</body>
+</html>

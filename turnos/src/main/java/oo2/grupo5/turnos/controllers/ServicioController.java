@@ -1,6 +1,7 @@
 package oo2.grupo5.turnos.controllers;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
@@ -18,15 +19,20 @@ import oo2.grupo5.turnos.dtos.requests.ServicioRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.services.interfaces.IServicioService;
+import oo2.grupo5.turnos.services.interfaces.IUbicacionService;
 
 @Controller
 @RequestMapping("/servicio")
 public class ServicioController {
 	
 	private final IServicioService servicioService;
+	private final IUbicacionService ubicacionService;
 
-    public ServicioController(IServicioService servicioService) {
+	
+
+    public ServicioController(IServicioService servicioService, IUbicacionService ubicacionService) {
         this.servicioService = servicioService;
+        this.ubicacionService = ubicacionService;
     }
     @GetMapping("/list")
     public String listNotDeleted(Model model, @PageableDefault(size = 5) Pageable pageable) {
@@ -44,6 +50,7 @@ public class ServicioController {
     @GetMapping("/form")
     public String createForm(Model model) {
         model.addAttribute("servicioRequestDTO", new ServicioRequestDTO());
+        model.addAttribute("ubicaciones", ubicacionService.findAll(PageRequest.of(0, 5)));
         return ViewRouteHelper.SERVICIO_FORM;
     }
 
@@ -65,8 +72,11 @@ public class ServicioController {
         requestDTO.setNombre(dto.getNombre());
         requestDTO.setDuracion(dto.getDuracion());
         requestDTO.setRequiereEmpleado(dto.isRequiereEmpleado());
+        requestDTO.setIdUbicacion(dto.getUbicacion().getIdUbicacion());
 
         model.addAttribute("servicioRequestDTO", requestDTO);
+        model.addAttribute("ubicaciones", ubicacionService.findAll(PageRequest.of(0, 5))); 
+
         return ViewRouteHelper.SERVICIO_FORM;
     }
 

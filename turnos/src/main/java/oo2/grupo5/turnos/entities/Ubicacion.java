@@ -1,18 +1,18 @@
 package oo2.grupo5.turnos.entities;
 
+
 import java.sql.Timestamp;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,28 +27,28 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Servicio {
-
+public class Ubicacion {
+	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idServicio")
+    @Column(name = "idUbicacion")
     @Setter(AccessLevel.NONE)
-    private Integer idServicio;
+	private Integer idUbicacion;
 	
-	@NotBlank(message = "The name cannot be empty")
-    @Column(name = "nombre", nullable = false)
-    private String nombre;
+	@NotBlank(message = "The localidad cannot be empty")
+    @Column(name = "localidad", nullable = false)
+	private String localidad;
+	
+	@NotBlank(message = "The calle cannot be empty")
+    @Column(name = "calle", nullable = false)
+	private String calle;
+	
+    @Column(name = "numero", nullable = false)
+	private int numero;
+	
+    @OneToMany(mappedBy = "ubicacion")
+    private Set<Servicio> servicios;
 
-	@Column(name = "requiereEmpleado", nullable = false)
-	private boolean requiereEmpleado;
-	
-	@Column(name = "duracion", nullable = false)
-	private int duracion;
-	
-	@ManyToOne
-	@JoinColumn(name = "idUbicacion", nullable = false)
-	private Ubicacion ubicacion;
-	
 	@Column(name = "soft_deleted", nullable = false)
     @Builder.Default
     private boolean softDeleted = false;
