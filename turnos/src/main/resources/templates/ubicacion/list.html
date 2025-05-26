@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Lista de Ubicaciones</title>
+</head>
+<body>
+<h1>Ubicaciones disponibles</h1>
+<br>
+<a th:href="@{/ubicacion/form}">Nueva Ubicación</a>
+<br>
+<table>
+    <thead>
+        <tr>
+            <th>Localidad</th>
+            <th>Calle</th>
+            <th>Número</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="ubicacion : ${ubicaciones}">
+            <td th:text="${ubicacion.localidad}"></td>
+            <td th:text="${ubicacion.calle}"></td>
+            <td th:text="${ubicacion.numero}"></td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<a th:href="@{/servicio/list}">Ver servicios</a>
+</body>
+</html>
