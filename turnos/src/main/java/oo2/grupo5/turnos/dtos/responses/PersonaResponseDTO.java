@@ -20,6 +20,8 @@ public class PersonaResponseDTO {
 	
 	private String apellido;
 	
+	private int dni;
+	
 	private LocalDate fechaDeNacimiento;
 	
 	private boolean softDeleted;
