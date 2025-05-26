@@ -5,9 +5,11 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import oo2.grupo5.turnos.entities.Persona;
 
+@Repository
 public interface IPersonaRepository extends JpaRepository<Persona, Integer> {
 	
 	//Search Persona with softDeleted = False
