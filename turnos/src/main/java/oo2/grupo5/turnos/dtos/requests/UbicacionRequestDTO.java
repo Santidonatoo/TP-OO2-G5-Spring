@@ -12,17 +12,18 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class ServicioRequestDTO {
+public class UbicacionRequestDTO {
 
-	private Integer idServicio;
+	private Integer idUbicacion;
 	
-    @NotBlank(message = "The name cannot be empty")
-    private String nombre;
-	
-    private int duracion;
+    @NotBlank(message = "The localidad cannot be empty")
+    private String localidad;
     
-    private Integer idUbicacion;
-
-	private boolean requiereEmpleado;
+    @NotBlank(message = "The calle cannot be empty")
+    private String calle;
+	
+    private int numero;
+    
+    
 
 }
