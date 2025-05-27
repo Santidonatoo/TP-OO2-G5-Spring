@@ -9,7 +9,7 @@ public class ViewRouteHelper {
 	    public static final String SERVICIO_ADMIN_LIST = "servicio/admin-list";
 	    
 	    //Ubicacion
-	    public static final String UBICACION_LIST = "ubicacion/list";
+	    public static final String UBICACION_ADMIN_LIST = "ubicacion/admin-list";
 	    public static final String UBICACION_FORM = "ubicacion/form";
 
 }

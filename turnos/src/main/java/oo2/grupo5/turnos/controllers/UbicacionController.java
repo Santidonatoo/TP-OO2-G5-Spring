@@ -28,11 +28,11 @@ public class UbicacionController {
         this.ubicacionService = ubicacionService;
     }
 
-    @GetMapping("/list")
+    @GetMapping("/admin/list")
     public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {
         Page<UbicacionResponseDTO> ubicaciones = ubicacionService.findAll(pageable);
         model.addAttribute("ubicaciones", ubicaciones);
-        return ViewRouteHelper.UBICACION_LIST;
+        return ViewRouteHelper.UBICACION_ADMIN_LIST;
     }
 
     @GetMapping("/form")
@@ -55,6 +55,7 @@ public class UbicacionController {
         UbicacionResponseDTO dto = ubicacionService.findById(idUbicacion);
 
         UbicacionRequestDTO requestDTO = new UbicacionRequestDTO();
+        requestDTO.setIdUbicacion(dto.getIdUbicacion());
         requestDTO.setLocalidad(dto.getLocalidad());
         requestDTO.setCalle(dto.getCalle());
         requestDTO.setNumero(dto.getNumero());
@@ -69,18 +70,18 @@ public class UbicacionController {
             return ViewRouteHelper.UBICACION_FORM;
         }
         ubicacionService.update(idUbicacion, dto);
-        return "redirect:/ubicacion/list";
+        return "redirect:/ubicacion/admin/list";
     }
 
     @PostMapping("/delete/{idUbicacion}")
     public String softDelete(@PathVariable Integer idUbicacion) {
         ubicacionService.deleteById(idUbicacion);
-        return "redirect:/ubicacion/list";
+        return "redirect:/ubicacion/admin/list";
     }
 
     @PostMapping("/restore/{idUbicacion}")
     public String restore(@PathVariable Integer idUbicacion) {
         ubicacionService.restoreById(idUbicacion);
-        return "redirect:/ubicacion/list";
+        return "redirect:/ubicacion/admin/list";
     }
 }
