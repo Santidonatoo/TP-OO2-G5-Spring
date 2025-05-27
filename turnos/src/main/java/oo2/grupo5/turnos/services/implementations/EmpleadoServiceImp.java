@@ -1,6 +1,8 @@
 package oo2.grupo5.turnos.services.implementations;
 
 import java.text.MessageFormat;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -11,17 +13,22 @@ import jakarta.persistence.EntityNotFoundException;
 import oo2.grupo5.turnos.dtos.requests.EmpleadoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
 import oo2.grupo5.turnos.entities.Empleado;
+import oo2.grupo5.turnos.entities.Servicio;
 import oo2.grupo5.turnos.repositories.IEmpleadoRepository;
+import oo2.grupo5.turnos.repositories.IServicioRepository;
 import oo2.grupo5.turnos.services.interfaces.IEmpleadoService;
 
 @Service
 public class EmpleadoServiceImp implements IEmpleadoService{
 	
 	private final IEmpleadoRepository empleadoRepository;
+	private final IServicioRepository servicioRepository;
+
 	private final ModelMapper modelMapper;
 	
-	public EmpleadoServiceImp(IEmpleadoRepository empleadoRepository, ModelMapper modelMapper) {
+	public EmpleadoServiceImp(IEmpleadoRepository empleadoRepository, IServicioRepository servicioRepository,ModelMapper modelMapper) {
 		this.empleadoRepository = empleadoRepository;
+		this.servicioRepository = servicioRepository;
 		this.modelMapper = modelMapper;
 	}
 	
@@ -29,6 +36,12 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	public EmpleadoResponseDTO save(EmpleadoRequestDTO empleadoRequestDTO) {
 		Empleado empleado = modelMapper.map(empleadoRequestDTO, Empleado.class);
     	Empleado saved = empleadoRepository.save(empleado);
+    	
+    	if (empleadoRequestDTO.getIdServicios() != null && !empleadoRequestDTO.getIdServicios().isEmpty()) {
+            Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(empleadoRequestDTO.getIdServicios()));
+            empleado.setListaServicios(servicios);
+        }
+    	
     	return modelMapper.map(saved, EmpleadoResponseDTO.class);
 	}
 	
@@ -57,7 +70,6 @@ public class EmpleadoServiceImp implements IEmpleadoService{
     	return empleadoRepository.findAllBySoftDeletedFalse(pageable)
     			.map(entity -> modelMapper.map(entity, EmpleadoResponseDTO.class));
 	}
-	
 	@Override
 	public EmpleadoResponseDTO update(Integer idPersona, EmpleadoRequestDTO empleadoRequestDTO) {
 		Empleado empleado = empleadoRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
@@ -68,6 +80,11 @@ public class EmpleadoServiceImp implements IEmpleadoService{
         empleado.setDni(empleadoRequestDTO.getDni());
         empleado.setFechaDeNacimiento(empleadoRequestDTO.getFechaDeNacimiento());
         empleado.setPuesto(empleadoRequestDTO.getPuesto());
+        
+        if (empleadoRequestDTO.getIdServicios() != null) {
+            Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(empleadoRequestDTO.getIdServicios()));
+            empleado.setListaServicios(servicios);
+        }
         
         Empleado updated = empleadoRepository.save(empleado);
         return modelMapper.map(updated, EmpleadoResponseDTO.class);

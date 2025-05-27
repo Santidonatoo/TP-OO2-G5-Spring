@@ -29,6 +29,13 @@
 	    </th:block>
 	</select>
 	<div th:if="${#fields.hasErrors('idUbicacion')}" th:errors="*{idUbicacion}"></div>
+	
+	<label>Empleados:</label>
+	<div th:each="empleado : ${empleados}">
+	    <input type="checkbox" th:field="*{idEmpleados}" th:value="${empleado.idPersona}" />
+	    <label th:text="${empleado.nombre} + ' ' + ${empleado.apellido} + ' (' + ${empleado.puesto} + ')'"></label>
+	</div>
+	<div th:if="${#fields.hasErrors('idEmpleados')}" th:errors="*{idEmpleados}"></div>
 
     <button type="submit">Guardar</button>
 </form>

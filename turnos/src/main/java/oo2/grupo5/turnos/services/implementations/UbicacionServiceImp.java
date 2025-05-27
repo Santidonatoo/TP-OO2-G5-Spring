@@ -45,7 +45,7 @@ public class UbicacionServiceImp implements IUbicacionService {
             .map(entity -> modelMapper.map(entity, UbicacionResponseDTO.class));
     }
     @Override
-    public Page<UbicacionResponseDTO> findAllfindAllNotDeleted(Pageable pageable) {
+    public Page<UbicacionResponseDTO> findAllNotDeleted(Pageable pageable) {
         return ubicacionRepository.findAllBySoftDeletedFalse(pageable)
             .map(entity -> modelMapper.map(entity, UbicacionResponseDTO.class));
     }

@@ -15,7 +15,7 @@ public interface IUbicacionService {
 
     Page<UbicacionResponseDTO> findAll(Pageable pageable);
     
-    Page<UbicacionResponseDTO> findAllfindAllNotDeleted(Pageable pageable);
+    Page<UbicacionResponseDTO> findAllNotDeleted(Pageable pageable);
 
     UbicacionResponseDTO update(Integer idUbicacion, UbicacionRequestDTO ubicacionRequestDTO);
 
