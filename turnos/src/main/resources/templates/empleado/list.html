@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <title>Lista de Empleados todos los roles</title>
+</head>
+<body>
+<h1>Empleados que no estan eliminados</h1>
+<br>
+
+    <a th:href="@{/empleado/form}">Nuevo</a>
+    <a th:href="@{/empleado/admin/list}">Ver todo</a>
+
+<br>
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Dni</th>
+            <th>Fecha de nacimiento</th>
+            <th>Puesto</th> 
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="empleado : ${empleados}">
+            <td th:text="${empleado.nombre}"></td>
+            <td th:text="${empleado.apellido}"></td>
+            <td th:text="${empleado.dni}"></td>
+            <td th:text="${empleado.fechaDeNacimiento}"></td>
+            <td th:text="${empleado.puesto}"></td>
+            <td>
+                <a th:href="@{/empleado/edit/{idPersona}(idPersona=${empleado.idPersona})}">Editar</a>
+                <form th:action="@{/empleado/delete/{idPersona}(idPersona=${empleado.idPersona})}" method="post" style="display:inline;">
+                    <button type="submit">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<br>
+
+</body>
+</html>
