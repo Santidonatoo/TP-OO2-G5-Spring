@@ -1,6 +1,7 @@
 package oo2.grupo5.turnos.entities;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -13,6 +14,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -50,6 +53,12 @@ public class Servicio {
 	@ManyToOne
 	@JoinColumn(name = "idUbicacion", nullable = false)
 	private Ubicacion ubicacion;
+	
+	@ManyToMany
+	@JoinTable(name = "servicioxempleado", 
+			  joinColumns = @JoinColumn(name = "idServicio"), 
+			  inverseJoinColumns = @JoinColumn(name = "idEmpleado"))
+	private Set<Empleado> listaEmpleados;
 	
 	@Column(name = "soft_deleted", nullable = false)
     @Builder.Default

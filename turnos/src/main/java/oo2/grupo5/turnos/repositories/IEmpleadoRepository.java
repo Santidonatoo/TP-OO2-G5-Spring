@@ -17,4 +17,7 @@ public interface IEmpleadoRepository extends JpaRepository<Empleado, Integer> {
 	
 	//Search Empleado with softDeleted = False by ID
 	Optional<Empleado> findByIdPersonaAndSoftDeletedFalse(Integer idPersona);
+	
+	//TraerEmpleadosDeUnServicio
+	//Page<Empleado> findByListaServicios_IdServicio(Integer idServicio);
 }
