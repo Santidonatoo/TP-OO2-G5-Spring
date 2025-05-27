@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import oo2.grupo5.turnos.validation.DuracionServicio;
 
 @Entity
 @Getter
@@ -42,6 +43,7 @@ public class Servicio {
 	@Column(name = "requiereEmpleado", nullable = false)
 	private boolean requiereEmpleado;
 	
+	@DuracionServicio
 	@Column(name = "duracion", nullable = false)
 	private int duracion;
 	

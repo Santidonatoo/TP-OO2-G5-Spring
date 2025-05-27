@@ -14,7 +14,7 @@
     <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
 
     <label>Duracion:</label>
-    <input type="number" th:field="*{duracion}" />
+    <input type="number" th:field="*{duracion}" step="15" min="15"/>
     <div th:if="${#fields.hasErrors('duracion')}" th:errors="*{duracion}"></div>
 
     <label>Requiere Empleado:</label>
