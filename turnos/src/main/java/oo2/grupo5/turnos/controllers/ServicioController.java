@@ -50,7 +50,7 @@ public class ServicioController {
     @GetMapping("/form")
     public String createForm(Model model) {
         model.addAttribute("servicioRequestDTO", new ServicioRequestDTO());
-        model.addAttribute("ubicaciones", ubicacionService.findAll(PageRequest.of(0, 5)));
+        model.addAttribute("ubicaciones", ubicacionService.findAllfindAllNotDeleted(PageRequest.of(0, 5)));
         return ViewRouteHelper.SERVICIO_FORM;
     }
 
