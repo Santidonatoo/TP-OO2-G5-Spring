@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import oo2.grupo5.turnos.dtos.requests.ClienteRequestDTO;
@@ -13,6 +14,7 @@ import oo2.grupo5.turnos.entities.Cliente;
 import oo2.grupo5.turnos.repositories.IClienteRepository;
 import oo2.grupo5.turnos.services.interfaces.IClienteService;
 
+@Service
 public class ClienteServiceImp implements IClienteService{
 	
 	private final IClienteRepository clienteRepository;

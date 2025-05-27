@@ -5,9 +5,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import jakarta.validation.Valid;
+import oo2.grupo5.turnos.dtos.requests.ClienteRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.ClienteResponseDTO;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.services.interfaces.IClienteService;
@@ -22,13 +28,69 @@ public class ClienteController {
 		this.clienteService = clienteService;
 	}
 	
-	/*
 	@GetMapping("/admin/list")
     public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {
         Page<ClienteResponseDTO> clientes = clienteService.findAll(pageable);
         model.addAttribute("clientes", clientes);
-        //return ViewRouteHelper.SERVICIO_ADMIN_LIST;
+        return ViewRouteHelper.CLIENTE_ADMIN_LIST;
     }
-	*/
+	
+	@GetMapping("/form")
+	public String createForm(Model model) {
+		model.addAttribute("clienteRequestDTO", new ClienteRequestDTO());
+	    return ViewRouteHelper.CLIENTE_FORM;
+	}
+	
+    @PostMapping("/save")
+    public String save(@Valid @ModelAttribute ClienteRequestDTO clienteRequestDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ViewRouteHelper.CLIENTE_FORM;
+        }
+        
+        if(clienteRequestDTO.getIdPersona() == null) {
+        	clienteService.save(clienteRequestDTO);
+        } else {
+        	clienteService.update(clienteRequestDTO.getIdPersona(), clienteRequestDTO);
+        }
+        return "redirect:/cliente/admin/list";
+    }
+    
+    @GetMapping("/edit/{idPersona}")
+    public String editForm(@PathVariable Integer idPersona, Model model) {
+        ClienteResponseDTO dto = clienteService.findById(idPersona);
+
+        ClienteRequestDTO requestDTO = new ClienteRequestDTO();
+        requestDTO.setIdPersona(dto.getIdPersona());
+        requestDTO.setNombre(dto.getNombre());
+        requestDTO.setApellido(dto.getApellido());
+        requestDTO.setDni(dto.getDni());
+
+        model.addAttribute("clienteRequestDTO", requestDTO);
+        return ViewRouteHelper.CLIENTE_FORM;
+    }
+    
+    @PostMapping("/update/{idPersona}")
+    public String update(@PathVariable Integer idPersona,
+                         @Valid @ModelAttribute ClienteRequestDTO clienteRequestDTO,
+                         BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ViewRouteHelper.CLIENTE_FORM;
+        }
+
+        clienteService.update(idPersona, clienteRequestDTO);
+        return "redirect:/cliente/admin/list";
+    }
+    
+    @PostMapping("/delete/{idPersona}")
+    public String softDelete(@PathVariable Integer idPersona) {
+        clienteService.deleteById(idPersona);
+        return "redirect:/cliente/admin/list";
+    }
+	
+    @PostMapping("/restore/{idPersona}")
+    public String restore(@PathVariable Integer idPersona) {
+        clienteService.restoreById(idPersona);
+        return "redirect:/cliente/admin/list";
+    }
 	
 }

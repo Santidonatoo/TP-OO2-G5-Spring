@@ -11,5 +11,13 @@ public class ViewRouteHelper {
 	    //Ubicacion
 	    public static final String UBICACION_ADMIN_LIST = "ubicacion/admin-list";
 	    public static final String UBICACION_FORM = "ubicacion/form";
-
+	    
+	    //Cliente
+	    public static final String CLIENTE_ADMIN_LIST = "cliente/admin-list";
+	    public static final String CLIENTE_FORM = "cliente/form";
+	    
+	    //Empleado
+	    public static final String EMPLEADO_LIST = "empleado/list";
+	    public static final String EMPLEADO_ADMIN_LIST = "empleado/admin-list";
+	    public static final String EMPLEADO_FORM = "empleado/form";
 }

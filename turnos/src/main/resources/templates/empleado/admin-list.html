@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Lista de Empleados ADMIN</title>
+</head>
+<body>
+<h1>Empleados Registrados</h1>
+<br>
+<a th:href="@{/empleado/form}">Nuevo Empleado</a>
+<a th:href="@{/empleado/list}">Ver activos</a>
+<br>
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Dni</th>
+            <th>Fecha de nacimiento</th>
+            <th>Puesto</th>
+            <th>Eliminado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="empleado : ${empleados}">
+            <td th:text="${empleado.nombre}"></td>
+            <td th:text="${empleado.apellido}"></td>
+            <td th:text="${empleado.dni}"></td>
+            <td th:text="${empleado.fechaDeNacimiento}"></td>
+            <td th:text="${empleado.puesto}"></td>
+            <td th:text="${empleado.softDeleted} ? 'Sí' : 'No'"></td>
+            <td>
+                <a th:href="@{/empleado/edit/{idPersona}(idPersona=${empleado.idPersona})}">Editar</a>
+                <form th:if="!${empleado.softDeleted}" th:action="@{/empleado/delete/{idPersona}(idPersona=${empleado.idPersona})}" method="post" style="display:inline;">
+                    <button type="submit">Eliminar</button>
+                </form>
+                <form th:if="${empleado.softDeleted}" th:action="@{/empleado/restore/{idPersona}(idPersona=${empleado.idPersona})}" method="post" style="display:inline;">
+                    <button type="submit">Restaurar</button>
+                </form>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<br>
+</body>
+</html>

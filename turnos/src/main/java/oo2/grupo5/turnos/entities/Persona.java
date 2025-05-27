@@ -17,6 +17,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,11 +50,11 @@ public class Persona {
 	@Column(name="apellido")
 	protected String apellido;
 	
-	@NotBlank(message = "The dni cannot be empty")
+	@NotNull
 	@Column(name="dni")
 	protected int dni;
 	
-	@NotBlank(message = "The birthday cannot be empty")
+	@NotNull
 	@Column(name="fechaDeNacimiento")
 	protected LocalDate fechaDeNacimiento;
 	

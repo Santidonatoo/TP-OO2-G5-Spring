@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Lista de Clientes ADMIN</title>
+</head>
+<body>
+<h1>Clientes Registrados</h1>
+<br>
+<a th:href="@{/cliente/form}">Nuevo Cliente</a>
+<br>
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Dni</th>
+            <th>Fecha de nacimiento</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="cliente : ${clientes}">
+            <td th:text="${cliente.nombre}"></td>
+            <td th:text="${cliente.apellido}"></td>
+            <td th:text="${cliente.dni}"></td>
+            <td th:text="${cliente.fechaDeNacimiento}"></td>
+            <td>
+                <a th:href="@{/cliente/edit/{idPersona}(idPersona=${cliente.idPersona})}">Editar</a>
+                <form th:if="!${cliente.softDeleted}" th:action="@{/cliente/delete/{idPersona}(idPersona=${cliente.idPersona})}" method="post" style="display:inline;">
+                    <button type="submit">Eliminar</button>
+                </form>
+                <form th:if="${cliente.softDeleted}" th:action="@{/cliente/restore/{idPersona}(idPersona=${cliente.idPersona})}" method="post" style="display:inline;">
+                    <button type="submit">Restaurar</button>
+                </form>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<br>
+</body>
+</html>
