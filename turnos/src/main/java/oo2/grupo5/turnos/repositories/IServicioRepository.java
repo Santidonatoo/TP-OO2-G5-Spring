@@ -17,4 +17,6 @@ public interface IServicioRepository extends JpaRepository<Servicio, Integer>{
 
     //Search Servicio with softDeleted = False by ID
     Optional<Servicio> findByIdServicioAndSoftDeletedFalse(Integer idServicio);
+    
+    //Page<Servicio> findByListaEmpleados_IdEmpleado(Integer idEmpleado);
 }

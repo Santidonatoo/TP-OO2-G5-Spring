@@ -1,5 +1,7 @@
 package oo2.grupo5.turnos.dtos.requests;
 
+import java.util.Set;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,4 +27,5 @@ public class ServicioRequestDTO {
 
 	private boolean requiereEmpleado;
 
+	private Set<Integer> idEmpleados;
 }

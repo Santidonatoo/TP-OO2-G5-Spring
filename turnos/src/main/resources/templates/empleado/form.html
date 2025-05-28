@@ -32,6 +32,12 @@
     <input type="text" th:field="*{puesto}" required />
     <div th:if="${#fields.hasErrors('puesto')}" th:errors="*{puesto}"></div>
 
+	<label>Servicios:</label>
+		<div th:each="servicio : ${servicios}">
+		    <input type="checkbox" th:field="*{idServicios}" th:value="${servicio.idServicio}" />
+		    <label th:text="${servicio.nombre} + ' ' + ${servicio.duracion} "></label>
+		</div>
+		<div th:if="${#fields.hasErrors('idServicios')}" th:errors="*{idServicios}"></div>
     <button type="submit">Guardar</button>
 </form>
 

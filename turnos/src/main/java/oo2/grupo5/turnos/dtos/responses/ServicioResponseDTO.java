@@ -1,5 +1,7 @@
 package oo2.grupo5.turnos.dtos.responses;
 
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,4 +25,6 @@ public class ServicioResponseDTO {
 	private UbicacionResponseDTO ubicacion;
 	
     private boolean softDeleted;
+    
+    private Set<EmpleadoResponseDTO> listaEmpleados; 
 }

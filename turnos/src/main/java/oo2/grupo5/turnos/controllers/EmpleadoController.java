@@ -1,6 +1,9 @@
 package oo2.grupo5.turnos.controllers;
 
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
@@ -15,17 +18,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.validation.Valid;
 import oo2.grupo5.turnos.dtos.requests.EmpleadoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
+import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.services.interfaces.IEmpleadoService;
+import oo2.grupo5.turnos.services.interfaces.IServicioService;
 
 @Controller
 @RequestMapping("/empleado")
 public class EmpleadoController {
 	
 	private final IEmpleadoService empleadoService;
-	
-	public EmpleadoController(IEmpleadoService empleadoService) {
+	private final IServicioService servicioService;
+
+	public EmpleadoController(IEmpleadoService empleadoService, IServicioService servicioService) {
 		this.empleadoService = empleadoService;
+		this.servicioService = servicioService;
 	}
 	
     @GetMapping("/list")
@@ -45,6 +52,7 @@ public class EmpleadoController {
 	@GetMapping("/form")
 	public String createForm(Model model) {
 		model.addAttribute("empleadoRequestDTO", new EmpleadoRequestDTO());
+        model.addAttribute("servicios", servicioService.findAllNotDeleted(PageRequest.of(0, 5))); 
 	    return ViewRouteHelper.EMPLEADO_FORM;
 	}
 	
@@ -71,8 +79,11 @@ public class EmpleadoController {
         requestDTO.setNombre(dto.getNombre());
         requestDTO.setApellido(dto.getApellido());
         requestDTO.setDni(dto.getDni());
+        requestDTO.setIdServicios(dto.getListaServicios().stream().map(ServicioResponseDTO::getIdServicio).collect(Collectors.toSet()));
 
         model.addAttribute("empleadoRequestDTO", requestDTO);
+        model.addAttribute("servicios", servicioService.findAll(PageRequest.of(0, 5))); 
+
         return ViewRouteHelper.EMPLEADO_FORM;
     }
 	
