@@ -20,4 +20,11 @@ public class ViewRouteHelper {
 	    public static final String EMPLEADO_LIST = "empleado/list";
 	    public static final String EMPLEADO_ADMIN_LIST = "empleado/admin-list";
 	    public static final String EMPLEADO_FORM = "empleado/form";
+	    
+	    //Auth
+	    public static final String USER_LOGIN = "authentication/login";
+	    public static final String USER_REGISTER = "authentication/register";
+	    
+	    //Home
+	    public static final String HOME_INDEX = "home/index";
 }

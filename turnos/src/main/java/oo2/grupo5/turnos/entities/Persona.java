@@ -15,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -57,6 +58,9 @@ public class Persona {
 	@NotNull
 	@Column(name="fechaDeNacimiento")
 	protected LocalDate fechaDeNacimiento;
+	
+	@OneToOne(mappedBy="persona")
+	private User user;
 	
 	@Column(name = "soft_deleted", nullable = false)
 	@Builder.Default

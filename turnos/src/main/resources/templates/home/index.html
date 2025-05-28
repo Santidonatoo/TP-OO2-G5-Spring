@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+<body>
+    <h1>Bienvenido</h1>
+
+    <form th:action="@{/auth/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+
+    <a th:href="@{/cliente/admin/list}">Ver Clientes</a>
+    <a th:href="@{/empleado/list}">Ver Empleados</a>
+    <a th:href="@{/servicio/list}">Ver Servicios</a>
+
+    <div sec:authorize="hasRole('ADMIN')">
+        <a th:href="@{/empleado/form}">Agregar nuevo empleado</a>
+    </div>
+</body>
+</html>

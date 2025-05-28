@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+    <form method="post" action="/auth/loginProcess" th:action="@{/auth/loginProcess}">
+        <label>
+            <input type="text" name="username" placeholder="Usuario" />
+        </label>
+        <label>
+            <input type="password" name="password" placeholder="Contraseña" />
+        </label>
+        <button type="submit">Login</button>
+        <div th:if="${error != null}" >
+            Invalid username or password.
+        </div>
+        <div th:if="${logout != null}">
+            Session closes successfully.
+        </div>
+    </form>
+    <p>No tenés una cuenta? <a th:href="@{/auth/registro}">Registrate acá</a></p>
+</body>
+</html>
