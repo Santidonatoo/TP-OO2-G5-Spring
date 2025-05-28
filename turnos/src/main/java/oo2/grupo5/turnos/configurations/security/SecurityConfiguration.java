@@ -52,7 +52,7 @@ public class SecurityConfiguration {
                     login.loginProcessingUrl("/auth/loginProcess");//POST
                     login.usernameParameter("username");
                     login.passwordParameter("password");
-                    login.defaultSuccessUrl("/index", true);
+                    login.defaultSuccessUrl("/auth/loginSuccess", true);
                     login.permitAll();
                 })
                 .logout(logout -> {

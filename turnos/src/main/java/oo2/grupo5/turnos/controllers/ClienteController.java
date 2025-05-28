@@ -3,6 +3,7 @@ package oo2.grupo5.turnos.controllers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,6 +30,7 @@ public class ClienteController {
 	}
 	
 	@GetMapping("/admin/list")
+	@PreAuthorize("hasRole('ADMIN')")
     public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {
         Page<ClienteResponseDTO> clientes = clienteService.findAll(pageable);
         model.addAttribute("clientes", clientes);
@@ -36,12 +38,14 @@ public class ClienteController {
     }
 	
 	@GetMapping("/form")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String createForm(Model model) {
 		model.addAttribute("clienteRequestDTO", new ClienteRequestDTO());
 	    return ViewRouteHelper.CLIENTE_FORM;
 	}
 	
     @PostMapping("/save")
+    @PreAuthorize("hasRole('ADMIN')")
     public String save(@Valid @ModelAttribute ClienteRequestDTO clienteRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ViewRouteHelper.CLIENTE_FORM;
@@ -56,6 +60,7 @@ public class ClienteController {
     }
     
     @GetMapping("/edit/{idPersona}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String editForm(@PathVariable Integer idPersona, Model model) {
         ClienteResponseDTO dto = clienteService.findById(idPersona);
 
@@ -70,6 +75,7 @@ public class ClienteController {
     }
     
     @PostMapping("/update/{idPersona}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Integer idPersona,
                          @Valid @ModelAttribute ClienteRequestDTO clienteRequestDTO,
                          BindingResult bindingResult) {
@@ -82,12 +88,14 @@ public class ClienteController {
     }
     
     @PostMapping("/delete/{idPersona}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String softDelete(@PathVariable Integer idPersona) {
         clienteService.deleteById(idPersona);
         return "redirect:/cliente/admin/list";
     }
 	
     @PostMapping("/restore/{idPersona}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String restore(@PathVariable Integer idPersona) {
         clienteService.restoreById(idPersona);
         return "redirect:/cliente/admin/list";
