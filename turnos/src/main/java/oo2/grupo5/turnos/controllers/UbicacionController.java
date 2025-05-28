@@ -3,6 +3,7 @@ package oo2.grupo5.turnos.controllers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,6 +30,7 @@ public class UbicacionController {
     }
 
     @GetMapping("/admin/list")
+    @PreAuthorize("hasRole('ADMIN')")
     public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {
         Page<UbicacionResponseDTO> ubicaciones = ubicacionService.findAll(pageable);
         model.addAttribute("ubicaciones", ubicaciones);
@@ -36,12 +38,14 @@ public class UbicacionController {
     }
 
     @GetMapping("/form")
+    @PreAuthorize("hasRole('ADMIN')")
     public String createForm(Model model) {
         model.addAttribute("ubicacionRequestDTO", new UbicacionRequestDTO());
         return ViewRouteHelper.UBICACION_FORM;
     }
 
     @PostMapping("/save")
+    @PreAuthorize("hasRole('ADMIN')")
     public String save(@Valid @ModelAttribute UbicacionRequestDTO ubicacionRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ViewRouteHelper.UBICACION_FORM;
@@ -51,6 +55,7 @@ public class UbicacionController {
     }
 
     @GetMapping("/edit/{idUbicacion}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String editForm(@PathVariable Integer idUbicacion, Model model) {
         UbicacionResponseDTO dto = ubicacionService.findById(idUbicacion);
 
@@ -65,6 +70,7 @@ public class UbicacionController {
     }
 
     @PostMapping("/update/{idUbicacion}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Integer idUbicacion, @Valid @ModelAttribute UbicacionRequestDTO dto, BindingResult result) {
         if (result.hasErrors()) {
             return ViewRouteHelper.UBICACION_FORM;
@@ -74,12 +80,14 @@ public class UbicacionController {
     }
 
     @PostMapping("/delete/{idUbicacion}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String softDelete(@PathVariable Integer idUbicacion) {
         ubicacionService.deleteById(idUbicacion);
         return "redirect:/ubicacion/admin/list";
     }
 
     @PostMapping("/restore/{idUbicacion}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String restore(@PathVariable Integer idUbicacion) {
         ubicacionService.restoreById(idUbicacion);
         return "redirect:/ubicacion/admin/list";

@@ -5,18 +5,23 @@
     <title>Index</title>
 </head>
 <body>
-    <h1>Bienvenido</h1>
+	<h1 th:if="${#authentication.isAuthenticated()}">
+	    Bienvenido <span th:text="${#authorization.expression('hasRole(''ADMIN'')') ? 'Administrador' 
+	                   : (#authorization.expression('hasRole(''CLIENT'')') ? 'Cliente' 
+	                   : (#authorization.expression('hasRole(''EMPLOYEE'')') ? 'Empleado' : 'Usuario'))}"></span>
+	</h1>
 
     <form th:action="@{/auth/logout}" method="post">
         <button type="submit">Logout</button>
     </form>
-
-    <a th:href="@{/cliente/admin/list}">Ver Clientes</a>
-    <a th:href="@{/empleado/list}">Ver Empleados</a>
     <a th:href="@{/servicio/list}">Ver Servicios</a>
 
-    <div sec:authorize="hasRole('ADMIN')">
-        <a th:href="@{/empleado/form}">Agregar nuevo empleado</a>
-    </div>
+	<div sec:authorize="hasRole('ADMIN')">
+	    <a th:href="@{/cliente/admin/list}">Ver Clientes</a>
+	    <a th:href="@{/empleado/admin/list}">Ver Empleados</a>
+	    <a th:href="@{/ubicacion/admin/list}">Ver Ubicaciones</a>
+	</div>
+
+
 </body>
 </html>
