@@ -41,9 +41,13 @@ public class ServicioServiceImp implements IServicioService {
     @Override
     public ServicioResponseDTO save(ServicioRequestDTO servicioRequestDTO) {
 
-    	 if (servicioRepository.existsByNombre(servicioRequestDTO.getNombre())) {
+    	if (servicioRepository.existsByNombre(servicioRequestDTO.getNombre())) {
     	        throw new IllegalArgumentException("Ya existe un servicio con el mismo nombre.");
-    	    }
+    	}
+    	if (!servicioRequestDTO.isRequiereEmpleado() && 
+    			    (servicioRequestDTO.getIdEmpleados() != null && !servicioRequestDTO.getIdEmpleados().isEmpty())) {
+    			    throw new IllegalArgumentException("El servicio no puede tener empleados asignados si no requiere empleados.");
+    	}
     	Ubicacion ubicacion = ubicacionRepository.findById(servicioRequestDTO.getIdUbicacion())
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Ubicación con id {0} no encontrada", servicioRequestDTO.getIdUbicacion())));
 
@@ -106,7 +110,14 @@ public class ServicioServiceImp implements IServicioService {
         // Buscar la nueva ubicación si se proporciona
         Ubicacion nuevaUbicacion = ubicacionRepository.findById(servicioRequestDTO.getIdUbicacion())
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Ubicación con id {0} no encontrada", servicioRequestDTO.getIdUbicacion())));
-
+        if (servicioRepository.existsByNombre(servicioRequestDTO.getNombre())&&
+    		    !servicioRepository.findById(idServicio).get().getNombre().equals(servicioRequestDTO.getNombre())) {
+	        throw new IllegalArgumentException("Ya existe un servicio con el mismo nombre.");
+	    }
+        if (!servicioRequestDTO.isRequiereEmpleado() && 
+			    (servicioRequestDTO.getIdEmpleados() != null && !servicioRequestDTO.getIdEmpleados().isEmpty())) {
+			    throw new IllegalArgumentException("El servicio no puede tener empleados asignados si no requiere empleados.");
+        }
         servicio.setNombre(servicioRequestDTO.getNombre());
         servicio.setDuracion(servicioRequestDTO.getDuracion());
         servicio.setRequiereEmpleado(servicioRequestDTO.isRequiereEmpleado());

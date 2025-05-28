@@ -43,5 +43,21 @@
 <a th:href="@{/servicio/admin/list}">Volver</a>
 <a th:href="@{/ubicacion/form}">Crear nueva ubicación</a>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const requiereEmpleadoCheckbox = document.querySelector("input[name='requiereEmpleado']");
+        const empleadosCheckboxes = document.querySelectorAll("input[name='idEmpleados']");
 
+        function toggleEmpleados() {
+            const habilitado = requiereEmpleadoCheckbox.checked;
+            empleadosCheckboxes.forEach(checkbox => checkbox.disabled = !habilitado);
+        }
+
+        // Ejecutar al cargar la página
+        toggleEmpleados();
+
+        // Escuchar cambios en el checkbox "Requiere Empleado"
+        requiereEmpleadoCheckbox.addEventListener("change", toggleEmpleados);
+    });
+</script>
 </html>

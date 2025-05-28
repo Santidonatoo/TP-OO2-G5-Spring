@@ -73,7 +73,10 @@ public class ServicioController {
     	if (servicioRepository.existsByNombre(servicioRequestDTO.getNombre())) {
             bindingResult.rejectValue("nombre", "error.servicio", "Ya existe un servicio con el mismo nombre.");
         }
-
+    	if (!servicioRequestDTO.isRequiereEmpleado() && 
+			    (servicioRequestDTO.getIdEmpleados() != null && !servicioRequestDTO.getIdEmpleados().isEmpty())) {
+			    throw new IllegalArgumentException("El servicio no puede tener empleados asignados si no requiere empleados.");
+    	}
     	if (bindingResult.hasErrors()) {
             model.addAttribute("ubicaciones", ubicacionService.findAllNotDeleted(PageRequest.of(0, 5))); 
             return ViewRouteHelper.SERVICIO_FORM;
@@ -105,9 +108,18 @@ public class ServicioController {
     @PostMapping("/update/{idServicio}")
     @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Integer idServicio, @Valid @ModelAttribute ServicioRequestDTO dto, BindingResult result) {
-        if (result.hasErrors()) {
+    	if (servicioRepository.existsByNombre(dto.getNombre()) &&
+    		    !servicioRepository.findById(idServicio).get().getNombre().equals(dto.getNombre())) {
+    		    result.rejectValue("nombre", "error.servicio", "Ya existe otro servicio con este nombre.");
+    	}
+    	if (!dto.isRequiereEmpleado() && 
+			    (dto.getIdEmpleados() != null && !dto.getIdEmpleados().isEmpty())) {
+			    throw new IllegalArgumentException("El servicio no puede tener empleados asignados si no requiere empleados.");
+    	}
+    	if (result.hasErrors()) {
             return ViewRouteHelper.SERVICIO_FORM;
         }
+        
         servicioService.update(idServicio, dto);
         return "redirect:/servicio/admin/list";
     }
