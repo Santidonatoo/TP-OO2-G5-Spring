@@ -7,15 +7,21 @@ import java.util.Set;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import oo2.grupo5.turnos.dtos.requests.EmpleadoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
 import oo2.grupo5.turnos.entities.Empleado;
+import oo2.grupo5.turnos.entities.Role;
 import oo2.grupo5.turnos.entities.Servicio;
+import oo2.grupo5.turnos.entities.User;
+import oo2.grupo5.turnos.enums.RoleType;
 import oo2.grupo5.turnos.repositories.IEmpleadoRepository;
+import oo2.grupo5.turnos.repositories.IRoleRepository;
 import oo2.grupo5.turnos.repositories.IServicioRepository;
+import oo2.grupo5.turnos.repositories.IUserRepository;
 import oo2.grupo5.turnos.services.interfaces.IEmpleadoService;
 
 @Service
@@ -23,13 +29,19 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	
 	private final IEmpleadoRepository empleadoRepository;
 	private final IServicioRepository servicioRepository;
-
+	private final IRoleRepository roleRepository;
+	private final PasswordEncoder passwordEncoder;
 	private final ModelMapper modelMapper;
+	private final IUserRepository userRepository;
 	
-	public EmpleadoServiceImp(IEmpleadoRepository empleadoRepository, IServicioRepository servicioRepository,ModelMapper modelMapper) {
+	public EmpleadoServiceImp(IEmpleadoRepository empleadoRepository, IServicioRepository servicioRepository,ModelMapper modelMapper,
+			IRoleRepository roleRepository, PasswordEncoder passwordEncoder, IUserRepository userRepository) {
 		this.empleadoRepository = empleadoRepository;
 		this.servicioRepository = servicioRepository;
 		this.modelMapper = modelMapper;
+		this.roleRepository = roleRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.userRepository = userRepository;
 	}
 	
 	@Override
@@ -41,6 +53,19 @@ public class EmpleadoServiceImp implements IEmpleadoService{
             Set<Servicio> servicios = new HashSet<>(servicioRepository.findAllById(empleadoRequestDTO.getIdServicios()));
             empleado.setListaServicios(servicios);
         }
+    	
+    	Role rolEmpleado = roleRepository.findByType(RoleType.EMPLOYEE)
+    			.orElseThrow(() -> new RuntimeException("Rol EMPLOYEE no encontrado"));
+    	
+        User user = User.builder()
+                .username(empleadoRequestDTO.getUsername())
+                .password(passwordEncoder.encode(empleadoRequestDTO.getPassword()))
+                .active(true)
+                .roleEntities(Set.of(rolEmpleado))
+                .persona(saved) // Relación con Persona (Empleado)
+                .build();
+        
+        userRepository.save(user);
     	
     	return modelMapper.map(saved, EmpleadoResponseDTO.class);
 	}

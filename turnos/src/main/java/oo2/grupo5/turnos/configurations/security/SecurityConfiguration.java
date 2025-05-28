@@ -43,6 +43,8 @@ public class SecurityConfiguration {
                         "/auth/registro", "/auth/registro-cliente"
                     ).permitAll();
                     
+                    auth.requestMatchers("/empleado/save").hasRole("ADMIN");
+                    
                     auth.anyRequest().authenticated();
                 })
                 .formLogin(login -> {
@@ -50,7 +52,7 @@ public class SecurityConfiguration {
                     login.loginProcessingUrl("/auth/loginProcess");//POST
                     login.usernameParameter("username");
                     login.passwordParameter("password");
-                    login.defaultSuccessUrl("/auth/loginSuccess");
+                    login.defaultSuccessUrl("/index", true);
                     login.permitAll();
                 })
                 .logout(logout -> {

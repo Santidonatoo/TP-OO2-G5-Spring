@@ -31,6 +31,14 @@
     <label>Puesto:</label>
     <input type="text" th:field="*{puesto}" required />
     <div th:if="${#fields.hasErrors('puesto')}" th:errors="*{puesto}"></div>
+    
+    <label>Nombre de usuario:</label>
+	<input type="text" th:field="*{username}" required />
+	<div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+	
+	<label>Contraseña:</label>
+	<input type="password" th:field="*{password}" required />
+	<div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
 
 	<label>Servicios:</label>
 		<div th:each="servicio : ${servicios}">
