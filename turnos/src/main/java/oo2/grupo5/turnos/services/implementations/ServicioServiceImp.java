@@ -41,6 +41,9 @@ public class ServicioServiceImp implements IServicioService {
     @Override
     public ServicioResponseDTO save(ServicioRequestDTO servicioRequestDTO) {
 
+    	 if (servicioRepository.existsByNombre(servicioRequestDTO.getNombre())) {
+    	        throw new IllegalArgumentException("Ya existe un servicio con el mismo nombre.");
+    	    }
     	Ubicacion ubicacion = ubicacionRepository.findById(servicioRequestDTO.getIdUbicacion())
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Ubicación con id {0} no encontrada", servicioRequestDTO.getIdUbicacion())));
 

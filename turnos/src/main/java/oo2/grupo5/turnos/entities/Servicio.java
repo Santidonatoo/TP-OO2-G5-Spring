@@ -40,8 +40,8 @@ public class Servicio {
     private Integer idServicio;
 	
 	@NotBlank(message = "The name cannot be empty")
-    @Column(name = "nombre", nullable = false)
-    private String nombre;
+	@Column(name = "nombre", nullable = false, unique = true)    
+	private String nombre;
 
 	@Column(name = "requiereEmpleado", nullable = false)
 	private boolean requiereEmpleado;

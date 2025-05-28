@@ -29,7 +29,7 @@
 	    </th:block>
 	</select>
 	<div th:if="${#fields.hasErrors('idUbicacion')}" th:errors="*{idUbicacion}"></div>
-	
+	<br>
 	<label>Empleados:</label>
 	<div th:each="empleado : ${empleados}">
 	    <input type="checkbox" th:field="*{idEmpleados}" th:value="${empleado.idPersona}" />
@@ -43,4 +43,5 @@
 <a th:href="@{/servicio/admin/list}">Volver</a>
 <a th:href="@{/ubicacion/form}">Crear nueva ubicación</a>
 </body>
+
 </html>

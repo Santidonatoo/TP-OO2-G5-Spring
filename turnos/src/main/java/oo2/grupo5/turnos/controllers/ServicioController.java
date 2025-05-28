@@ -22,6 +22,7 @@ import oo2.grupo5.turnos.dtos.requests.ServicioRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
+import oo2.grupo5.turnos.repositories.IServicioRepository;
 import oo2.grupo5.turnos.services.interfaces.IEmpleadoService;
 import oo2.grupo5.turnos.services.interfaces.IServicioService;
 import oo2.grupo5.turnos.services.interfaces.IUbicacionService;
@@ -33,12 +34,15 @@ public class ServicioController {
 	private final IServicioService servicioService;
 	private final IUbicacionService ubicacionService;
 	private final IEmpleadoService empleadoService;
+	private final IServicioRepository servicioRepository;
 	
 
-    public ServicioController(IServicioService servicioService, IUbicacionService ubicacionService, IEmpleadoService empleadoService) {
+    public ServicioController(IServicioService servicioService, IUbicacionService ubicacionService,
+    		IEmpleadoService empleadoService, IServicioRepository servicioRepository) {
         this.servicioService = servicioService;
         this.ubicacionService = ubicacionService;
         this.empleadoService = empleadoService;
+        this.servicioRepository = servicioRepository;
     }
     @GetMapping("/list")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'EMPLOYEE')")
@@ -65,8 +69,13 @@ public class ServicioController {
 
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
-    public String save(@Valid @ModelAttribute ServicioRequestDTO servicioRequestDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+    public String save(@Valid @ModelAttribute ServicioRequestDTO servicioRequestDTO, BindingResult bindingResult, Model model) {
+    	if (servicioRepository.existsByNombre(servicioRequestDTO.getNombre())) {
+            bindingResult.rejectValue("nombre", "error.servicio", "Ya existe un servicio con el mismo nombre.");
+        }
+
+    	if (bindingResult.hasErrors()) {
+            model.addAttribute("ubicaciones", ubicacionService.findAllNotDeleted(PageRequest.of(0, 5))); 
             return ViewRouteHelper.SERVICIO_FORM;
         }
         servicioService.save(servicioRequestDTO);
