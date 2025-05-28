@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,19 +41,21 @@ public class ServicioController {
         this.empleadoService = empleadoService;
     }
     @GetMapping("/list")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'EMPLOYEE')")
     public String listNotDeleted(Model model, @PageableDefault(size = 5) Pageable pageable) {
         Page<ServicioResponseDTO> servicios = servicioService.findAllNotDeleted(pageable);
         model.addAttribute("servicios", servicios);
         return ViewRouteHelper.SERVICIO_LIST;
     }
     @GetMapping("/admin/list")
+    @PreAuthorize("hasRole('ADMIN')")
     public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {
         Page<ServicioResponseDTO> servicios = servicioService.findAll(pageable);
         model.addAttribute("servicios", servicios);
         return ViewRouteHelper.SERVICIO_ADMIN_LIST;
     }
-    
-    @GetMapping("/form")
+    @GetMapping("/form")    
+    @PreAuthorize("hasRole('ADMIN')")
     public String createForm(Model model) {
         model.addAttribute("servicioRequestDTO", new ServicioRequestDTO());
         model.addAttribute("ubicaciones", ubicacionService.findAllNotDeleted(PageRequest.of(0, 5)));
@@ -61,6 +64,7 @@ public class ServicioController {
     }
 
     @PostMapping("/save")
+    @PreAuthorize("hasRole('ADMIN')")
     public String save(@Valid @ModelAttribute ServicioRequestDTO servicioRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ViewRouteHelper.SERVICIO_FORM;
@@ -70,6 +74,7 @@ public class ServicioController {
     }
 
     @GetMapping("/edit/{idServicio}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String editForm(@PathVariable Integer idServicio, Model model) {
     	ServicioResponseDTO dto = servicioService.findById(idServicio);
 
@@ -89,6 +94,7 @@ public class ServicioController {
     }
 
     @PostMapping("/update/{idServicio}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Integer idServicio, @Valid @ModelAttribute ServicioRequestDTO dto, BindingResult result) {
         if (result.hasErrors()) {
             return ViewRouteHelper.SERVICIO_FORM;
@@ -98,12 +104,14 @@ public class ServicioController {
     }
 
     @PostMapping("/delete/{idServicio}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String softDelete(@PathVariable Integer idServicio) {
         servicioService.deleteById(idServicio);
         return "redirect:/servicio/admin/list";
     }
 
     @PostMapping("/restore/{idServicio}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String restore(@PathVariable Integer idServicio) {
     		servicioService.restoreById(idServicio);
         return "redirect:/servicio/admin/list";

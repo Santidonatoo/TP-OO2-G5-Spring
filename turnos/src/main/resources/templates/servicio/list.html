@@ -6,9 +6,11 @@
 <body>
 <h1>Servicios que no estan eliminados</h1>
 <br>
-
-    <a th:href="@{/servicio/form}">Nuevo</a>
+<div sec:authorize="hasRole('ADMIN')">
+	<a th:href="@{/servicio/form}">Nuevo</a>
     <a th:href="@{/servicio/admin/list}">Ver todo</a>
+</div>
+    
 
 <br>
 <table>
@@ -17,7 +19,6 @@
             <th>Nombre</th>
             <th>Duración</th>
             <th>Ubicación</th> 
-            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -25,17 +26,12 @@
             <td th:text="${servicio.nombre}"></td>
             <td th:text="${servicio.duracion} + ' min'"></td>
             <td th:text="${servicio.ubicacion.localidad} + ', ' + ${servicio.ubicacion.calle} + ' ' + ${servicio.ubicacion.numero}"></td> 
-            <td>
-                <a th:href="@{/servicio/edit/{idServicio}(idServicio=${servicio.idServicio})}">Editar</a>
-                <form th:action="@{/servicio/delete/{idServicio}(idServicio=${servicio.idServicio})}" method="post" style="display:inline;">
-                    <button type="submit">Eliminar</button>
-                </form>
-            </td>
         </tr>
     </tbody>
 </table>
 <br>
 <br>
+<a th:href="@{/index}">Volver</a>
 
 </body>
 </html>
