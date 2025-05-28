@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,6 +37,7 @@ public class EmpleadoController {
 	}
 	
     @GetMapping("/list")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public String listNotDeleted(Model model, @PageableDefault(size = 5) Pageable pageable) {
         Page<EmpleadoResponseDTO> empleados = empleadoService.findAllNotDeleted(pageable);
         model.addAttribute("empleados", empleados);
@@ -43,6 +45,7 @@ public class EmpleadoController {
     }
 	
 	@GetMapping("/admin/list")
+	@PreAuthorize("hasAnyRole('ADMIN')")
     public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {
         Page<EmpleadoResponseDTO> empleados = empleadoService.findAll(pageable);
         model.addAttribute("empleados", empleados);
@@ -50,6 +53,7 @@ public class EmpleadoController {
     }
 	
 	@GetMapping("/form")
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	public String createForm(Model model) {
 		model.addAttribute("empleadoRequestDTO", new EmpleadoRequestDTO());
         model.addAttribute("servicios", servicioService.findAllNotDeleted(PageRequest.of(0, 5))); 
@@ -57,6 +61,7 @@ public class EmpleadoController {
 	}
 	
     @PostMapping("/save")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public String save(@Valid @ModelAttribute EmpleadoRequestDTO empleadoRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ViewRouteHelper.EMPLEADO_FORM;
@@ -71,6 +76,7 @@ public class EmpleadoController {
     }
 	
     @GetMapping("/edit/{idPersona}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public String editForm(@PathVariable Integer idPersona, Model model) {
         EmpleadoResponseDTO dto = empleadoService.findById(idPersona);
 
@@ -88,6 +94,7 @@ public class EmpleadoController {
     }
 	
     @PostMapping("/update/{idPersona}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public String update(@PathVariable Integer idPersona,
                          @Valid @ModelAttribute EmpleadoRequestDTO empleadoRequestDTO,
                          BindingResult bindingResult) {
@@ -100,12 +107,14 @@ public class EmpleadoController {
     }
     
     @PostMapping("/delete/{idPersona}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public String softDelete(@PathVariable Integer idPersona) {
         empleadoService.deleteById(idPersona);
         return "redirect:/empleado/admin/list";
     }
 	
     @PostMapping("/restore/{idPersona}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public String restore(@PathVariable Integer idPersona) {
         empleadoService.restoreById(idPersona);
         return "redirect:/empleado/admin/list";
