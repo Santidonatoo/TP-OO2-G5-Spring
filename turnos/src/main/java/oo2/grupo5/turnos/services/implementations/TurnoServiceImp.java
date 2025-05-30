@@ -1,6 +1,7 @@
 package oo2.grupo5.turnos.services.implementations;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -9,11 +10,17 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import oo2.grupo5.turnos.dtos.requests.TurnoRequestDTO;
+import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
+import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.TurnoResponseDTO;
 import oo2.grupo5.turnos.entities.DatosTurno;
+import oo2.grupo5.turnos.entities.Empleado;
+import oo2.grupo5.turnos.entities.Servicio;
 import oo2.grupo5.turnos.entities.Turno;
 import oo2.grupo5.turnos.enums.EstadoTurno;
 import oo2.grupo5.turnos.repositories.IDatosTurnoRepository;
+import oo2.grupo5.turnos.repositories.IEmpleadoRepository;
+import oo2.grupo5.turnos.repositories.IServicioRepository;
 import oo2.grupo5.turnos.repositories.ITurnoRepository;
 import oo2.grupo5.turnos.services.interfaces.ITurnoService;
 
@@ -22,12 +29,16 @@ public class TurnoServiceImp implements ITurnoService {
 
 	private final IDatosTurnoRepository datosTurnoRepository;
 	private final ITurnoRepository turnoRepository;
+	private final IServicioRepository servicioRepository;
+	private final IEmpleadoRepository empleadoRepository;
 	private final ModelMapper modelMapper;
 	
-	public TurnoServiceImp(ITurnoRepository turnoRepository, IDatosTurnoRepository datosTurnoRepository, ModelMapper modelMapper) {
+	public TurnoServiceImp(ITurnoRepository turnoRepository, IDatosTurnoRepository datosTurnoRepository, IServicioRepository servicioRepository, IEmpleadoRepository empleadoRepository, ModelMapper modelMapper) {
         
 		this.turnoRepository = turnoRepository;
 		this.datosTurnoRepository = datosTurnoRepository;
+		this.servicioRepository = servicioRepository;
+		this.empleadoRepository = empleadoRepository;
         this.modelMapper = modelMapper;
     }
 	
@@ -86,6 +97,23 @@ public class TurnoServiceImp implements ITurnoService {
 	@Override
 	public void deleteById(Integer idTurno) {
 		turnoRepository.deleteById(idTurno);
+	}
+
+	@Override
+	public Page<TurnoResponseDTO> findTurnosByServicioEmpleadoFecha(Pageable pageable, Integer idServicio, Integer idEmpleado, LocalDate fecha){
+		Servicio servicio = servicioRepository.findById(idServicio).orElse(null);
+		Empleado empleado = empleadoRepository.findById(idEmpleado).orElse(null);
+		
+		return turnoRepository.findByDatosTurno_EmpleadoAndDatosTurno_ServicioAndDatosTurno_Fecha(empleado, servicio, fecha, pageable)
+				.map(entity -> modelMapper.map(entity, TurnoResponseDTO.class));
+	}
+
+	@Override
+	public Page<TurnoResponseDTO> findTurnosByServicioFecha(Pageable pageable, Integer idServicio, LocalDate fecha) {
+		Servicio servicio = servicioRepository.findById(idServicio).orElse(null);
+		
+		return turnoRepository.findByDatosTurno_ServicioAndDatosTurno_Fecha(servicio, fecha, pageable)
+				.map(entity -> modelMapper.map(entity, TurnoResponseDTO.class));
 	}
 	
 }
