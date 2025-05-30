@@ -95,6 +95,12 @@ public class EmpleadoServiceImp implements IEmpleadoService{
     	return empleadoRepository.findAllBySoftDeletedFalse(pageable)
     			.map(entity -> modelMapper.map(entity, EmpleadoResponseDTO.class));
 	}
+	
+    public Page<EmpleadoResponseDTO> findAllEmpleadosbyServicio(Integer idServicio, Pageable pageable){
+    	return empleadoRepository.findAllByListaServicios_IdServicioAndSoftDeletedFalse(idServicio, pageable)
+    			.map(entity -> modelMapper.map(entity, EmpleadoResponseDTO.class));
+    }
+
 	@Override
 	public EmpleadoResponseDTO update(Integer idPersona, EmpleadoRequestDTO empleadoRequestDTO) {
 		Empleado empleado = empleadoRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
