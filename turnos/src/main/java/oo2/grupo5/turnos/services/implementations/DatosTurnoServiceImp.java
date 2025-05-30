@@ -42,10 +42,15 @@ public class DatosTurnoServiceImp implements IDatosTurnoService {
 		
 		Cliente cliente = clienteRepository.findById(datosTurnoRequestDTO.getIdCliente())
 				.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Cliente con id {0} no encontrado", datosTurnoRequestDTO.getIdCliente())));
-		Empleado empleado = empleadoRepository.findById(datosTurnoRequestDTO.getIdEmpleado())
-				.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Empleado con id {0} no encontrado", datosTurnoRequestDTO.getIdEmpleado())));
+
 		Servicio servicio = servicioRepository.findById(datosTurnoRequestDTO.getIdServicio())
 				.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio con id {0} no encontrado", datosTurnoRequestDTO.getIdServicio())));
+		
+		Empleado empleado = null;
+	    if (datosTurnoRequestDTO.getIdEmpleado() != null) {
+	        empleado = empleadoRepository.findById(datosTurnoRequestDTO.getIdEmpleado())
+	                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Empleado con id {0} no encontrado", datosTurnoRequestDTO.getIdEmpleado())));
+	    }
 		
 		DatosTurno datosTurno = modelMapper.map(datosTurnoRequestDTO, DatosTurno.class);
 		datosTurno.setCliente(cliente);
