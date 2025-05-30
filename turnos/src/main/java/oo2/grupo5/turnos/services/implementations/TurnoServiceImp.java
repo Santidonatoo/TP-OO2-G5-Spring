@@ -1,0 +1,91 @@
+package oo2.grupo5.turnos.services.implementations;
+
+import java.text.MessageFormat;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import jakarta.persistence.EntityNotFoundException;
+import oo2.grupo5.turnos.dtos.requests.TurnoRequestDTO;
+import oo2.grupo5.turnos.dtos.responses.TurnoResponseDTO;
+import oo2.grupo5.turnos.entities.DatosTurno;
+import oo2.grupo5.turnos.entities.Turno;
+import oo2.grupo5.turnos.enums.EstadoTurno;
+import oo2.grupo5.turnos.repositories.IDatosTurnoRepository;
+import oo2.grupo5.turnos.repositories.ITurnoRepository;
+import oo2.grupo5.turnos.services.interfaces.ITurnoService;
+
+@Service
+public class TurnoServiceImp implements ITurnoService {
+
+	private final IDatosTurnoRepository datosTurnoRepository;
+	private final ITurnoRepository turnoRepository;
+	private final ModelMapper modelMapper;
+	
+	public TurnoServiceImp(ITurnoRepository turnoRepository, IDatosTurnoRepository datosTurnoRepository, ModelMapper modelMapper) {
+        
+		this.turnoRepository = turnoRepository;
+		this.datosTurnoRepository = datosTurnoRepository;
+        this.modelMapper = modelMapper;
+    }
+	
+	@Override
+	public TurnoResponseDTO save(TurnoRequestDTO turnoRequestDTO) {
+		
+		DatosTurno datosTurno = datosTurnoRepository.findById(turnoRequestDTO.getIdDatosTurno())
+				.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Los datos del turno que tienen id {0} no han sido encontrados", turnoRequestDTO.getIdDatosTurno())));
+		
+		Turno turno = modelMapper.map(turnoRequestDTO, Turno.class);
+		turno.setDatosTurno(datosTurno);
+		
+		Turno saved = turnoRepository.save(turno);
+		return modelMapper.map(saved, TurnoResponseDTO.class);
+	}
+
+	@Override
+	public TurnoResponseDTO findById(Integer idTurno) {
+		Turno turno = turnoRepository.findById(idTurno)
+				.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("El turno con id {0} no ha sido encontrado", idTurno)));
+		
+		return modelMapper.map(turno, TurnoResponseDTO.class);
+	}
+
+	@Override
+	public Page<TurnoResponseDTO> findAll(Pageable pageable) {
+		
+		return turnoRepository.findAll(pageable)
+                .map(entity -> modelMapper.map(entity, TurnoResponseDTO.class));
+	}
+
+	@Override
+	public TurnoResponseDTO update(Integer idTurno, TurnoRequestDTO turnoRequestDTO) {
+		Turno turno = turnoRepository.findById(idTurno)
+				.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("El turno con id {0} no ha sido encontrado", idTurno)));
+		
+		DatosTurno datosTurno = datosTurnoRepository.findById(turnoRequestDTO.getIdDatosTurno())
+				.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Los datos del turno que tienen id {0} no han sido encontrados", turnoRequestDTO.getIdDatosTurno())));
+		
+		turno = modelMapper.map(turnoRequestDTO, Turno.class);
+		turno.setDatosTurno(datosTurno);
+		turno.setHora(turnoRequestDTO.getHora());
+		
+		Turno updated = turnoRepository.save(turno);
+		return modelMapper.map(updated, TurnoResponseDTO.class);
+	}
+
+	@Override
+	public void cancelById(Integer idTurno) {
+		Turno turno = turnoRepository.findById(idTurno)
+				.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("El turno con id {0} no ha sido encontrado", idTurno)));
+		
+		turno.setEstado(EstadoTurno.CANCELADO);
+	}
+
+	@Override
+	public void deleteById(Integer idTurno) {
+		turnoRepository.deleteById(idTurno);
+	}
+	
+}

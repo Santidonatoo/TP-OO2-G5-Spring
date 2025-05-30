@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Elegir Empleado</title>
+</head>
+<body>
+  <h1>Elige un empleado</h1>
+  <form th:action="@{/turno/guardar-empleado}" method="post">
+    <div>
+      <label for="idEmpleado">Empleado:</label>
+      <select name="idEmpleado" id="idEmpleado" required>
+        <option value="" disabled selected>Seleccione un empleado</option>
+        <!-- Se espera que el atributo "empleados" venga en el modelo -->
+        <option th:each="empleado : ${empleados}" 
+                th:value="${empleado.idPersona}" 
+                th:text="${empleado.nombre}"></option>
+      </select>
+    </div>
+    <div>
+      <button type="submit">Siguiente</button>
+    </div>
+  </form>
+</body>
+</html>
