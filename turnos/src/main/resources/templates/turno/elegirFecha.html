@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Elegir Fecha</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <h1>Elige una fecha para tu turno</h1>
+  <form th:action="@{/turno/guardar-fecha}" method="post">
+    <div>
+      <label for="fecha">Fecha:</label>
+      <input type="date" name="fecha" id="fecha" required>
+    </div>
+    <div>
+      <button type="submit">Siguiente</button>
+    </div>
+  </form>
+</body>
+</html>

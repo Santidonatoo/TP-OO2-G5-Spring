@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Elegir Horario</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <h1>Elige un horario para tu turno</h1>
+  <form th:action="@{/turno/guardar-horario}" method="post">
+    <div>
+      <label for="horario">Horario:</label>
+      <select name="horario" id="horario" required>
+        <option value="" disabled selected>Seleccione un horario</option>
+        <option th:each="hora : ${horarios}" th:value="${hora}" th:text="${hora}"></option>
+      </select>
+    </div>
+
+    <div>
+      <button type="submit">Siguiente</button>
+    </div>
+  </form>
+</body>

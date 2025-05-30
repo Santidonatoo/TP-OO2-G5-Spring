@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirmar Turno</title>
+</head>
+<body>
+  	<h1>Confirme su turno!</h1>
+	<h2>Servicio: <span th:text="${datosTurno.idServicio}"></span></h2>  
+	<h2>Empleado: <span th:text="${datosTurno.idEmpleado}"></span></h2>
+	<h2>Fecha: <span th:text="${datosTurno.fecha}"></span></h2>
+	<h2>Horario: <span th:text="${turno.hora}"></span></h2>
+	<form th:action="@{/turno/turno-exitoso}" method="post">
+	    <button type="submit">Confirmar</button>
+	</form>
+	<form th:action="@{/index}" method="post">
+		    <button type="submit">Cancelar</button>
+	</form>
+</body>
+</html>

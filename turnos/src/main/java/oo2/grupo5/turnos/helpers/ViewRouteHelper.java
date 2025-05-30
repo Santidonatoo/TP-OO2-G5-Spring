@@ -25,6 +25,13 @@ public class ViewRouteHelper {
 	    public static final String USER_LOGIN = "authentication/login";
 	    public static final String USER_REGISTER = "authentication/register";
 	    
+	    //Turno
+	    public static final String TURNO_EMPLEADO = "turno/elegirEmpleado";
+	    public static final String TURNO_SERVICIO = "turno/elegirServicio";
+	    public static final String TURNO_FECHA = "turno/elegirFecha";
+	    public static final String TURNO_HORARIO = "turno/elegirHorario";
+	    public static final String TURNO_CONFIRMAR = "turno/confirmarTurno";
+	      
 	    //Home
 	    public static final String HOME_INDEX = "home/index";
 }
