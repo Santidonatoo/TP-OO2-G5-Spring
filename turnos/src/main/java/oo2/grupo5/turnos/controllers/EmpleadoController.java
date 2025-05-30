@@ -79,12 +79,13 @@ public class EmpleadoController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     public String editForm(@PathVariable Integer idPersona, Model model) {
         EmpleadoResponseDTO dto = empleadoService.findById(idPersona);
-
+        
         EmpleadoRequestDTO requestDTO = new EmpleadoRequestDTO();
         requestDTO.setIdPersona(dto.getIdPersona());
         requestDTO.setNombre(dto.getNombre());
         requestDTO.setApellido(dto.getApellido());
         requestDTO.setDni(dto.getDni());
+        requestDTO.setPuesto(dto.getPuesto());
         requestDTO.setIdServicios(dto.getListaServicios().stream().map(ServicioResponseDTO::getIdServicio).collect(Collectors.toSet()));
 
         model.addAttribute("empleadoRequestDTO", requestDTO);
