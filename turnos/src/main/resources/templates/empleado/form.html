@@ -24,22 +24,26 @@
     <input type="number" th:field="*{dni}" required />
     <div th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
     
-    <label>Fecha de nacimiento:</label>
-    <input type="date" th:field="*{fechaDeNacimiento}" required />
-    <div th:if="${#fields.hasErrors('fechaDeNacimiento')}" th:errors="*{fechaDeNacimiento}"></div>
+    <div th:if="${empleadoRequestDTO.idPersona == null}">
+	    <label>Fecha de nacimiento:</label>
+	    <input type="date" th:field="*{fechaDeNacimiento}" th:value="${#temporals.format(empleadoRequestDTO.fechaDeNacimiento, 'yyyy-MM-dd')}" required />
+	    <div th:if="${#fields.hasErrors('fechaDeNacimiento')}" th:errors="*{fechaDeNacimiento}"></div>
+    </div>
     
     <label>Puesto:</label>
     <input type="text" th:field="*{puesto}" required />
     <div th:if="${#fields.hasErrors('puesto')}" th:errors="*{puesto}"></div>
     
-    <label>Nombre de usuario:</label>
-	<input type="text" th:field="*{username}" required />
-	<div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+    <div th:if="${empleadoRequestDTO.idPersona == null}">
+	    <label>Nombre de usuario:</label>
+		<input type="text" th:field="*{username}" required />
+		<div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+		
+		<label>Contraseña:</label>
+		<input type="password" th:field="*{password}" required />
+		<div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+	</div>
 	
-	<label>Contraseña:</label>
-	<input type="password" th:field="*{password}" required />
-	<div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-
 	<label>Servicios:</label>
 		<div th:each="servicio : ${servicios}">
 		    <input type="checkbox" th:field="*{idServicios}" th:value="${servicio.idServicio}" />

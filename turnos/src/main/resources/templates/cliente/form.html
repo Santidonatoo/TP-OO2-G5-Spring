@@ -24,10 +24,12 @@
     <input type="number" th:field="*{dni}" required />
     <div th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
     
-    <label>Fecha de nacimiento:</label>
-    <input type="date" th:field="*{fechaDeNacimiento}" required />
-    <div th:if="${#fields.hasErrors('fechaDeNacimiento')}" th:errors="*{fechaDeNacimiento}"></div>
-
+    <div th:if="${clienteRequestDTO.idPersona == null}">
+	    <label>Fecha de nacimiento:</label>
+	    <input type="date" th:field="*{fechaDeNacimiento}" required />
+	    <div th:if="${#fields.hasErrors('fechaDeNacimiento')}" th:errors="*{fechaDeNacimiento}"></div>
+	</div>
+	
     <button type="submit">Guardar</button>
 </form>
 
