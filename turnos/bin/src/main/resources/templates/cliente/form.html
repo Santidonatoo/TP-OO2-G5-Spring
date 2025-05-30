@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="${clienteRequestDTO.idPersona != null} ? 'Editar Cliente' : 'Nuevo Cliente'">Formulario Clientes</title>
+</head>
+<body>
+<h1 th:text="${clienteRequestDTO.idPersona != null} ? 'Editar Cliente' : 'Nuevo Cliente'"></h1>
+<br>
+
+<form th:action="${clienteRequestDTO.idPersona != null} ? @{/cliente/update/{idPersona}(idPersona=${clienteRequestDTO.idPersona})} : @{/cliente/save}" 
+      method="post" th:object="${clienteRequestDTO}">
+    
+    <input type="hidden" th:if="${clienteRequestDTO.idPersona != null}" th:field="*{idPersona}" />
+
+    <label>Nombre:</label>
+    <input type="text" th:field="*{nombre}" required />
+    <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+
+    <label>Apellido:</label>
+    <input type="text" th:field="*{apellido}" required />
+    <div th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></div>
+
+    <label>Dni:</label>
+    <input type="number" th:field="*{dni}" required />
+    <div th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
+    
+    <div th:if="${clienteRequestDTO.idPersona == null}">
+	    <label>Fecha de nacimiento:</label>
+	    <input type="date" th:field="*{fechaDeNacimiento}" required />
+	    <div th:if="${#fields.hasErrors('fechaDeNacimiento')}" th:errors="*{fechaDeNacimiento}"></div>
+	</div>
+	
+    <button type="submit">Guardar</button>
+</form>
+
+<br>
+<a th:href="@{/cliente/admin/list}">Volver</a>
+</body>
+</html>

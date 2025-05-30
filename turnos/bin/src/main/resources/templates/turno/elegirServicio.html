@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Elegir Servicio</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <h1>Elige un servicio</h1>
+  <form th:action="@{/turno/guardar-servicio}" method="post">
+    <div>
+      <label for="idServicio">Servicio:</label>
+      <select name="idServicio" id="idServicio" required>
+        <option value="" disabled selected>Seleccione un servicio</option>
+        <!-- Se espera que el controlador añada la lista de servicios en el atributo "servicios" -->
+        <option th:each="servicio : ${servicios}"
+				th:value="${servicio.idServicio}"  
+				th:text="${servicio.duracion} + ' min' + ${servicio.nombre}"></option>
+      </select>
+    </div>
+    <div>
+      <button type="submit">Siguiente</button>
+    </div>
+  </form>
+</body>
+</html>

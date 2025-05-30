@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <title>Lista de Servicios todos los roles</title>
+</head>
+<body>
+<h1>Servicios que no estan eliminados</h1>
+<br>
+<div sec:authorize="hasRole('ADMIN')">
+	<a th:href="@{/servicio/form}">Nuevo</a>
+    <a th:href="@{/servicio/admin/list}">Ver todo</a>
+</div>
+    
+
+<br>
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Duración</th>
+            <th>Ubicación</th> 
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="servicio : ${servicios}">
+            <td th:text="${servicio.nombre}"></td>
+            <td th:text="${servicio.duracion} + ' min'"></td>
+            <td th:text="${servicio.ubicacion.localidad} + ', ' + ${servicio.ubicacion.calle} + ' ' + ${servicio.ubicacion.numero}"></td> 
+        </tr>
+    </tbody>
+</table>
+<br>
+<br>
+<a th:href="@{/index}">Volver</a>
+
+</body>
+</html>

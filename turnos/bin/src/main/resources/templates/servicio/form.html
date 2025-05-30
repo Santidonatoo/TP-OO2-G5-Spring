@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="${servicioRequestDTO.idServicio != null} ? 'Editar' : 'Nuevo'">Formulario</title>
+</head>
+<body>
+<h1 th:text="${servicioRequestDTO.idServicio != null} ? 'Editar Servicio' : 'Nuevo Servicio'"></h1>
+<br>
+<form th:action="${servicioRequestDTO.idServicio != null} ? @{/servicio/update/{idServicio}(idServicio=${servicioRequestDTO.idServicio})} : @{/servicio/save}" method="post" th:object="${servicioRequestDTO}">
+    <input type="hidden" th:if="${servicioRequestDTO.idServicio != null}" th:field="*{idServicio}" />
+
+    <label>Nombre:</label>
+    <input type="text" th:field="*{nombre}" />
+    <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+
+    <label>Duracion:</label>
+    <input type="number" th:field="*{duracion}" step="15" min="15"/>
+    <div th:if="${#fields.hasErrors('duracion')}" th:errors="*{duracion}"></div>
+
+    <label>Requiere Empleado:</label>
+    <input type="checkbox" th:field="*{requiereEmpleado}" />
+    <div th:if="${#fields.hasErrors('requiereEmpleado')}" th:errors="*{requiereEmpleado}"></div>
+
+	<label for="ubicacion">Ubicación:</label>
+	<select name="idUbicacion" id="ubicacion" th:field="*{idUbicacion}" required>
+	    <option value="">Seleccione una ubicación</option>
+	    <th:block th:each="ubicacion : ${ubicaciones}">
+	        <option th:value="${ubicacion.idUbicacion}" th:text="${ubicacion.localidad} + ', ' + ${ubicacion.calle} + ' ' + ${ubicacion.numero}"></option>
+	    </th:block>
+	</select>
+	<div th:if="${#fields.hasErrors('idUbicacion')}" th:errors="*{idUbicacion}"></div>
+	<br>
+	<label>Empleados:</label>
+	<div th:each="empleado : ${empleados}">
+	    <input type="checkbox" th:field="*{idEmpleados}" th:value="${empleado.idPersona}" />
+	    <label th:text="${empleado.nombre} + ' ' + ${empleado.apellido} + ' (' + ${empleado.puesto} + ')'"></label>
+	</div>
+	<div th:if="${#fields.hasErrors('idEmpleados')}" th:errors="*{idEmpleados}"></div>
+
+    <button type="submit">Guardar</button>
+</form>
+<br>
+<a th:href="@{/servicio/admin/list}">Volver</a>
+<a th:href="@{/ubicacion/form}">Crear nueva ubicación</a>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const requiereEmpleadoCheckbox = document.querySelector("input[name='requiereEmpleado']");
+        const empleadosCheckboxes = document.querySelectorAll("input[name='idEmpleados']");
+
+        function toggleEmpleados() {
+            const habilitado = requiereEmpleadoCheckbox.checked;
+            empleadosCheckboxes.forEach(checkbox => checkbox.disabled = !habilitado);
+        }
+
+        // Ejecutar al cargar la página
+        toggleEmpleados();
+
+        // Escuchar cambios en el checkbox "Requiere Empleado"
+        requiereEmpleadoCheckbox.addEventListener("change", toggleEmpleados);
+    });
+</script>
+</html>

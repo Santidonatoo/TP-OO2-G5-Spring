@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="${empleadoRequestDTO.idPersona != null} ? 'Editar Empleado' : 'Nuevo Empleado'">Formulario Empleados</title>
+</head>
+<body>
+<h1 th:text="${empleadoRequestDTO.idPersona != null} ? 'Editar Empleado' : 'Nuevo Empleado'"></h1>
+<br>
+
+<form th:action="${empleadoRequestDTO.idPersona != null} ? @{/empleado/update/{idPersona}(idPersona=${empleadoRequestDTO.idPersona})} : @{/empleado/save}" 
+      method="post" th:object="${empleadoRequestDTO}">
+    
+    <input type="hidden" th:if="${empleadoRequestDTO.idPersona != null}" th:field="*{idPersona}" />
+
+    <label>Nombre:</label>
+    <input type="text" th:field="*{nombre}" required />
+    <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+
+    <label>Apellido:</label>
+    <input type="text" th:field="*{apellido}" required />
+    <div th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></div>
+
+    <label>Dni:</label>
+    <input type="number" th:field="*{dni}" required />
+    <div th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
+    
+    <div th:if="${empleadoRequestDTO.idPersona == null}">
+	    <label>Fecha de nacimiento:</label>
+	    <input type="date" th:field="*{fechaDeNacimiento}" th:value="${#temporals.format(empleadoRequestDTO.fechaDeNacimiento, 'yyyy-MM-dd')}" required />
+	    <div th:if="${#fields.hasErrors('fechaDeNacimiento')}" th:errors="*{fechaDeNacimiento}"></div>
+    </div>
+    
+    <label>Puesto:</label>
+    <input type="text" th:field="*{puesto}" required />
+    <div th:if="${#fields.hasErrors('puesto')}" th:errors="*{puesto}"></div>
+    
+    <div th:if="${empleadoRequestDTO.idPersona == null}">
+	    <label>Nombre de usuario:</label>
+		<input type="text" th:field="*{username}" required />
+		<div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+		
+		<label>Contraseña:</label>
+		<input type="password" th:field="*{password}" required />
+		<div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+	</div>
+	
+	<label>Servicios:</label>
+		<div th:each="servicio : ${servicios}">
+		    <input type="checkbox" th:field="*{idServicios}" th:value="${servicio.idServicio}" />
+		    <label th:text="${servicio.nombre} + ' ' + ${servicio.duracion} "></label>
+		</div>
+		<div th:if="${#fields.hasErrors('idServicios')}" th:errors="*{idServicios}"></div>
+    <button type="submit">Guardar</button>
+</form>
+
+<br>
+<a th:href="@{/empleado/admin/list}">Volver</a>
+</body>
+</html>
