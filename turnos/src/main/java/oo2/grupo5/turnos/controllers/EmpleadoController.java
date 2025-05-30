@@ -56,7 +56,7 @@ public class EmpleadoController {
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	public String createForm(Model model) {
 		model.addAttribute("empleadoRequestDTO", new EmpleadoRequestDTO());
-        model.addAttribute("servicios", servicioService.findAllNotDeleted(PageRequest.of(0, 5))); 
+        model.addAttribute("servicios", servicioService.findAllByNotDeletedAndRequiereEmpleadoTrue(PageRequest.of(0, 5))); 
 	    return ViewRouteHelper.EMPLEADO_FORM;
 	}
 	
@@ -89,7 +89,7 @@ public class EmpleadoController {
         requestDTO.setIdServicios(dto.getListaServicios().stream().map(ServicioResponseDTO::getIdServicio).collect(Collectors.toSet()));
 
         model.addAttribute("empleadoRequestDTO", requestDTO);
-        model.addAttribute("servicios", servicioService.findAll(PageRequest.of(0, 5))); 
+        model.addAttribute("servicios", servicioService.findAllByNotDeletedAndRequiereEmpleadoTrue(PageRequest.of(0, 5))); 
 
         return ViewRouteHelper.EMPLEADO_FORM;
     }

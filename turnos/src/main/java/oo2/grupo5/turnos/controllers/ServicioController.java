@@ -99,8 +99,8 @@ public class ServicioController {
         requestDTO.setIdEmpleados(dto.getListaEmpleados().stream().map(EmpleadoResponseDTO::getIdPersona).collect(Collectors.toSet()));
 
         model.addAttribute("servicioRequestDTO", requestDTO);
-        model.addAttribute("ubicaciones", ubicacionService.findAll(PageRequest.of(0, 5))); 
-        model.addAttribute("empleados", empleadoService.findAll(PageRequest.of(0, 5))); 
+        model.addAttribute("ubicaciones", ubicacionService.findAllNotDeleted(PageRequest.of(0, 5))); 
+        model.addAttribute("empleados", empleadoService.findAllNotDeleted(PageRequest.of(0, 5))); 
 
         return ViewRouteHelper.SERVICIO_FORM;
     }

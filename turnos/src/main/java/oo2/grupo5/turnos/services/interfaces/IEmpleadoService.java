@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import oo2.grupo5.turnos.dtos.requests.EmpleadoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
+import oo2.grupo5.turnos.entities.Empleado;
 
 public interface IEmpleadoService {
 	
@@ -21,9 +22,13 @@ public interface IEmpleadoService {
 	//FindAll not deleted
 	Page<EmpleadoResponseDTO> findAllNotDeleted(Pageable pageable);
 	
+    Page<EmpleadoResponseDTO> findAllEmpleadosbyServicio(Integer idServicio, Pageable pageable);
+
+	
 	EmpleadoResponseDTO update(Integer idPersona, EmpleadoRequestDTO empleadoRequestDTO);
 	
 	void deleteById(Integer idPersona);
 	
 	EmpleadoResponseDTO restoreById(Integer idPersona);
+	
 }

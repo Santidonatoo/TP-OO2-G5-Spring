@@ -76,6 +76,8 @@ public class ServicioServiceImp implements IServicioService {
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",idServicio)));
         return modelMapper.map(servicio, ServicioResponseDTO.class);
 	}
+    
+
 
     @Override
     public Page<ServicioResponseDTO> findAll(Pageable pageable) {
@@ -89,19 +91,17 @@ public class ServicioServiceImp implements IServicioService {
                 .map(entity -> modelMapper.map(entity, ServicioResponseDTO.class));
 
     }
+    @Override
+    public Page<ServicioResponseDTO> findAllByNotDeletedAndRequiereEmpleadoTrue(Pageable pageable) {
+    	return servicioRepository.findAllBySoftDeletedFalseAndRequiereEmpleadoTrue(pageable)
+                .map(entity -> modelMapper.map(entity, ServicioResponseDTO.class));
+    }
+    public Page<ServicioResponseDTO> findAllServiciosbyEmpleado(Integer idPersona, Pageable pageable){
+    	return servicioRepository.findAllByListaEmpleados_IdPersonaAndSoftDeletedFalse(idPersona, pageable)
+                .map(entity -> modelMapper.map(entity, ServicioResponseDTO.class));
+    }
+
     
-    /*
-    public ServicioResponseDTO update(Integer idServicio, ServicioRequestDTO servicioRequestDTO) {
-    	Servicio servicio = servicioRepository.findByIdServicioAndSoftDeletedFalse(idServicio)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",idServicio)));
-
-        servicio.setNombre(servicioRequestDTO.getNombre());
-        servicio.setDuracion(servicioRequestDTO.getDuracion());
-        servicio.setRequiereEmpleado(servicioRequestDTO.isRequiereEmpleado());
-
-        Servicio updated = servicioRepository.save(servicio);
-        return modelMapper.map(updated, ServicioResponseDTO.class);
-    }*/
     @Override
     public ServicioResponseDTO update(Integer idServicio, ServicioRequestDTO servicioRequestDTO) {
         Servicio servicio = servicioRepository.findByIdServicioAndSoftDeletedFalse(idServicio)
@@ -155,4 +155,6 @@ public class ServicioServiceImp implements IServicioService {
         Servicio restored = servicioRepository.save(servicio);
         return modelMapper.map(restored, ServicioResponseDTO.class);
     }
+    
+    
 }
