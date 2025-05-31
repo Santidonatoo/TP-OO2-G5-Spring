@@ -2,7 +2,10 @@ package oo2.grupo5.turnos.dtos.requests;
 
 import java.time.LocalDate;
 
+
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,4 +30,8 @@ public class PersonaRequestDTO {
 	private int dni;
 	
 	private LocalDate fechaDeNacimiento;
+	
+	@Valid
+	@NotNull(message = "Contacto cannot be null")
+	private ContactoRequestDTO contacto;
 }

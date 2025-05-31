@@ -19,6 +19,8 @@
             <th>Dni</th>
             <th>Fecha de nacimiento</th>
             <th>Puesto</th> 
+			<th>Email</th>
+			<th>Teléfono</th>
         </tr>
     </thead>
     <tbody>
@@ -28,6 +30,8 @@
             <td th:text="${empleado.dni}"></td>
             <td th:text="${empleado.fechaDeNacimiento}"></td>
             <td th:text="${empleado.puesto}"></td>
+			<td th:text="${empleado.contacto.email}"></td>
+			<td th:text="${empleado.contacto.telefono}"></td>
         </tr>
     </tbody>
 </table>

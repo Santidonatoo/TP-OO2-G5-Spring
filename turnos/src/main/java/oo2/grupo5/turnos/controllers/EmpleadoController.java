@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
+import oo2.grupo5.turnos.dtos.requests.ContactoRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.EmpleadoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
@@ -55,7 +56,11 @@ public class EmpleadoController {
 	@GetMapping("/form")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	public String createForm(Model model) {
-		model.addAttribute("empleadoRequestDTO", new EmpleadoRequestDTO());
+		
+		EmpleadoRequestDTO empleadoRequestDTO = new EmpleadoRequestDTO();
+		//Inicializo ContactoRquestDTO
+		empleadoRequestDTO.setContacto(new ContactoRequestDTO());
+		model.addAttribute("empleadoRequestDTO", empleadoRequestDTO);
         model.addAttribute("servicios", servicioService.findAllByNotDeletedAndRequiereEmpleadoTrue(PageRequest.of(0, 5))); 
 	    return ViewRouteHelper.EMPLEADO_FORM;
 	}

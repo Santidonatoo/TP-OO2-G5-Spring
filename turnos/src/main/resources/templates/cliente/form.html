@@ -30,6 +30,15 @@
 	    <div th:if="${#fields.hasErrors('fechaDeNacimiento')}" th:errors="*{fechaDeNacimiento}"></div>
 	</div>
 	
+	<label>Email:</label>
+	<input type="email" th:field="*{contacto.email}" required />
+	<div th:if="${#fields.hasErrors('contacto.email')}" th:errors="*{contacto.email}"></div>
+
+	 <label>Teléfono:</label>
+	 <input type="text" th:field="*{contacto.telefono}" required />
+	 <div th:if="${#fields.hasErrors('contacto.telefono')}" th:errors="*{contacto.telefono}"></div>
+
+	
     <button type="submit">Guardar</button>
 </form>
 

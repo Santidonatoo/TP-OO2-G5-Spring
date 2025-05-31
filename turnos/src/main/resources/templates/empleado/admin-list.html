@@ -17,6 +17,8 @@
             <th>Dni</th>
             <th>Fecha de nacimiento</th>
             <th>Puesto</th>
+			<th>Email</th>
+			<th>Teléfono</th>
             <th>Eliminado</th>
             <th>Acciones</th>
         </tr>
@@ -28,6 +30,8 @@
             <td th:text="${empleado.dni}"></td>
             <td th:text="${empleado.fechaDeNacimiento}"></td>
             <td th:text="${empleado.puesto}"></td>
+			<td th:text="${empleado.contacto.email}"></td>
+			<td th:text="${empleado.contacto.telefono}"></td>
             <td th:text="${empleado.softDeleted} ? 'Sí' : 'No'"></td>
             <td>
                 <a th:href="@{/empleado/edit/{idPersona}(idPersona=${empleado.idPersona})}">Editar</a>

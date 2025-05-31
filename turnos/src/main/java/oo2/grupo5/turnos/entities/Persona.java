@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
@@ -15,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
@@ -73,5 +76,10 @@ public class Persona {
 	@Column(name = "update_at")
 	@UpdateTimestamp
 	protected Timestamp updateAt;
+	
+	//con esto marco que la idPersona es la clave foranea de Contacto 
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "idContacto", referencedColumnName = "idCont")
+	private Contacto contacto;
 	
 }

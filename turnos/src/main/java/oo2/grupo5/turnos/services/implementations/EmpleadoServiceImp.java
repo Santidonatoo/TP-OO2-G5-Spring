@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
 import oo2.grupo5.turnos.dtos.requests.EmpleadoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
+import oo2.grupo5.turnos.entities.Contacto;
 import oo2.grupo5.turnos.entities.Empleado;
 import oo2.grupo5.turnos.entities.Role;
 import oo2.grupo5.turnos.entities.Servicio;
@@ -47,6 +48,13 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	@Override
 	public EmpleadoResponseDTO save(EmpleadoRequestDTO empleadoRequestDTO) {
 		Empleado empleado = modelMapper.map(empleadoRequestDTO, Empleado.class);
+		
+		Contacto contacto = Contacto.builder()
+	            .email(empleadoRequestDTO.getContacto().getEmail())
+	            .telefono(empleadoRequestDTO.getContacto().getTelefono())
+	            .build();
+	    empleado.setContacto(contacto);
+		
     	Empleado saved = empleadoRepository.save(empleado);
     	
     	if (empleadoRequestDTO.getIdServicios() != null && !empleadoRequestDTO.getIdServicios().isEmpty()) {

@@ -14,6 +14,7 @@ import oo2.grupo5.turnos.dtos.requests.ClienteRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.ClienteResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.RegistroClienteResponseDTO;
 import oo2.grupo5.turnos.entities.Cliente;
+import oo2.grupo5.turnos.entities.Contacto;
 import oo2.grupo5.turnos.entities.Role;
 import oo2.grupo5.turnos.entities.User;
 import oo2.grupo5.turnos.enums.RoleType;
@@ -43,12 +44,20 @@ public class ClienteServiceImp implements IClienteService{
 	public void registrarCliente(RegistroClienteResponseDTO dto) {
 		Role rolCliente = roleRepository.findByType(RoleType.CLIENT).orElseThrow();
 		
+		//Creo un contacto
+		Contacto contacto = Contacto.builder()
+	            .email(dto.getContacto().getEmail())
+	            .telefono(dto.getContacto().getTelefono())
+	            .build();
+		
+		
 		//Creo un nuevo cliente
 		Cliente cliente = new Cliente();
 		cliente.setNombre(dto.getNombre());
 		cliente.setApellido(dto.getApellido());
 		cliente.setDni(dto.getDni());
 		cliente.setFechaDeNacimiento(dto.getFechaDeNacimiento());
+		cliente.setContacto(contacto);
 		
 		//Guardo el nuevo cliente
 		cliente = clienteRepository.save(cliente);
@@ -108,6 +117,13 @@ public class ClienteServiceImp implements IClienteService{
         cliente.setApellido(clienteRequestDTO.getApellido());
         cliente.setDni(clienteRequestDTO.getDni());
         cliente.setFechaDeNacimiento(clienteRequestDTO.getFechaDeNacimiento());
+        
+        //recordar que por default cliente siempre tiene un contacto, por eso se da por sentado que el contacto no es nulo 
+        if (clienteRequestDTO.getContacto() != null) {
+            cliente.getContacto().setEmail(clienteRequestDTO.getContacto().getEmail());
+            cliente.getContacto().setTelefono(clienteRequestDTO.getContacto().getTelefono());
+        }
+        
 
         Cliente updated = clienteRepository.save(cliente);
         return modelMapper.map(updated, ClienteResponseDTO.class);

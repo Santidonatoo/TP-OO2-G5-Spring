@@ -23,4 +23,6 @@ public class EmpleadoRequestDTO extends PersonaRequestDTO {
 	private String password;
 	
 	private Set<Integer> idServicios;
+	
+	
 }

@@ -44,6 +44,19 @@
 		<div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
 	</div>
 	
+	<fieldset>
+	     <legend>Contacto</legend>
+	        
+	     <label>Email:</label>
+	     <input type="email" th:field="*{contacto.email}" required />
+	     <div th:if="${#fields.hasErrors('contacto.email')}" th:errors="*{contacto.email}"></div>
+
+	     <label>Teléfono:</label>
+	     <input type="text" th:field="*{contacto.telefono}" required />
+	     <div th:if="${#fields.hasErrors('contacto.telefono')}" th:errors="*{contacto.telefono}"></div>
+	 </fieldset>
+	
+	
 	<label>Servicios:</label>
 		<div th:each="servicio : ${servicios}">
 		    <input type="checkbox" th:field="*{idServicios}" th:value="${servicio.idServicio}" />
