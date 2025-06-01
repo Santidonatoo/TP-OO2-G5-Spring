@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
 import oo2.grupo5.turnos.dtos.requests.ClienteRequestDTO;
+import oo2.grupo5.turnos.dtos.requests.ContactoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.ClienteResponseDTO;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.services.interfaces.IClienteService;
@@ -40,14 +41,20 @@ public class ClienteController {
 	@GetMapping("/form")
 	@PreAuthorize("hasRole('ADMIN')")
 	public String createForm(Model model) {
-		model.addAttribute("clienteRequestDTO", new ClienteRequestDTO());
+		ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO();
+		
+		//inicalizo ContactoRequestDTO 
+		clienteRequestDTO.setContacto(new ContactoRequestDTO());
+		
+		model.addAttribute("clienteRequestDTO", clienteRequestDTO);
 	    return ViewRouteHelper.CLIENTE_FORM;
 	}
 	
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
-    public String save(@Valid @ModelAttribute ClienteRequestDTO clienteRequestDTO, BindingResult bindingResult) {
+    public String save(@Valid @ModelAttribute ClienteRequestDTO clienteRequestDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
+        	model.addAttribute("clienteRequestDTO", clienteRequestDTO);
             return ViewRouteHelper.CLIENTE_FORM;
         }
         

@@ -2,6 +2,7 @@ package oo2.grupo5.turnos.dtos.requests;
 
 import java.time.LocalDate;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -29,4 +30,8 @@ public class RegistroClienteRequestDTO {
 	
 	@NotBlank(message="La contraseña no puede estar vacia")
 	private String password;
+	
+	@Valid
+	@NotNull(message = "Contacto cannot be null")
+	private ContactoRequestDTO contacto;
 }

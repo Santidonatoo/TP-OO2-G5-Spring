@@ -33,4 +33,5 @@ public class RegistroClienteResponseDTO {
 	private LocalDate fechaDeNacimiento;
 	
 	//Agregar los datos de contacto que se quieran enviar
+	private ContactoResponseDTO contacto;
 }

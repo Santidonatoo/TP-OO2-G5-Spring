@@ -2,6 +2,7 @@ package oo2.grupo5.turnos.dtos.responses;
 
 import java.time.LocalDate;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,4 +26,6 @@ public class PersonaResponseDTO {
 	private LocalDate fechaDeNacimiento;
 	
 	private boolean softDeleted;
+	
+	private ContactoResponseDTO contacto;
 }

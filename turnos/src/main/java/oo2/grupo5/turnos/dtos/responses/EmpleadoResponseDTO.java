@@ -15,5 +15,7 @@ public class EmpleadoResponseDTO extends PersonaResponseDTO {
 	private String puesto;
 	
     private Set<ServicioResponseDTO> listaServicios; 
+    
+    private ContactoResponseDTO contacto;
 
 }

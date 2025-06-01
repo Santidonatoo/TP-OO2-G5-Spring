@@ -27,7 +27,18 @@ public class PersonaServiceImp implements IPersonaService {
     
     @Override
     public PersonaResponseDTO save(PersonaRequestDTO personaRequestDTO) {
+    	//mappeo la persona con personaRequestDTO
     	Persona persona = modelMapper.map(personaRequestDTO, Persona.class);
+    	//ahora mappeo a contacto solo
+    	if (personaRequestDTO.getContacto() != null) {
+	        persona.setContacto(
+	            oo2.grupo5.turnos.entities.Contacto.builder()
+	                .email(personaRequestDTO.getContacto().getEmail())
+	                .telefono(personaRequestDTO.getContacto().getTelefono())
+	                .build()
+	        );
+	    }
+    	//ahora si guardo la persona
     	Persona saved = personaRepository.save(persona);
     	return modelMapper.map(saved, PersonaResponseDTO.class);
     }
