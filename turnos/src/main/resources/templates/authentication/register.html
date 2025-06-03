@@ -1,30 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Registrarse</title>
+    <meta charset="UTF-8">
+    <title>Registrarse</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 400px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-<form action="/auth/registro-cliente" method="post">
-	
-	<div>
-    	<input type="text" name="username" placeholder="Email o nombre de usuario" required />
-    	<input type="password" name="password" placeholder="Contraseña" required />
-    	<input type="text" name="nombre" placeholder="Nombre" required />
-    	<input type="text" name="apellido" placeholder="Apellido" required />
-    	<input type="text" name="dni" placeholder="DNI" required />
-    	<input type="date" name="fechaDeNacimiento" placeholder="Fecha de nacimiento" required />
-	</div>
-	
-	<br><hr><br>
-	
-	<div>
-		<input type="text" name="contacto.email" placeholder="Email de contacto" required />
-		<input type="text" name="contacto.telefono" placeholder="Teléfono de contacto" required />
-	</div>
-	
-	<br>
-    <button type="submit">Registrarse</button>
-</form>
+    <div class="container">
+        <h2>Registro</h2>
+        <form action="/auth/registro-cliente" method="post">
+            <div>
+                <input type="text" name="username" placeholder="Nombre de Usuario" required />
+                <input type="password" name="password" placeholder="Contraseña" required />
+                <input type="text" name="nombre" placeholder="Nombre" required />
+                <input type="text" name="apellido" placeholder="Apellido" required />
+                <input type="text" name="dni" placeholder="DNI" required />
+                <input type="date" name="fechaDeNacimiento" required />
+            </div>
+
+            <br><hr><br>
+            <div>
+                <input type="text" name="contacto.email" placeholder="Email de contacto" required />
+                <input type="text" name="contacto.telefono" placeholder="Teléfono de contacto" required />
+            </div>
+
+            <br>
+            <button type="submit">Registrarse</button>
+        </form>
+    </div>
 </body>
 </html>
