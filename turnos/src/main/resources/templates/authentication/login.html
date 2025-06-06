@@ -3,23 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <form method="post" action="/auth/loginProcess" th:action="@{/auth/loginProcess}">
-        <label>
-            <input type="text" name="username" placeholder="Usuario" />
-        </label>
-        <label>
-            <input type="password" name="password" placeholder="Contraseña" />
-        </label>
-        <button type="submit">Login</button>
-        <div th:if="${error != null}" >
-            Invalid username or password.
-        </div>
-        <div th:if="${logout != null}">
-            Session closes successfully.
-        </div>
-    </form>
-    <p>No tenés una cuenta? <a th:href="@{/auth/registro}">Registrate acá</a></p>
+    <div class="container">
+        <h2>Login</h2>
+        <form method="post" action="/auth/loginProcess" th:action="@{/auth/loginProcess}">
+            <input type="text" name="username" placeholder="Usuario" required />
+            <input type="password" name="password" placeholder="Contraseña" required />
+            <button type="submit">Login</button>
+            <div class="error-message" th:if="${error != null}">
+                Usuario o contraseña incorrectos.
+            </div>
+            <div class="success-message" th:if="${logout != null}">
+                Sesión cerrada exitosamente.
+            </div>
+        </form>
+        <p>No tenés una cuenta? <a th:href="@{/auth/registro}">Registrate acá</a></p>
+    </div>
 </body>
 </html>

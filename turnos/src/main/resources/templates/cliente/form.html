@@ -2,7 +2,82 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title th:text="${clienteRequestDTO.idPersona != null} ? 'Editar Cliente' : 'Nuevo Cliente'">Formulario Clientes</title>
-</head>
+	<style>
+		       body {
+		           display: flex;
+		           flex-direction: column;
+		           align-items: center;
+		           background-color: #f8f9fa;
+		           font-family: Arial, sans-serif;
+		           padding: 20px;
+		       }
+
+		       h1 {
+		           margin-bottom: 20px;
+		       }
+
+		       form {
+		           width: 90%;
+		           max-width: 600px;
+		           padding: 20px;
+		           background: white;
+		           border-radius: 10px;
+		           box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+		       }
+
+		       label {
+		           display: block;
+		           margin-top: 10px;
+		           font-weight: bold;
+		       }
+
+		       input, select {
+		           width: 100%;
+		           padding: 8px;
+		           margin-top: 5px;
+		           border: 1px solid #ccc;
+		           border-radius: 5px;
+		       }
+
+		       button {
+		           background-color: #007bff;
+		           color: white;
+		           padding: 10px 20px;
+		           border: none;
+		           border-radius: 5px;
+		           cursor: pointer;
+		           margin-top: 15px;
+		           width: 100%;
+		       }
+
+		       button:hover {
+		           background-color: #0056b3;
+		       }
+
+		       a {
+		           display: inline-block;
+		           margin-top: 20px;
+		           color: #007bff;
+		           text-decoration: none;
+		       }
+
+		       a:hover {
+		           text-decoration: underline;
+		       }
+
+		       fieldset {
+		           border: 1px solid #ccc;
+		           padding: 10px;
+		           margin-top: 15px;
+		           border-radius: 5px;
+		       }
+
+		       legend {
+		           font-weight: bold;
+		       }
+			   
+		   </style>
+	</head>
 <body>
 <h1 th:text="${clienteRequestDTO.idPersona != null} ? 'Editar Cliente' : 'Nuevo Cliente'"></h1>
 <br>

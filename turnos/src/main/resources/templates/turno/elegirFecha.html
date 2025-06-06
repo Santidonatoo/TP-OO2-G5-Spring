@@ -5,16 +5,28 @@
   <title>Elegir Fecha</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-  <h1>Elige una fecha para tu turno</h1>
-  <form th:action="@{/turno/guardar-fecha}" method="post">
-    <div>
-      <label for="fecha">Fecha:</label>
-      <input type="date" name="fecha" id="fecha" required>
-    </div>
-    <div>
-      <button type="submit">Siguiente</button>
-    </div>
-  </form>
-</body>
+	<body>
+  	<h1>Elige una fecha para tu turno</h1>
+  	<form th:action="@{/turno/guardar-fecha}" method="post">
+ 	   <div>
+ 	     <label for="fecha">Fecha:</label>
+ 	     <input type="date" name="fecha" id="fecha" required min="2025-06-01" max="2025-12-31">
+ 	   </div>
+ 	   <div>
+ 	     <button type="submit">Siguiente</button>
+	    </div>
+	  </form>
+	  
+	  <script>
+   	   document.addEventListener("DOMContentLoaded", function() {
+   	     let fechaInput = document.getElementById("fecha");
+   	     let hoy = new Date();
+   	     let futuro = new Date();
+   	     futuro.setMonth(futuro.getMonth() + 3); // Limita hasta 3 meses en el futuro
+		  
+ 	     fechaInput.min = hoy.toISOString().split("T")[0];
+  	     fechaInput.max = futuro.toISOString().split("T")[0];
+	   });
+	  </script>
+	</body>
 </html>

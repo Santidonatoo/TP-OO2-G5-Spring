@@ -2,6 +2,53 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <title>Lista de Empleados todos los roles</title>
+	<style>
+	        body {
+	            display: flex;
+	            flex-direction: column;
+	            justify-content: center;
+	            align-items: center;
+	            background-color: #f8f9fa;
+	            font-family: Arial, sans-serif;
+	            padding: 20px;
+	        }
+
+
+	        h1 {
+	            margin-bottom: 20px;
+	        }
+
+	        a {
+	            display: inline-block;
+	            padding: 10px;
+	            margin: 5px;
+	            text-decoration: none;
+	            border-radius: 5px;
+	            background-color: #28a745;
+	            color: white;
+	        }
+
+	        a:hover {
+	            background-color: #218838;
+	        }
+
+	        table {
+	            width: 100%;
+	            border-collapse: collapse;
+	            margin-top: 20px;
+	        }
+
+	        th, td {
+	            padding: 10px;
+	            border: 1px solid #ddd;
+	            text-align: center;
+	        }
+
+	        th {
+	            background-color: #007bff;
+	            color: white;
+	        }
+	    </style>
 </head>
 <body>
 <h1>Empleados que no estan eliminados</h1>

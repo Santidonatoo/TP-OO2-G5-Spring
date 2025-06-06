@@ -51,7 +51,7 @@ public class UbicacionController {
             return ViewRouteHelper.UBICACION_FORM;
         }
         ubicacionService.save(ubicacionRequestDTO);
-        return "redirect:/ubicacion/list";
+        return "redirect:/ubicacion/admin/list";
     }
 
     @GetMapping("/edit/{idUbicacion}")

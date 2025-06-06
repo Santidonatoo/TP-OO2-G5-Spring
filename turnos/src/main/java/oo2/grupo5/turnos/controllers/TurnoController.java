@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,7 @@ import oo2.grupo5.turnos.dtos.requests.TurnoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.DatosTurnoResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
-import oo2.grupo5.turnos.entities.DatosTurno;
+import oo2.grupo5.turnos.dtos.responses.TurnoResponseDTO;
 import oo2.grupo5.turnos.entities.User;
 import oo2.grupo5.turnos.enums.EstadoTurno;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
@@ -36,7 +37,6 @@ import oo2.grupo5.turnos.services.interfaces.IDatosTurnoService;
 import oo2.grupo5.turnos.services.interfaces.IEmpleadoService;
 import oo2.grupo5.turnos.services.interfaces.IServicioService;
 import oo2.grupo5.turnos.services.interfaces.ITurnoService;
-import oo2.grupo5.turnos.services.interfaces.IUbicacionService;
 
 @Controller
 @RequestMapping("/turno")
@@ -80,14 +80,19 @@ public class TurnoController {
 	@PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'EMPLOYEE')")
     public String guardarServicio(@RequestParam("idServicio") Integer idServicio, @ModelAttribute("DatosTurnoRequestDTO") DatosTurnoRequestDTO datosTurno) {
         datosTurno.setIdServicio(idServicio);
-        return "redirect:/turno/elegir-empleado";
+        
+        if (servicioService.findById(idServicio).isRequiereEmpleado()) {
+            return "redirect:/turno/elegir-empleado"; // Redirige a la vista de selección de empleados
+        } else {
+            return "redirect:/turno/elegir-fecha"; // Si no requiere empleado, pasa directamente a elegir fecha
+        }
     }
 	
 	@GetMapping("/elegir-empleado")
 	@PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'EMPLOYEE')")
     public String mostrarEmpleados(Model model, @ModelAttribute("DatosTurnoRequestDTO") DatosTurnoRequestDTO datosTurno, @PageableDefault(size = 5) Pageable pageable) {
         
-        Page<EmpleadoResponseDTO> empleados = empleadoService.findAllNotDeleted(pageable);
+        Page<EmpleadoResponseDTO> empleados = empleadoService.findAllEmpleadosbyServicio(datosTurno.getIdServicio(), pageable);
         model.addAttribute("empleados", empleados);
         
         return ViewRouteHelper.TURNO_EMPLEADO; // Vista para elegir empleado.
@@ -117,21 +122,36 @@ public class TurnoController {
 	
 	@GetMapping("/elegir-horario")
 	@PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'EMPLOYEE')")
-	public String mostrarHorarios(Model model, @ModelAttribute("DatosTurnoRequestDTO") DatosTurnoRequestDTO datosTurno) {
-		int frecuencia = servicioService.findById(datosTurno.getIdServicio()).getDuracion();
-		
-		List<LocalTime> horarios = new ArrayList<>();
-        LocalTime horaInicio = LocalTime.of(10, 0);
-        LocalTime horaFin = LocalTime.of(18, 0);
+	public String mostrarHorarios(Model model, @ModelAttribute("DatosTurnoRequestDTO") DatosTurnoRequestDTO datosTurno, @PageableDefault(size = 5) Pageable pageable) {
+	    int frecuencia = servicioService.findById(datosTurno.getIdServicio()).getDuracion();
+	    
+	    Page<TurnoResponseDTO> turnos;
+	    
+	    if(servicioService.findById(datosTurno.getIdServicio()).isRequiereEmpleado()) {
+	    	turnos = turnoService.findTurnosByServicioEmpleadoFecha(pageable, datosTurno.getIdServicio(), datosTurno.getIdEmpleado(), datosTurno.getFecha());
+	    } else {turnos = turnoService.findTurnosByServicioFecha(pageable, datosTurno.getIdServicio(), datosTurno.getFecha());}
+	    
+	    
+	    
+	    // Convertimos los turnos ocupados en una lista de LocalTime para facilitar la comparación
+	    List<LocalTime> turnosOcupados = turnos.getContent().stream()
+	                                          .map(TurnoResponseDTO::getHora) // Asumiendo que getHora devuelve un LocalTime
+	                                          .collect(Collectors.toList());
+	    
+	    List<LocalTime> horariosDisponibles = new ArrayList<>();
+	    LocalTime horaInicio = LocalTime.of(10, 0);
+	    LocalTime horaFin = LocalTime.of(18, 0);
 
-        while (horaInicio.isBefore(horaFin) || horaInicio.equals(horaFin)) {
-            horarios.add(horaInicio);
-            horaInicio = horaInicio.plusMinutes(frecuencia); // Avanza según la frecuencia
-        }
-        
-        System.out.println(horarios);
-        model.addAttribute("horarios", horarios);
-		return ViewRouteHelper.TURNO_HORARIO; // Vista para elegir fecha.
+	    while (horaInicio.isBefore(horaFin) || horaInicio.equals(horaFin)) {
+	        if (!turnosOcupados.contains(horaInicio)) { // Agrega solo si no está ocupado
+	            horariosDisponibles.add(horaInicio);
+	        }
+	        horaInicio = horaInicio.plusMinutes(frecuencia);
+	    }
+
+	    System.out.println(horariosDisponibles);
+	    model.addAttribute("horarios", horariosDisponibles);
+	    return ViewRouteHelper.TURNO_HORARIO; // Vista para elegir fecha.
 	}
 	
 	@PostMapping("/guardar-horario")

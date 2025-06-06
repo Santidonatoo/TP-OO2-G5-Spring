@@ -2,45 +2,113 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Lista de Servicios para el rol ADMIN</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        a, button {
+            display: inline-block;
+            padding: 10px;
+            margin: 5px;
+            text-decoration: none;
+            border-radius: 5px;
+            width: auto;
+        }
+
+        a {
+            background-color: #28a745;
+            color: white;
+        }
+
+        a:hover {
+            background-color: #218838;
+        }
+
+        button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #bb2d3b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .acciones {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
 </head>
 <body>
-<h1>Todos los Servicios eliminados o no</h1>
-<br>
-<a th:href="@{/servicio/form}">Nuevo</a>
-<a th:href="@{/servicio/list}">Ver activos</a>
-<br>
-<br>
-<table>
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Duración</th>
-            <th>Requiere Empleado</th>
-            <th>Ubicación</th>
-            <th>Eliminado</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:each="servicio : ${servicios}">
-            <td th:text="${servicio.nombre}"></td>
-            <td th:text="${servicio.duracion} + ' min'"></td>
-            <td th:text="${servicio.requiereEmpleado} ? 'Sí' : 'No'"></td>
-            <td th:text="${servicio.ubicacion != null} ? ${servicio.ubicacion.localidad} + ', ' + ${servicio.ubicacion.calle} + ' ' + ${servicio.ubicacion.numero} : 'Sin ubicación'"></td> <!-- Muestra la ubicación -->
-            <td th:text="${servicio.softDeleted} ? 'Sí' : 'No'"></td>
-            <td>
-                <a th:href="@{/servicio/edit/{idServicio}(idServicio=${servicio.idServicio})}">Editar</a>
-                <form th:if="!${servicio.softDeleted}" th:action="@{/servicio/delete/{idServicio}(idServicio=${servicio.idServicio})}" method="post" style="display:inline;">
-                    <button type="submit">Eliminar</button>
-                </form>
-                <form th:if="${servicio.softDeleted}" th:action="@{/servicio/restore/{idServicio}(idServicio=${servicio.idServicio})}" method="post" style="display:inline;">
-                    <button type="submit">Restaurar</button>
-                </form>
-            </td>
-        </tr>
-    </tbody>
-</table>
-<br>
-<a th:href="@{/index}">Volver</a>
+        <h1>Todos los Servicios eliminados o no</h1>
+
+        <a th:href="@{/servicio/form}">Nuevo</a>
+        <a th:href="@{/servicio/list}">Ver activos</a>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Duración</th>
+                    <th>Requiere Empleado</th>
+                    <th>Ubicación</th>
+                    <th>Eliminado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="servicio : ${servicios}">
+                    <td th:text="${servicio.nombre}"></td>
+                    <td th:text="${servicio.duracion} + ' min'"></td>
+                    <td th:text="${servicio.requiereEmpleado} ? 'Sí' : 'No'"></td>
+                    <td th:text="${servicio.ubicacion != null} ? ${servicio.ubicacion.localidad} + ', ' + ${servicio.ubicacion.calle} + ' ' + ${servicio.ubicacion.numero} : 'Sin ubicación'"></td>
+                    <td th:text="${servicio.softDeleted} ? 'Sí' : 'No'"></td>
+                    <td class="acciones">
+                        <a th:href="@{/servicio/edit/{idServicio}(idServicio=${servicio.idServicio})}">Editar</a>
+                        <form th:if="!${servicio.softDeleted}" th:action="@{/servicio/delete/{idServicio}(idServicio=${servicio.idServicio})}" method="post">
+                            <button type="submit">Eliminar</button>
+                        </form>
+                        <form th:if="${servicio.softDeleted}" th:action="@{/servicio/restore/{idServicio}(idServicio=${servicio.idServicio})}" method="post">
+                            <button type="submit">Restaurar</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br>
+        <a th:href="@{/index}">Volver</a>
 </body>
 </html>
