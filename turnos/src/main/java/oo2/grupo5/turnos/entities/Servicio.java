@@ -60,6 +60,13 @@ public class Servicio {
 			  inverseJoinColumns = @JoinColumn(name = "idEmpleado"))
 	private Set<Empleado> listaEmpleados;
 	
+	@ManyToMany
+	@JoinTable(name = "servicioxdisponibilidad", 
+	    joinColumns = @JoinColumn(name = "idServicio"), 
+	    inverseJoinColumns = @JoinColumn(name = "idDisponibilidad"))
+	private Set<Disponibilidad> listaDisponibilidades;
+	
+	
 	@Column(name = "soft_deleted", nullable = false)
     @Builder.Default
     private boolean softDeleted = false;

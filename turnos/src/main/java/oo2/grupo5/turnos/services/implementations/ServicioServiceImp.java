@@ -2,7 +2,10 @@ package oo2.grupo5.turnos.services.implementations;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -11,11 +14,14 @@ import org.springframework.stereotype.Service;
 
 
 import jakarta.persistence.EntityNotFoundException;
+import oo2.grupo5.turnos.dtos.requests.DisponibilidadRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.ServicioRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
+import oo2.grupo5.turnos.entities.Disponibilidad;
 import oo2.grupo5.turnos.entities.Empleado;
 import oo2.grupo5.turnos.entities.Servicio;
 import oo2.grupo5.turnos.entities.Ubicacion;
+import oo2.grupo5.turnos.repositories.IDisponibilidadRepository;
 import oo2.grupo5.turnos.repositories.IEmpleadoRepository;
 import oo2.grupo5.turnos.repositories.IServicioRepository;
 import oo2.grupo5.turnos.repositories.IUbicacionRepository;
@@ -27,14 +33,16 @@ public class ServicioServiceImp implements IServicioService {
 	private final IServicioRepository servicioRepository;
 	private final IUbicacionRepository ubicacionRepository;
 	private final IEmpleadoRepository empleadoRepository;
+	private final IDisponibilidadRepository disponibilidadRepository;
 
     private final ModelMapper modelMapper;
     
     public ServicioServiceImp(IServicioRepository servicioRepository, IUbicacionRepository ubicacionRepository,
-    		IEmpleadoRepository empleadoRepository, ModelMapper modelMapper) {
+    		IEmpleadoRepository empleadoRepository, IDisponibilidadRepository disponibilidadRepository, ModelMapper modelMapper) {
         this.servicioRepository = servicioRepository;
         this.ubicacionRepository = ubicacionRepository;
         this.empleadoRepository = empleadoRepository;
+        this.disponibilidadRepository = disponibilidadRepository;
         this.modelMapper = modelMapper;
     }
     
@@ -58,7 +66,48 @@ public class ServicioServiceImp implements IServicioService {
             Set<Empleado> empleados = new HashSet<>(empleadoRepository.findAllById(servicioRequestDTO.getIdEmpleados()));
             servicio.setListaEmpleados(empleados);
         }
+        
+        // Manejar disponibilidades
+        //la lista esta vacia?
+        if (servicioRequestDTO.getDisponibilidades() != null && !servicioRequestDTO.getDisponibilidades().isEmpty()) {
+            Set<Disponibilidad> disponibilidadesAsociadas = new HashSet<>();
 
+            for (DisponibilidadRequestDTO disponibilidadRequestDTO : servicioRequestDTO.getDisponibilidades()) {
+            	
+            	 // Valida que horaInicio sea menor que horaFin
+                if (disponibilidadRequestDTO.getHoraInicio().isAfter(disponibilidadRequestDTO.getHoraFin()) ||
+                		disponibilidadRequestDTO.getHoraInicio().equals(disponibilidadRequestDTO.getHoraFin())) {
+                    throw new IllegalArgumentException(
+                        String.format("La hora de inicio (%s) debe ser anterior a la hora de fin (%s) para el día %s.",
+                        		disponibilidadRequestDTO.getHoraInicio(),
+                        		disponibilidadRequestDTO.getHoraFin(),
+                        		disponibilidadRequestDTO.getDiaSemana()
+                        )
+                    );
+                }
+            	
+            	//busca si la disponibilidad ya existe en la base de datos
+                Optional<Disponibilidad> existente = disponibilidadRepository.findByDiaSemanaAndHoraInicioAndHoraFin(
+                		disponibilidadRequestDTO.getDiaSemana(), disponibilidadRequestDTO.getHoraInicio(), disponibilidadRequestDTO.getHoraFin());
+                
+                //si la encuentra la agrega, sino la crea para luego agregarla
+                Disponibilidad disponibilidad = existente.orElseGet(() -> {
+                    Disponibilidad nuevaDisponibilidad = Disponibilidad.builder()
+                            .diaSemana(disponibilidadRequestDTO.getDiaSemana())
+                            .horaInicio(disponibilidadRequestDTO.getHoraInicio())
+                            .horaFin(disponibilidadRequestDTO.getHoraFin())
+                            .softDeleted(false)
+                            .build();
+                    return disponibilidadRepository.save(nuevaDisponibilidad);
+                });
+
+                disponibilidadesAsociadas.add(disponibilidad);
+            }
+
+            servicio.setListaDisponibilidades(disponibilidadesAsociadas);
+        }
+        
+        //Se guarda el servicio
         Servicio saved = servicioRepository.save(servicio);
         return modelMapper.map(saved, ServicioResponseDTO.class);
     }
@@ -103,7 +152,7 @@ public class ServicioServiceImp implements IServicioService {
 
     
     @Override
-    public ServicioResponseDTO update(Integer idServicio, ServicioRequestDTO servicioRequestDTO) {
+    public ServicioResponseDTO update(Integer idServicio, ServicioRequestDTO servicioRequestDTO, List<Integer> eliminarDisponibilidades) {
         Servicio servicio = servicioRepository.findByIdServicioAndSoftDeletedFalse(idServicio)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio con id {0} no encontrado", idServicio)));
 
@@ -128,6 +177,48 @@ public class ServicioServiceImp implements IServicioService {
             Set<Empleado> empleados = new HashSet<>(empleadoRepository.findAllById(servicioRequestDTO.getIdEmpleados()));
             servicio.setListaEmpleados(empleados);
         }
+        
+        //Actualizar disponibilidades
+        if (servicioRequestDTO.getDisponibilidades() != null) {
+            Set<Disponibilidad> nuevasDisponibilidades = new HashSet<>();
+
+            for (DisponibilidadRequestDTO disponibilidadDTO : servicioRequestDTO.getDisponibilidades()) {
+                Optional<Disponibilidad> existente = disponibilidadRepository.findByDiaSemanaAndHoraInicioAndHoraFin(
+                        disponibilidadDTO.getDiaSemana(),
+                        disponibilidadDTO.getHoraInicio(),
+                        disponibilidadDTO.getHoraFin()
+                );
+
+                Disponibilidad disponibilidad = existente.orElseGet(() -> {
+                    Disponibilidad nueva = Disponibilidad.builder()
+                            .diaSemana(disponibilidadDTO.getDiaSemana())
+                            .horaInicio(disponibilidadDTO.getHoraInicio())
+                            .horaFin(disponibilidadDTO.getHoraFin())
+                            .softDeleted(false)
+                            .build();
+                    return disponibilidadRepository.save(nueva);
+                });
+
+                nuevasDisponibilidades.add(disponibilidad);
+            }
+            
+           
+            if (servicio.getListaDisponibilidades() == null) {
+                servicio.setListaDisponibilidades(nuevasDisponibilidades);
+            } else {
+                servicio.getListaDisponibilidades().addAll(nuevasDisponibilidades);
+            }
+        }
+        
+        //Procesar la eliminacion de las disponibilidades en el caso de que hayan sido seleccionadas
+        if (eliminarDisponibilidades != null && !eliminarDisponibilidades.isEmpty()) {
+            Set<Disponibilidad> updatedDisponibilidades = servicio.getListaDisponibilidades()
+                    .stream()
+                    .filter(d -> !eliminarDisponibilidades.contains(d.getIdDisponibilidad()))
+                    .collect(Collectors.toSet());
+            servicio.setListaDisponibilidades(updatedDisponibilidades);
+        }
+
         
         Servicio updated = servicioRepository.save(servicio);
         return modelMapper.map(updated, ServicioResponseDTO.class);
@@ -155,6 +246,5 @@ public class ServicioServiceImp implements IServicioService {
         Servicio restored = servicioRepository.save(servicio);
         return modelMapper.map(restored, ServicioResponseDTO.class);
     }
-    
     
 }

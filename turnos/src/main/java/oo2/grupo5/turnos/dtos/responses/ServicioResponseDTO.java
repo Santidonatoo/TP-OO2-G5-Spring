@@ -27,4 +27,6 @@ public class ServicioResponseDTO {
     private boolean softDeleted;
     
     private Set<EmpleadoResponseDTO> listaEmpleados; 
+    
+    private Set<DisponibilidadResponseDTO> listaDisponibilidades;
 }

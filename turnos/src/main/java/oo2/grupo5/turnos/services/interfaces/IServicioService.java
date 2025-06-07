@@ -1,5 +1,9 @@
 package oo2.grupo5.turnos.services.interfaces;
 
+import java.util.List;
+import java.util.Set;
+
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -27,7 +31,7 @@ public interface IServicioService {
     
     Page<ServicioResponseDTO> findAllServiciosbyEmpleado(Integer idPersona, Pageable pageable);
     
-    ServicioResponseDTO update(Integer idServicio, ServicioRequestDTO servicioRequestDTO);
+    ServicioResponseDTO update(Integer idServicio, ServicioRequestDTO servicioRequestDTO, List<Integer> eliminarDisponibilidades);
 
     void deleteById(Integer idServicio);
 

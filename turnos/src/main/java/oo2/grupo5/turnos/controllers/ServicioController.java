@@ -1,5 +1,8 @@
 package oo2.grupo5.turnos.controllers;
 
+import java.time.DayOfWeek;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -15,14 +18,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
+import oo2.grupo5.turnos.dtos.requests.DisponibilidadRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.ServicioRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
+import oo2.grupo5.turnos.repositories.IDisponibilidadRepository;
 import oo2.grupo5.turnos.repositories.IServicioRepository;
+import oo2.grupo5.turnos.services.interfaces.IDisponibilidadService;
 import oo2.grupo5.turnos.services.interfaces.IEmpleadoService;
 import oo2.grupo5.turnos.services.interfaces.IServicioService;
 import oo2.grupo5.turnos.services.interfaces.IUbicacionService;
@@ -35,15 +41,19 @@ public class ServicioController {
 	private final IUbicacionService ubicacionService;
 	private final IEmpleadoService empleadoService;
 	private final IServicioRepository servicioRepository;
+	private final IDisponibilidadService disponibilidadService;
 	
 
     public ServicioController(IServicioService servicioService, IUbicacionService ubicacionService,
-    		IEmpleadoService empleadoService, IServicioRepository servicioRepository) {
+    		IEmpleadoService empleadoService, IServicioRepository servicioRepository, IDisponibilidadService disponibilidadService) {
         this.servicioService = servicioService;
         this.ubicacionService = ubicacionService;
         this.empleadoService = empleadoService;
         this.servicioRepository = servicioRepository;
+        this.disponibilidadService = disponibilidadService;
+       
     }
+    
     @GetMapping("/list")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'EMPLOYEE')")
     public String listNotDeleted(Model model, @PageableDefault(size = 5) Pageable pageable) {
@@ -64,6 +74,11 @@ public class ServicioController {
         model.addAttribute("servicioRequestDTO", new ServicioRequestDTO());
         model.addAttribute("ubicaciones", ubicacionService.findAllNotDeleted(PageRequest.of(0, 5)));
         model.addAttribute("empleados", empleadoService.findAllNotDeleted(PageRequest.of(0, 5))); 
+        model.addAttribute("disponibilidades", disponibilidadService.findAllNotDeleted(PageRequest.of(0, 5)));
+        
+        List<DayOfWeek> diasSemana = Arrays.asList(DayOfWeek.values());
+        model.addAttribute("diasSemana", diasSemana);
+        
         return ViewRouteHelper.SERVICIO_FORM;
     }
 
@@ -81,6 +96,8 @@ public class ServicioController {
             model.addAttribute("ubicaciones", ubicacionService.findAllNotDeleted(PageRequest.of(0, 5))); 
             return ViewRouteHelper.SERVICIO_FORM;
         }
+    	
+    	
         servicioService.save(servicioRequestDTO);
         return "redirect:/servicio/admin/list";
     }
@@ -90,24 +107,48 @@ public class ServicioController {
     public String editForm(@PathVariable Integer idServicio, Model model) {
     	ServicioResponseDTO dto = servicioService.findById(idServicio);
 
-    	ServicioRequestDTO requestDTO = new ServicioRequestDTO();
-        requestDTO.setIdServicio(dto.getIdServicio());
-        requestDTO.setNombre(dto.getNombre());
-        requestDTO.setDuracion(dto.getDuracion());
-        requestDTO.setRequiereEmpleado(dto.isRequiereEmpleado());
-        requestDTO.setIdUbicacion(dto.getUbicacion().getIdUbicacion());
-        requestDTO.setIdEmpleados(dto.getListaEmpleados().stream().map(EmpleadoResponseDTO::getIdPersona).collect(Collectors.toSet()));
+    	ServicioRequestDTO requestDTO = ServicioRequestDTO.builder()
+    			.idServicio(dto.getIdServicio())
+    			.nombre(dto.getNombre())
+    			.duracion(dto.getDuracion())
+    			.requiereEmpleado(dto.isRequiereEmpleado())
+    			.idUbicacion(dto.getUbicacion().getIdUbicacion())
+    			.idEmpleados(dto.getListaEmpleados().stream()
+    					.map(EmpleadoResponseDTO::getIdPersona)
+    					.collect(Collectors.toSet()))
+    			.disponibilidades(
+    					dto.getListaDisponibilidades().stream()
+    						.map(disp -> DisponibilidadRequestDTO.builder()
+    								.idDisponibilidad(disp.getIdDisponibilidad())
+    								.diaSemana(disp.getDiaSemana())
+    								.horaInicio(disp.getHoraInicio())
+    								.horaFin(disp.getHoraFin())
+    								.build())
+    						.collect(Collectors.toList())
+        )
+        .build();
+       // requestDTO.setIdServicio(dto.getIdServicio());
+    //   requestDTO.setNombre(dto.getNombre());
+      //  requestDTO.setDuracion(dto.getDuracion());
+      //  requestDTO.setRequiereEmpleado(dto.isRequiereEmpleado());
+       // requestDTO.setIdUbicacion(dto.getUbicacion().getIdUbicacion());
+       // requestDTO.setIdEmpleados(dto.getListaEmpleados().stream().map(EmpleadoResponseDTO::getIdPersona).collect(Collectors.toSet()))
+        
+           
 
         model.addAttribute("servicioRequestDTO", requestDTO);
         model.addAttribute("ubicaciones", ubicacionService.findAllNotDeleted(PageRequest.of(0, 5))); 
         model.addAttribute("empleados", empleadoService.findAllNotDeleted(PageRequest.of(0, 5))); 
+        model.addAttribute("disponibilidades", disponibilidadService.findAllNotDeleted(PageRequest.of(0, 5)));
 
         return ViewRouteHelper.SERVICIO_FORM;
     }
 
     @PostMapping("/update/{idServicio}")
     @PreAuthorize("hasRole('ADMIN')")
-    public String update(@PathVariable Integer idServicio, @Valid @ModelAttribute ServicioRequestDTO dto, BindingResult result) {
+    public String update(@PathVariable Integer idServicio, @Valid @ModelAttribute ServicioRequestDTO dto, 
+    		BindingResult result, @RequestParam(name = "eliminarDisponibilidades", required = false) List<Integer> eliminarDisponibilidades) {
+    	
     	if (servicioRepository.existsByNombre(dto.getNombre()) &&
     		    !servicioRepository.findById(idServicio).get().getNombre().equals(dto.getNombre())) {
     		    result.rejectValue("nombre", "error.servicio", "Ya existe otro servicio con este nombre.");
@@ -120,7 +161,7 @@ public class ServicioController {
             return ViewRouteHelper.SERVICIO_FORM;
         }
         
-        servicioService.update(idServicio, dto);
+        servicioService.update(idServicio, dto, eliminarDisponibilidades);
         return "redirect:/servicio/admin/list";
     }
 

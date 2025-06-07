@@ -1,5 +1,7 @@
 package oo2.grupo5.turnos.dtos.requests;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.validation.constraints.NotBlank;
@@ -28,4 +30,7 @@ public class ServicioRequestDTO {
 	private boolean requiereEmpleado;
 
 	private Set<Integer> idEmpleados;
+	
+	@Builder.Default
+	private List<DisponibilidadRequestDTO> disponibilidades = new ArrayList<>();
 }
