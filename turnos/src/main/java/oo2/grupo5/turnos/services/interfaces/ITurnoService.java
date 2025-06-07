@@ -26,7 +26,7 @@ public interface ITurnoService {
 	
 	void deleteById(Integer idTurno);
 	
-	public Page<TurnoResponseDTO> findTurnosByServicioEmpleadoFecha(Pageable pageable, Integer idServicio, Integer idEmpleado, LocalDate fecha);
+	public Page<TurnoResponseDTO> findTurnosByEmpleadoFecha(Pageable pageable, Integer idEmpleado, LocalDate fecha);
 	
 	public Page<TurnoResponseDTO> findTurnosByServicioFecha(Pageable pageable, Integer idServicio, LocalDate fecha);
 
