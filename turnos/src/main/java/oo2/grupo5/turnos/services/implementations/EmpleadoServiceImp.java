@@ -20,6 +20,7 @@ import oo2.grupo5.turnos.entities.Servicio;
 import oo2.grupo5.turnos.entities.User;
 import oo2.grupo5.turnos.enums.RoleType;
 import oo2.grupo5.turnos.repositories.IEmpleadoRepository;
+import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.repositories.IRoleRepository;
 import oo2.grupo5.turnos.repositories.IServicioRepository;
 import oo2.grupo5.turnos.repositories.IUserRepository;
@@ -34,19 +35,27 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	private final PasswordEncoder passwordEncoder;
 	private final ModelMapper modelMapper;
 	private final IUserRepository userRepository;
+	private final IPersonaRepository personaRepository;
 	
 	public EmpleadoServiceImp(IEmpleadoRepository empleadoRepository, IServicioRepository servicioRepository,ModelMapper modelMapper,
-			IRoleRepository roleRepository, PasswordEncoder passwordEncoder, IUserRepository userRepository) {
+			IRoleRepository roleRepository, PasswordEncoder passwordEncoder, IUserRepository userRepository, 
+			IPersonaRepository personaRepository) {
 		this.empleadoRepository = empleadoRepository;
 		this.servicioRepository = servicioRepository;
 		this.modelMapper = modelMapper;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.userRepository = userRepository;
+		this.personaRepository = personaRepository;
 	}
 	
 	@Override
 	public EmpleadoResponseDTO save(EmpleadoRequestDTO empleadoRequestDTO) {
+		
+    	if (personaRepository.existsByDni(empleadoRequestDTO.getDni())) {
+	        throw new IllegalArgumentException("Ya existe una persona con el mismo dni.");
+    	}
+    	
 		Empleado empleado = modelMapper.map(empleadoRequestDTO, Empleado.class);
 		
 		Contacto contacto = Contacto.builder()
@@ -113,6 +122,11 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	public EmpleadoResponseDTO update(Integer idPersona, EmpleadoRequestDTO empleadoRequestDTO) {
 		Empleado empleado = empleadoRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Empleado with id {0} not found",idPersona)));
+		
+		if (personaRepository.existsByDni(empleadoRequestDTO.getDni())&&
+    		    personaRepository.findById(idPersona).get().getDni() != empleadoRequestDTO.getDni()) {
+	        throw new IllegalArgumentException("Ya existe una persona con el mismo dni.");
+	    }
 		
         empleado.setNombre(empleadoRequestDTO.getNombre());
         empleado.setApellido(empleadoRequestDTO.getApellido());

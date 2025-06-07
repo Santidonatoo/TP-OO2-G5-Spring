@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import oo2.grupo5.turnos.dtos.requests.ClienteRequestDTO;
+import oo2.grupo5.turnos.dtos.requests.RegistroClienteRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.ClienteResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.RegistroClienteResponseDTO;
 import oo2.grupo5.turnos.entities.Cliente;
@@ -19,6 +20,7 @@ import oo2.grupo5.turnos.entities.Role;
 import oo2.grupo5.turnos.entities.User;
 import oo2.grupo5.turnos.enums.RoleType;
 import oo2.grupo5.turnos.repositories.IClienteRepository;
+import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.repositories.IRoleRepository;
 import oo2.grupo5.turnos.repositories.IUserRepository;
 import oo2.grupo5.turnos.services.interfaces.IClienteService;
@@ -31,18 +33,24 @@ public class ClienteServiceImp implements IClienteService{
 	private final IUserRepository userRepository;
 	private final IRoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final IPersonaRepository personaRepository;
 	
 	public ClienteServiceImp(IClienteRepository clienteRepository, ModelMapper modelMapper, IUserRepository userRepository,
-			IRoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+			IRoleRepository roleRepository, PasswordEncoder passwordEncoder, IPersonaRepository personaRepository) {
 		this.clienteRepository = clienteRepository;
 		this.modelMapper = modelMapper;
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.personaRepository = personaRepository;
 	}
 	
-	public void registrarCliente(RegistroClienteResponseDTO dto) {
+	public void registrarCliente(RegistroClienteRequestDTO dto) {
 		Role rolCliente = roleRepository.findByType(RoleType.CLIENT).orElseThrow();
+		
+    	if (personaRepository.existsByDni(dto.getDni())) {
+	        throw new IllegalArgumentException("Ya existe una persona con el mismo dni.");
+    	}
 		
 		//Creo un contacto
 		Contacto contacto = Contacto.builder()
@@ -112,6 +120,11 @@ public class ClienteServiceImp implements IClienteService{
 	public ClienteResponseDTO update(Integer idPersona, ClienteRequestDTO clienteRequestDTO) {
 		Cliente cliente = clienteRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Cliente with id {0} not found",idPersona)));
+		
+		if (personaRepository.existsByDni(clienteRequestDTO.getDni())&&
+    		    personaRepository.findById(idPersona).get().getDni() != clienteRequestDTO.getDni()) {
+	        throw new IllegalArgumentException("Ya existe una persona con el mismo dni.");
+	    }
 		
         cliente.setNombre(clienteRequestDTO.getNombre());
         cliente.setApellido(clienteRequestDTO.getApellido());

@@ -22,6 +22,7 @@ import oo2.grupo5.turnos.dtos.requests.EmpleadoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
+import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.services.interfaces.IEmpleadoService;
 import oo2.grupo5.turnos.services.interfaces.IServicioService;
 
@@ -31,10 +32,13 @@ public class EmpleadoController {
 	
 	private final IEmpleadoService empleadoService;
 	private final IServicioService servicioService;
+	private final IPersonaRepository personaRepository;
 
-	public EmpleadoController(IEmpleadoService empleadoService, IServicioService servicioService) {
+	public EmpleadoController(IEmpleadoService empleadoService, IServicioService servicioService, 
+			IPersonaRepository personaRepository) {
 		this.empleadoService = empleadoService;
 		this.servicioService = servicioService;
+		this.personaRepository = personaRepository;
 	}
 	
     @GetMapping("/list")
@@ -68,7 +72,11 @@ public class EmpleadoController {
     @PostMapping("/save")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public String save(@Valid @ModelAttribute EmpleadoRequestDTO empleadoRequestDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+    	if (personaRepository.existsByDni(empleadoRequestDTO.getDni())) {
+            bindingResult.rejectValue("dni", "error.persona", "Ya existe una persona con el mismo dni.");
+        }
+    	
+    	if (bindingResult.hasErrors()) {
             return ViewRouteHelper.EMPLEADO_FORM;
         }
         
@@ -104,7 +112,12 @@ public class EmpleadoController {
     public String update(@PathVariable Integer idPersona,
                          @Valid @ModelAttribute EmpleadoRequestDTO empleadoRequestDTO,
                          BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+    	if (personaRepository.existsByDni(empleadoRequestDTO.getDni()) &&
+    		    personaRepository.findById(idPersona).get().getDni() == empleadoRequestDTO.getDni()) {
+    			bindingResult.rejectValue("dni", "error.persona", "Ya existe otra persona con este dni.");
+    	}
+    	
+    	if (bindingResult.hasErrors()) {
             return ViewRouteHelper.EMPLEADO_FORM;
         }
 
