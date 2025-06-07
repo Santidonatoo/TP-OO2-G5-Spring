@@ -18,6 +18,7 @@ import oo2.grupo5.turnos.dtos.requests.ClienteRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.ContactoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.ClienteResponseDTO;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
+import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.services.interfaces.IClienteService;
 
 @Controller
@@ -25,9 +26,11 @@ import oo2.grupo5.turnos.services.interfaces.IClienteService;
 public class ClienteController {
 
 	private final IClienteService clienteService;
+	private final IPersonaRepository personaRepository;
 	
-	public ClienteController(IClienteService clienteService) {
+	public ClienteController(IClienteService clienteService, IPersonaRepository personaRepository) {
 		this.clienteService = clienteService;
+		this.personaRepository = personaRepository;
 	}
 	
     @GetMapping("/list")
@@ -61,7 +64,11 @@ public class ClienteController {
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public String save(@Valid @ModelAttribute ClienteRequestDTO clienteRequestDTO, BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
+    	if (personaRepository.existsByDni(clienteRequestDTO.getDni())) {
+            bindingResult.rejectValue("dni", "error.persona", "Ya existe una persona con el mismo dni.");
+        }
+    	
+    	if (bindingResult.hasErrors()) {
         	model.addAttribute("clienteRequestDTO", clienteRequestDTO);
             return ViewRouteHelper.CLIENTE_FORM;
         }
@@ -94,7 +101,12 @@ public class ClienteController {
     public String update(@PathVariable Integer idPersona,
                          @Valid @ModelAttribute ClienteRequestDTO clienteRequestDTO,
                          BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+    	if (personaRepository.existsByDni(clienteRequestDTO.getDni()) &&
+    		    personaRepository.findById(idPersona).get().getDni() == clienteRequestDTO.getDni()) {
+    			bindingResult.rejectValue("dni", "error.persona", "Ya existe otra persona con este dni.");
+    	}
+    	
+    	if (bindingResult.hasErrors()) {
             return ViewRouteHelper.CLIENTE_FORM;
         }
 
