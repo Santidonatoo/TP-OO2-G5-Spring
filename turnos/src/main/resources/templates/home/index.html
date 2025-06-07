@@ -73,8 +73,8 @@
         <a th:href="@{/turno/elegir-servicio}">Pedir Turno</a>
 
         <div sec:authorize="hasRole('ADMIN')" class="admin-links">
-            <a th:href="@{/cliente/admin/list}">Ver Clientes</a>
-            <a th:href="@{/empleado/admin/list}">Ver Empleados</a>
+            <a th:href="@{/cliente/list}">Ver Clientes</a>
+            <a th:href="@{/empleado/list}">Ver Empleados</a>
             <a th:href="@{/ubicacion/list}">Ver Ubicaciones</a>
         </div>
     </div>

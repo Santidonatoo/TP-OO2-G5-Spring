@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-    <title>Lista de Clientes ADMIN</title>
+    <title>Lista de Clientes</title>
 	<style>
 	        body {
 	            display: flex;
@@ -13,47 +13,23 @@
 	            padding: 20px;
 	        }
 
-	        .container {
-	            background: white;
-	            padding: 30px;
-	            border-radius: 10px;
-	            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-	            text-align: center;
-	            width: 90%;
-	            max-width: 800px;
-	        }
 
 	        h1 {
 	            margin-bottom: 20px;
 	        }
 
-	        a, button {
+	        a {
 	            display: inline-block;
 	            padding: 10px;
 	            margin: 5px;
 	            text-decoration: none;
 	            border-radius: 5px;
-	            width: auto;
-	        }
-
-	        a {
 	            background-color: #28a745;
 	            color: white;
 	        }
 
 	        a:hover {
 	            background-color: #218838;
-	        }
-
-	        button {
-	            background-color: #dc3545;
-	            color: white;
-	            border: none;
-	            cursor: pointer;
-	        }
-
-	        button:hover {
-	            background-color: #bb2d3b;
 	        }
 
 	        table {
@@ -72,18 +48,14 @@
 	            background-color: #007bff;
 	            color: white;
 	        }
-
-	        .acciones {
-	            display: flex;
-	            justify-content: center;
-	            gap: 10px;
-	        }
 	    </style>
 </head>
 <body>
-<h1>Clientes Registrados</h1>
+<h1>Clientes que no estan eliminados</h1>
 <br>
-<a th:href="@{/cliente/list}">Ver activos</a>
+    <div sec:authorize="hasRole('ADMIN')">
+    	<a th:href="@{/cliente/admin/list}">Ver todo</a> 
+    </div>
 <br>
 <table>
     <thead>
@@ -91,10 +63,9 @@
             <th>Nombre</th>
             <th>Apellido</th>
             <th>Dni</th>
-            <th>Fecha de nacimiento</th>
+            <th>Fecha de nacimiento</th> 
 			<th>Email</th>
 			<th>Teléfono</th>
-            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -105,18 +76,10 @@
             <td th:text="${cliente.fechaDeNacimiento}"></td>
 			<td th:text="${cliente.contacto.email}"></td>
 			<td th:text="${cliente.contacto.telefono}"></td>
-            <td>
-                <a th:href="@{/cliente/edit/{idPersona}(idPersona=${cliente.idPersona})}">Editar</a>
-                <form th:if="!${cliente.softDeleted}" th:action="@{/cliente/delete/{idPersona}(idPersona=${cliente.idPersona})}" method="post" style="display:inline;">
-                    <button type="submit">Eliminar</button>
-                </form>
-                <form th:if="${cliente.softDeleted}" th:action="@{/cliente/restore/{idPersona}(idPersona=${cliente.idPersona})}" method="post" style="display:inline;">
-                    <button type="submit">Restaurar</button>
-                </form>
-            </td>
         </tr>
     </tbody>
 </table>
+<br>
 <br>
 <a th:href="@{/index}">Volver</a>
 
