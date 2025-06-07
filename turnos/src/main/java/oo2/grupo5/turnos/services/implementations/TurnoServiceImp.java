@@ -100,11 +100,11 @@ public class TurnoServiceImp implements ITurnoService {
 	}
 
 	@Override
-	public Page<TurnoResponseDTO> findTurnosByServicioEmpleadoFecha(Pageable pageable, Integer idServicio, Integer idEmpleado, LocalDate fecha){
-		Servicio servicio = servicioRepository.findById(idServicio).orElse(null);
+	public Page<TurnoResponseDTO> findTurnosByEmpleadoFecha(Pageable pageable, Integer idEmpleado, LocalDate fecha){
+		
 		Empleado empleado = empleadoRepository.findById(idEmpleado).orElse(null);
 		
-		return turnoRepository.findByDatosTurno_EmpleadoAndDatosTurno_ServicioAndDatosTurno_Fecha(empleado, servicio, fecha, pageable)
+		return turnoRepository.findByDatosTurno_EmpleadoAndDatosTurno_Fecha(empleado, fecha, pageable)
 				.map(entity -> modelMapper.map(entity, TurnoResponseDTO.class));
 	}
 

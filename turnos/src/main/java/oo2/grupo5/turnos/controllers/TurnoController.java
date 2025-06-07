@@ -128,22 +128,26 @@ public class TurnoController {
 	    Page<TurnoResponseDTO> turnos;
 	    
 	    if(servicioService.findById(datosTurno.getIdServicio()).isRequiereEmpleado()) {
-	    	turnos = turnoService.findTurnosByServicioEmpleadoFecha(pageable, datosTurno.getIdServicio(), datosTurno.getIdEmpleado(), datosTurno.getFecha());
+	    	turnos = turnoService.findTurnosByEmpleadoFecha(pageable, datosTurno.getIdEmpleado(), datosTurno.getFecha());
 	    } else {turnos = turnoService.findTurnosByServicioFecha(pageable, datosTurno.getIdServicio(), datosTurno.getFecha());}
 	    
 	    
 	    
 	    // Convertimos los turnos ocupados en una lista de LocalTime para facilitar la comparación
-	    List<LocalTime> turnosOcupados = turnos.getContent().stream()
-	                                          .map(TurnoResponseDTO::getHora) // Asumiendo que getHora devuelve un LocalTime
-	                                          .collect(Collectors.toList());
+	    List<LocalTime> turnosBloqueados = new ArrayList<>();
+	    for (TurnoResponseDTO turno : turnos.getContent()) {
+	        LocalTime inicioTurno = turno.getHora();
+	        for (int minutos = 0; minutos < turno.getDatosTurno().getServicio().getDuracion(); minutos += 15) {
+	            turnosBloqueados.add(inicioTurno.plusMinutes(minutos));
+	        }
+	    }
 	    
 	    List<LocalTime> horariosDisponibles = new ArrayList<>();
 	    LocalTime horaInicio = LocalTime.of(10, 0);
 	    LocalTime horaFin = LocalTime.of(18, 0);
 
 	    while (horaInicio.isBefore(horaFin) || horaInicio.equals(horaFin)) {
-	        if (!turnosOcupados.contains(horaInicio)) { // Agrega solo si no está ocupado
+	        if (!turnosBloqueados.contains(horaInicio)) { // Agrega solo si no está ocupado
 	            horariosDisponibles.add(horaInicio);
 	        }
 	        horaInicio = horaInicio.plusMinutes(frecuencia);
