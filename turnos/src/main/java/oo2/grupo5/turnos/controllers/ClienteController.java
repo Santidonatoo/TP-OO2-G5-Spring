@@ -30,6 +30,14 @@ public class ClienteController {
 		this.clienteService = clienteService;
 	}
 	
+    @GetMapping("/list")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public String listNotDeleted(Model model, @PageableDefault(size = 5) Pageable pageable) {
+        Page<ClienteResponseDTO> clientes = clienteService.findAllNotDeleted(pageable);
+        model.addAttribute("clientes", clientes);
+        return ViewRouteHelper.CLIENTE_LIST;
+    }
+	
 	@GetMapping("/admin/list")
 	@PreAuthorize("hasRole('ADMIN')")
     public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {

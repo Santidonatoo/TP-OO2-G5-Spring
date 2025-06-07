@@ -20,8 +20,13 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,18 +52,23 @@ public class Persona {
 	protected Integer idPersona;
 	
 	@NotBlank(message = "The name cannot be empty")
-	@Column(name="nombre")
+	@Size(min = 3, max = 50, message = "El nombre debe tener entre 3 y 50 caracteres")
+	@Column(name="nombre", length = 50)
 	protected String nombre;
 	
 	@NotBlank(message = "The surname cannot be empty")
-	@Column(name="apellido")
+	@Size(min = 3, max = 50, message = "El apellido debe tener entre 3 y 50 caracteres")
+	@Column(name="apellido", length = 50)
 	protected String apellido;
 	
-	@NotNull
-	@Column(name="dni")
+	@NotNull (message = "The DNI cannot be empty")
+	@Min(value = 1000000, message = "El DNI debe tener al menos 7 digitos")
+	@Max(value= 99999999, message = "El DNI no puede tener mas de 8 digitos")
+	@Column(name="dni", unique = true)
 	protected int dni;
 	
-	@NotNull
+	@NotNull(message = "La fecha de nacimiento no puede ser nula")
+	@Past(message = "La fecha de nacimiento debe ser anterior a la fecha actual")
 	@Column(name="fechaDeNacimiento")
 	protected LocalDate fechaDeNacimiento;
 	
@@ -77,6 +87,8 @@ public class Persona {
 	@UpdateTimestamp
 	protected Timestamp updateAt;
 	
+	@Valid
+	@NotNull(message = "El Contacto no puede ser nulo")
 	//con esto marco que la idPersona es la clave foranea de Contacto 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "idContacto", referencedColumnName = "idCont")
