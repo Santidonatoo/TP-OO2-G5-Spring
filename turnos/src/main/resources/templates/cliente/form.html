@@ -77,6 +77,46 @@
 		       }
 			   
 		   </style>
+			<script>
+		       document.addEventListener('DOMContentLoaded', function() {
+		           const fechaInput = document.querySelector('input[type="date"]');
+		           if (fechaInput) {
+		               // Establecer la fecha máxima
+		               const today = new Date().toISOString().split('T')[0];
+		               fechaInput.setAttribute('max', today);
+		               
+		               // Prevenir selección de fechas futuras
+		               fechaInput.addEventListener('input', function() {
+		                   const selectedDate = new Date(this.value);
+		                   const currentDate = new Date();
+		                   currentDate.setHours(0, 0, 0, 0);
+		                   
+		                   if (selectedDate > currentDate) {
+		                       this.value = '';
+		                       alert('No se pueden seleccionar fechas futuras');
+		                   }
+		               });
+		               
+		               // Prevenir navegación con teclado a fechas futuras
+		               fechaInput.addEventListener('keydown', function(e) {
+		                   // Prevenir el uso de flechas para ir a fechas futuras
+		                   if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
+		                       const currentValue = this.value;
+		                       setTimeout(() => {
+		                           const newValue = this.value;
+		                           const selectedDate = new Date(newValue);
+		                           const currentDate = new Date();
+		                           currentDate.setHours(0, 0, 0, 0);
+		                           
+		                           if (selectedDate > currentDate) {
+		                               this.value = currentValue;
+		                           }
+		                       }, 0);
+		                   }
+		               });
+		           }
+		       });
+		   </script>
 	</head>
 <body>
 <h1 th:text="${clienteRequestDTO.idPersona != null} ? 'Editar Cliente' : 'Nuevo Cliente'"></h1>
@@ -101,7 +141,9 @@
     
     <div th:if="${clienteRequestDTO.idPersona == null}">
 	    <label>Fecha de nacimiento:</label>
-	    <input type="date" th:field="*{fechaDeNacimiento}" required />
+	    <input type="date" th:field="*{fechaDeNacimiento}" 
+	           th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" 
+	           required />
 	    <div th:if="${#fields.hasErrors('fechaDeNacimiento')}" th:errors="*{fechaDeNacimiento}"></div>
 	</div>
 	
