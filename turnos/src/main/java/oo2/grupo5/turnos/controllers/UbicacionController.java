@@ -28,7 +28,14 @@ public class UbicacionController {
     public UbicacionController(IUbicacionService ubicacionService) {
         this.ubicacionService = ubicacionService;
     }
-
+    @GetMapping("/list")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String listNotDeleted(Model model, @PageableDefault(size = 5) Pageable pageable) {
+        Page<UbicacionResponseDTO> ubicaciones = ubicacionService.findAllNotDeleted(pageable);
+        model.addAttribute("ubicaciones", ubicaciones);
+        return ViewRouteHelper.UBICACION_LIST;
+    }
+    
     @GetMapping("/admin/list")
     @PreAuthorize("hasRole('ADMIN')")
     public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {
