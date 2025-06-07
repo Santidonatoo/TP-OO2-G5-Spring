@@ -84,6 +84,7 @@
                     <th>Duración</th>
                     <th>Requiere Empleado</th>
                     <th>Ubicación</th>
+					<th>Días y Horarios</th>
                     <th>Eliminado</th>
                     <th>Acciones</th>
                 </tr>
@@ -94,6 +95,27 @@
                     <td th:text="${servicio.duracion} + ' min'"></td>
                     <td th:text="${servicio.requiereEmpleado} ? 'Sí' : 'No'"></td>
                     <td th:text="${servicio.ubicacion != null} ? ${servicio.ubicacion.localidad} + ', ' + ${servicio.ubicacion.calle} + ' ' + ${servicio.ubicacion.numero} : 'Sin ubicación'"></td>
+					<td>
+						<div th:if="${servicio.listaDisponibilidades != null}">
+							<span th:each="disp : ${servicio.listaDisponibilidades}">
+								<span th:switch="${disp.diaSemana}">
+									<span th:case="'MONDAY'">Lunes</span>
+									<span th:case="'TUESDAY'">Martes</span>
+									<span th:case="'WEDNESDAY'">Miércoles</span>
+									<span th:case="'THURSDAY'">Jueves</span>
+									<span th:case="'FRIDAY'">Viernes</span>
+									<span th:case="'SATURDAY'">Sábado</span>
+									<span th:case="'SUNDAY'">Domingo</span>
+									<span th:case="*">[[${disp.diaSemana}]]</span>
+								</span>
+								&nbsp;
+								<span th:text="${#temporals.format(disp.horaInicio, 'HH:mm')}"></span>
+								-
+								<span th:text="${#temporals.format(disp.horaFin, 'HH:mm')}"></span>
+								<br/>
+							</span>
+						</div>
+					</td>				
                     <td th:text="${servicio.softDeleted} ? 'Sí' : 'No'"></td>
                     <td class="acciones">
                         <a th:href="@{/servicio/edit/{idServicio}(idServicio=${servicio.idServicio})}">Editar</a>
