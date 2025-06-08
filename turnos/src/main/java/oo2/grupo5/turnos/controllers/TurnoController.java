@@ -129,6 +129,7 @@ public class TurnoController {
 	    
 	    // Obtener los turnos ocupados
 	    Page<TurnoResponseDTO> turnos;
+	    
 	    if (servicio.isRequiereEmpleado()) {
 	        turnos = turnoService.findTurnosByEmpleadoFecha(pageable, datosTurno.getIdEmpleado(), datosTurno.getFecha());
 	    } else {
@@ -153,12 +154,13 @@ public class TurnoController {
 	        .forEach(disponibilidad -> {
 	            LocalTime horaInicio = disponibilidad.getHoraInicio();
 	            LocalTime horaFin = disponibilidad.getHoraFin();
-
-	            while (horaInicio.isBefore(horaFin) || horaInicio.equals(horaFin)) {
-	                if (!turnosBloqueados.contains(horaInicio)) { // Agrega solo si no está ocupado
-	                    horariosDisponibles.add(horaInicio);
-	                }
-	                horaInicio = horaInicio.plusMinutes(frecuencia);
+	            if (frecuencia > 0) {
+	            	while (horaInicio.isBefore(horaFin) || horaInicio.equals(horaFin)) {
+		                if (!turnosBloqueados.contains(horaInicio)) { // Agrega solo si no está ocupado
+		                    horariosDisponibles.add(horaInicio);
+		                }
+		                horaInicio = horaInicio.plusMinutes(frecuencia);
+		            }
 	            }
 	        });
 
