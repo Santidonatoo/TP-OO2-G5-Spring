@@ -164,7 +164,7 @@ public class EmpleadoServiceImp implements IEmpleadoService{
     			.orElseThrow(() -> new EmpleadoNotFoundException(idPersona));
     	
     	if(!empleado.isSoftDeleted()) {
-    		throw new EmpleadoNotFoundException(idPersona);
+    		throw new IllegalStateException(MessageFormat.format("Empleado with id {0} is not deleted",idPersona));
     	}
     	
     	empleado.setSoftDeleted(false);
