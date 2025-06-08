@@ -169,7 +169,7 @@ public class TurnoController {
 	        });
 	    
 	    if (horariosDisponibles.isEmpty()) {
-	        throw new NoDisponibilidadException("No hay disponibilidad en ese horario. Por favor, elija otra fecha.");
+	        throw new NoDisponibilidadException("No hay disponibilidad en ese fecha. Por favor, elija otra.");
 	    }
 	    
 	    model.addAttribute("horarios", horariosDisponibles);
