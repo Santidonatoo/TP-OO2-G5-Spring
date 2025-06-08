@@ -50,5 +50,7 @@ public class ViewRouteHelper {
 	    public static final String ERROR_NOT_FOUND_EMPLEADO = "error/not-found-empleado";
 	    public static final String ERROR_NOT_FOUND_UBICACION = "error/not-found-ubicacion";
 	    public static final String ERROR_DNI_REGISTRO = "error/error-registro";
+	    public static final String ERROR_INVALID_HORARIO = "error/error-invalid-horario";
+	    public static final String ERROR_EDIT_HORARIO = "error/error-edit-horario";
 
 }

@@ -21,6 +21,7 @@ import oo2.grupo5.turnos.entities.Disponibilidad;
 import oo2.grupo5.turnos.entities.Empleado;
 import oo2.grupo5.turnos.entities.Servicio;
 import oo2.grupo5.turnos.entities.Ubicacion;
+import oo2.grupo5.turnos.exceptions.HorarioDisponibilidadInvalidoException;
 import oo2.grupo5.turnos.exceptions.ServicioNotFoundException;
 import oo2.grupo5.turnos.exceptions.UbicacionNotFoundException;
 import oo2.grupo5.turnos.repositories.IDisponibilidadRepository;
@@ -79,7 +80,7 @@ public class ServicioServiceImp implements IServicioService {
             	 // Valida que horaInicio sea menor que horaFin
                 if (disponibilidadRequestDTO.getHoraInicio().isAfter(disponibilidadRequestDTO.getHoraFin()) ||
                 		disponibilidadRequestDTO.getHoraInicio().equals(disponibilidadRequestDTO.getHoraFin())) {
-                    throw new IllegalArgumentException(
+                    throw new HorarioDisponibilidadInvalidoException(
                         String.format("La hora de inicio (%s) debe ser anterior a la hora de fin (%s) para el día %s.",
                         		disponibilidadRequestDTO.getHoraInicio(),
                         		disponibilidadRequestDTO.getHoraFin(),
@@ -185,6 +186,18 @@ public class ServicioServiceImp implements IServicioService {
             Set<Disponibilidad> nuevasDisponibilidades = new HashSet<>();
 
             for (DisponibilidadRequestDTO disponibilidadDTO : servicioRequestDTO.getDisponibilidades()) {
+            	
+            	if (disponibilidadDTO.getHoraInicio().isAfter(disponibilidadDTO.getHoraFin()) ||
+            	        disponibilidadDTO.getHoraInicio().equals(disponibilidadDTO.getHoraFin())) {
+            	        throw new HorarioDisponibilidadInvalidoException(
+            	            String.format("Error al actualizar el servicio: La hora de inicio (%s) debe ser anterior a la hora de fin (%s) para el día %s.",
+            	                disponibilidadDTO.getHoraInicio(),
+            	                disponibilidadDTO.getHoraFin(),
+            	                disponibilidadDTO.getDiaSemana()
+            	            )
+            	        );
+            	    }
+            	
                 Optional<Disponibilidad> existente = disponibilidadRepository.findByDiaSemanaAndHoraInicioAndHoraFin(
                         disponibilidadDTO.getDiaSemana(),
                         disponibilidadDTO.getHoraInicio(),
