@@ -21,6 +21,7 @@ import oo2.grupo5.turnos.entities.Disponibilidad;
 import oo2.grupo5.turnos.entities.Empleado;
 import oo2.grupo5.turnos.entities.Servicio;
 import oo2.grupo5.turnos.entities.Ubicacion;
+import oo2.grupo5.turnos.exceptions.ServicioNotFoundException;
 import oo2.grupo5.turnos.repositories.IDisponibilidadRepository;
 import oo2.grupo5.turnos.repositories.IEmpleadoRepository;
 import oo2.grupo5.turnos.repositories.IServicioRepository;
@@ -115,14 +116,14 @@ public class ServicioServiceImp implements IServicioService {
     @Override
     public ServicioResponseDTO findById(Integer idServicio) {
         Servicio servicio = servicioRepository.findById(idServicio)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",idServicio)));
+                .orElseThrow(() -> new ServicioNotFoundException(idServicio));
         return modelMapper.map(servicio, ServicioResponseDTO.class);
     }
     
     @Override
 	public ServicioResponseDTO findByIdNotDeleted(Integer idServicio) {
 		Servicio servicio = servicioRepository.findByIdServicioAndSoftDeletedFalse(idServicio)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",idServicio)));
+                .orElseThrow(() -> new ServicioNotFoundException(idServicio));
         return modelMapper.map(servicio, ServicioResponseDTO.class);
 	}
     

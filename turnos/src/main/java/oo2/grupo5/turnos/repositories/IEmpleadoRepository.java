@@ -21,6 +21,7 @@ public interface IEmpleadoRepository extends JpaRepository<Empleado, Integer> {
 	//Traer lista de empleados notdeleted de un servicio
     Page<Empleado> findAllByListaServicios_IdServicioAndSoftDeletedFalse(Integer idServicio, Pageable pageable);
 
+	boolean existsByDni(int dni);
 	
 	//TraerEmpleadosDeUnServicio
 }

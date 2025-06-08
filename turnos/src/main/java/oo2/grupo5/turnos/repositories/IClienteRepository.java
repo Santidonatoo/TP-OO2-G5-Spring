@@ -17,4 +17,6 @@ public interface IClienteRepository extends JpaRepository<Cliente, Integer>{
 	
 	//Search Cliente with softDeleted = False by ID
 	Optional<Cliente> findByIdPersonaAndSoftDeletedFalse(Integer idPersona);
+	
+	boolean existsByDni(int dni);
 }

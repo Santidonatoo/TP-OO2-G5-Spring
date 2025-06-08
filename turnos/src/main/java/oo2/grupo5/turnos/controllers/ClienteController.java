@@ -12,12 +12,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 import oo2.grupo5.turnos.dtos.requests.ClienteRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.ContactoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.ClienteResponseDTO;
+import oo2.grupo5.turnos.exceptions.ClienteNotFoundException;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
+import oo2.grupo5.turnos.repositories.IPersonaRepository;
+import oo2.grupo5.turnos.repositories.IUserRepository;
 import oo2.grupo5.turnos.services.interfaces.IClienteService;
 
 @Controller
@@ -25,10 +29,22 @@ import oo2.grupo5.turnos.services.interfaces.IClienteService;
 public class ClienteController {
 
 	private final IClienteService clienteService;
+	private final IPersonaRepository personaRepository;
+	private final IUserRepository userRepository;
 	
-	public ClienteController(IClienteService clienteService) {
+	public ClienteController(IClienteService clienteService, IPersonaRepository personaRepository, IUserRepository userRepository) {
 		this.clienteService = clienteService;
+		this.personaRepository = personaRepository;
+		this.userRepository = userRepository;
 	}
+	
+    @GetMapping("/list")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public String listNotDeleted(Model model, @PageableDefault(size = 5) Pageable pageable) {
+        Page<ClienteResponseDTO> clientes = clienteService.findAllNotDeleted(pageable);
+        model.addAttribute("clientes", clientes);
+        return ViewRouteHelper.CLIENTE_LIST;
+    }
 	
 	@GetMapping("/admin/list")
 	@PreAuthorize("hasRole('ADMIN')")
@@ -37,7 +53,18 @@ public class ClienteController {
         model.addAttribute("clientes", clientes);
         return ViewRouteHelper.CLIENTE_ADMIN_LIST;
     }
-	
+	@GetMapping("/buscar")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String buscarCliente(@RequestParam Integer idPersona, Model model) {
+        try {
+        	ClienteResponseDTO cliente = clienteService.findById(idPersona);
+            model.addAttribute("cliente", cliente);
+            return ViewRouteHelper.CLIENTE_DETALLE;
+        } catch (ClienteNotFoundException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            return ViewRouteHelper.ERROR_NOT_FOUND_CLIENTE;
+        }
+    }
 	@GetMapping("/form")
 	@PreAuthorize("hasRole('ADMIN')")
 	public String createForm(Model model) {
@@ -53,7 +80,17 @@ public class ClienteController {
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public String save(@Valid @ModelAttribute ClienteRequestDTO clienteRequestDTO, BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
+    	//Validacion dni repetido
+    	if (personaRepository.existsByDni(clienteRequestDTO.getDni())) {
+            bindingResult.rejectValue("dni", "error.persona", "Ya existe una persona con el mismo dni.");
+        }
+    	
+    	//Validacion username repetido
+    	if (userRepository.existsByUsername(clienteRequestDTO.getUsername())){
+    			bindingResult.rejectValue("username", "error.persona", "Ya existe otra persona con este username.");
+    	}
+    	
+    	if (bindingResult.hasErrors()) {
         	model.addAttribute("clienteRequestDTO", clienteRequestDTO);
             return ViewRouteHelper.CLIENTE_FORM;
         }
@@ -86,7 +123,19 @@ public class ClienteController {
     public String update(@PathVariable Integer idPersona,
                          @Valid @ModelAttribute ClienteRequestDTO clienteRequestDTO,
                          BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+    	//Validacion dni repetido
+    	if (personaRepository.existsByDni(clienteRequestDTO.getDni()) &&
+    		    personaRepository.findById(idPersona).get().getDni() == clienteRequestDTO.getDni()) {
+    			bindingResult.rejectValue("dni", "error.persona", "Ya existe otra persona con este dni.");
+    	}
+    	
+    	//Validacion username repetido
+    	if (userRepository.existsByUsername(clienteRequestDTO.getUsername()) &&
+    		    !userRepository.findById(idPersona).get().getUsername().equals(clienteRequestDTO.getUsername())) {
+    			bindingResult.rejectValue("username", "error.persona", "Ya existe otra persona con este username.");
+    	}
+    	
+    	if (bindingResult.hasErrors()) {
             return ViewRouteHelper.CLIENTE_FORM;
         }
 

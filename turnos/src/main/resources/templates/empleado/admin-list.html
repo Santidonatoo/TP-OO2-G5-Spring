@@ -73,13 +73,18 @@
 	</head>
 		<body>
 		<h1>Empleados Registrados</h1>
-		<br>
+		
 		<a th:href="@{/empleado/form}">Nuevo</a>
 		<a th:href="@{/empleado/list}">Ver activos</a>
-		<br>
+		<form th:action="@{/empleado/buscar}" method="get">
+			<label for="idPersona">Buscar por ID:</label>
+			<input type="number" id="idPersona" name="idPersona" required />
+			<button type="submit">Buscar</button>
+		</form>
 		<table>
 		    <thead>
 		        <tr>
+					<th>ID</th>
 		            <th>Nombre</th>
 		            <th>Apellido</th>
 		            <th>Dni</th>
@@ -93,6 +98,7 @@
 		    </thead>
 		    <tbody>
 		        <tr th:each="empleado : ${empleados}">
+					<td th:text="${empleado.idPersona}"></td>
 		            <td th:text="${empleado.nombre}"></td>
 		            <td th:text="${empleado.apellido}"></td>
 		            <td th:text="${empleado.dni}"></td>

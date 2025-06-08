@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+	<head>
+	    <title>Detalle del Empleado</title>
+	    <style>
+	        body {
+	            display: flex;
+	            flex-direction: column;
+	            justify-content: center;
+	            align-items: center;
+	            height: 100vh;
+	            background-color: #f8f9fa;
+	            font-family: Arial, sans-serif;
+	            padding: 20px;
+	        }
+
+	        .detalle-container {
+	            background: white;
+	            padding: 30px;
+	            border-radius: 10px;
+	            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+	            text-align: center;
+	            width: 90%;
+	            max-width: 600px;
+	        }
+
+	        h1 {
+	            color: #007bff;
+	            margin-bottom: 20px;
+	        }
+
+	        p {
+	            font-size: 18px;
+	            color: #333;
+	            margin-bottom: 10px;
+	        }
+
+	        .servicios-container {
+	            margin-top: 20px;
+	            padding: 15px;
+	            border: 1px solid #ccc;
+	            border-radius: 5px;
+	            text-align: left;
+	        }
+
+	        .servicio-item {
+	            font-size: 16px;
+	            color: #333;
+	        }
+
+	        a {
+	            display: inline-block;
+	            padding: 10px 15px;
+	            text-decoration: none;
+	            border-radius: 5px;
+	            background-color: #28a745;
+	            color: white;
+	            margin-top: 15px;
+	        }
+
+	        a:hover {
+	            background-color: #218838;
+	        }
+	    </style>
+	</head>
+	<body>
+	    <div class="detalle-container">
+	        <h1>Detalle del Empleado</h1>
+	        <p><strong>Nombre:</strong> <span th:text="${empleado.nombre}"></span>&nbsp;<strong>Apelldio:</strong><span th:text="${empleado.apellido}"></span></p>
+	        <p><strong>DNI:</strong> <span th:text="${empleado.dni}"></span></p>
+	        <p><strong>Fecha de nacimiento:</strong> <span th:text="${empleado.fechaDeNacimiento}"></span></p>
+	        <p><strong>Puesto:</strong> <span th:text="${empleado.puesto}"></span></p>
+
+	        <div class="contacto-container">
+	            <h2>Contacto</h2>
+	            <p><strong>Email:</strong> <span th:text="${empleado.contacto.email}"></span></p>
+	            <p><strong>Teléfono:</strong> <span th:text="${empleado.contacto.telefono}"></span></p>
+	        </div>
+
+	        <div th:if="${empleado.listaServicios != null && !empleado.listaServicios.isEmpty()}" class="servicios-container">
+	            <h2>Servicios Asignados</h2>
+	            <div th:each="servicio : ${empleado.listaServicios}" class="servicio-item">
+					<p>
+					 	<span style="margin-right: 10px;" th:text="${servicio.nombre}"></span>
+						<span th:text="${servicio.duracion} + ' min'"></span>
+					</p>
+	            </div>
+	        </div>
+
+	        <br>
+	        <a th:href="@{/empleado/edit/{idPersona}(idPersona=${empleado.idPersona})}">Editar</a>
+	        <a th:href="@{/empleado/admin/list}">Volver a la lista de empleados</a>
+	    </div>
+	</body>
+	</html>

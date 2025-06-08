@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en"> 
 <head>
     <meta charset="UTF-8">
     <title>Registrarse</title>
@@ -43,25 +43,89 @@
         button:hover {
             background-color: #0056b3;
         }
+        
+                /* IMPORTANTE: Agregar estilos para mensajes de error */
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        
     </style>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fechaInput = document.querySelector('input[name="fechaDeNacimiento"]');
+            if (fechaInput) {
+                // Establecer la fecha máxima (fecha actual)
+                const today = new Date().toISOString().split('T')[0];
+                fechaInput.setAttribute('max', today);
+                
+                // Prevenir selección de fechas futuras
+                fechaInput.addEventListener('input', function() {
+                    const selectedDate = new Date(this.value);
+                    const currentDate = new Date();
+                    currentDate.setHours(0, 0, 0, 0);
+                    
+                    if (selectedDate > currentDate) {
+                        this.value = '';
+                        alert('No se pueden seleccionar fechas futuras');
+                    }
+                });
+                
+                // Prevenir navegación con teclado a fechas futuras
+                fechaInput.addEventListener('keydown', function(e) {
+                    // Prevenir el uso de flechas para ir a fechas futuras
+                    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
+                        const currentValue = this.value;
+                        setTimeout(() => {
+                            const newValue = this.value;
+                            const selectedDate = new Date(newValue);
+                            const currentDate = new Date();
+                            currentDate.setHours(0, 0, 0, 0);
+                            
+                            if (selectedDate > currentDate) {
+                                this.value = currentValue;
+                            }
+                        }, 0);
+                    }
+                });
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container">
         <h2>Registro</h2>
-        <form action="/auth/registro-cliente" method="post">
+        <form action="/auth/registro-cliente" method="post" th:object="${clienteDTO}">
             <div>
-                <input type="text" name="username" placeholder="Nombre de Usuario" required />
-                <input type="password" name="password" placeholder="Contraseña" required />
-                <input type="text" name="nombre" placeholder="Nombre" required />
-                <input type="text" name="apellido" placeholder="Apellido" required />
-                <input type="text" name="dni" placeholder="DNI" required />
-                <input type="date" name="fechaDeNacimiento" required />
+                <input type="text" th:field="*{username}" placeholder="Nombre de Usuario" required />
+                <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error-message"></div>
+                
+                <input type="password" th:field="*{password}" placeholder="Contraseña" required />
+                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></div>
+                
+                <input type="text" th:field="*{nombre}" placeholder="Nombre" required />
+                <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="error-message"></div>
+                
+                <input type="text" th:field="*{apellido}" placeholder="Apellido" required />
+                <div th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}" class="error-message"></div>
+                
+                <input type="text" th:field="*{dni}" placeholder="DNI" required />
+                <div th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}" class="error-message"></div>
+                
+                <input type="date" th:field="*{fechaDeNacimiento}" required />
+                <div th:if="${#fields.hasErrors('fechaDeNacimiento')}" th:errors="*{fechaDeNacimiento}" class="error-message"></div>
             </div>
 
             <br><hr><br>
             <div>
-                <input type="text" name="contacto.email" placeholder="Email de contacto" required />
-                <input type="text" name="contacto.telefono" placeholder="Teléfono de contacto" required />
+                <input type="text" th:field="*{contacto.email}" placeholder="Email de contacto" required />
+                <div th:if="${#fields.hasErrors('contacto.email')}" th:errors="*{contacto.email}" class="error-message"></div>
+                
+                <input type="text" th:field="*{contacto.telefono}" placeholder="Teléfono de contacto" required />
+                <div th:if="${#fields.hasErrors('contacto.telefono')}" th:errors="*{contacto.telefono}" class="error-message"></div>
             </div>
 
             <br>

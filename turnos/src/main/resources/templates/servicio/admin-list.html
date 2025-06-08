@@ -76,10 +76,17 @@
 
         <a th:href="@{/servicio/form}">Nuevo</a>
         <a th:href="@{/servicio/list}">Ver activos</a>
+		
+		<form th:action="@{/servicio/buscar}" method="get">
+		    <label for="idServicio">Buscar por ID:</label>
+		    <input type="number" id="idServicio" name="idServicio" required />
+		    <button type="submit">Buscar</button>
+		</form>
 
         <table>
             <thead>
                 <tr>
+					<th>ID</th>
                     <th>Nombre</th>
                     <th>Duración</th>
                     <th>Requiere Empleado</th>
@@ -91,6 +98,7 @@
             </thead>
             <tbody>
                 <tr th:each="servicio : ${servicios}">
+					<td th:text="${servicio.idServicio}"></td>
                     <td th:text="${servicio.nombre}"></td>
                     <td th:text="${servicio.duracion} + ' min'"></td>
                     <td th:text="${servicio.requiereEmpleado} ? 'Sí' : 'No'"></td>
