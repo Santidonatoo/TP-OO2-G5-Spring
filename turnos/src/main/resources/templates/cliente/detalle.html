@@ -78,6 +78,7 @@
 	        <p><strong>Nombre:</strong> <span th:text="${cliente.nombre}"></span>&nbsp;<strong>Apelldio:</strong><span th:text="${cliente.apellido}"></span></p>
 	        <p><strong>DNI:</strong> <span th:text="${cliente.dni}"></span></p>
 	        <p><strong>Fecha de nacimiento:</strong> <span th:text="${cliente.fechaDeNacimiento}"></span></p>
+			<p><strong>Ultimo inicio de sesion:</strong> <span th:text="${#temporals.format(cliente.ultimoInicioSesion, 'yyyy-MM-dd / HH:mm')}"></span></p>
 
 	        <div class="contacto-container">
 	            <h2>Contacto</h2>
