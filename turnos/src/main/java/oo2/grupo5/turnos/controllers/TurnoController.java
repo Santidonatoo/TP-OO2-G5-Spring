@@ -36,6 +36,7 @@ import oo2.grupo5.turnos.repositories.IServicioRepository;
 import oo2.grupo5.turnos.services.interfaces.IClienteService;
 import oo2.grupo5.turnos.services.interfaces.IDatosTurnoService;
 import oo2.grupo5.turnos.services.interfaces.IEmpleadoService;
+import oo2.grupo5.turnos.services.interfaces.IMailService;
 import oo2.grupo5.turnos.services.interfaces.IServicioService;
 import oo2.grupo5.turnos.services.interfaces.ITurnoService;
 
@@ -50,14 +51,16 @@ public class TurnoController {
 	private final IClienteService clienteService;
 	private final IEmpleadoService empleadoService;
 	private final IServicioService servicioService;
+	private final IMailService mailService;
 	
 	 public TurnoController(ITurnoService turnoService, IDatosTurnoService datosTurnoService, IClienteService clienteService, 
-			 IEmpleadoService empleadoService, IServicioService servicioService) {
+			 IEmpleadoService empleadoService, IServicioService servicioService, IMailService mailService) {
 		 	this.turnoService = turnoService;
 	        this.datosTurnoService = datosTurnoService;
 	        this.clienteService = clienteService;
 	        this.empleadoService = empleadoService;
 	        this.servicioService = servicioService;
+	        this.mailService = mailService;
 	    }
 	 
 	@ModelAttribute("DatosTurnoRequestDTO")
@@ -193,7 +196,7 @@ public class TurnoController {
         if (authentication != null && authentication.getPrincipal() instanceof User) {
             User user = (User) authentication.getPrincipal();
             idCliente = user.getPersona().getIdPersona();
-        }
+        //}
         
         datosTurno.setIdCliente(idCliente);
         
@@ -202,9 +205,24 @@ public class TurnoController {
         turno.setEstado(EstadoTurno.ACEPTADO);
         turnoService.save(turno);
         
+     // Enviar correo de confirmación
+        String email = user.getPersona().getContacto().getEmail(); // Asegurate que esto sea correcto
+        String nombre = user.getPersona().getNombre(); // Si tenés campo nombre
+        String asunto = "Confirmación de Turno";
+        String mensaje = "Hola " + nombre + ",\n\nTu turno ha sido reservado con éxito, los datos de del mismo son los siguientes \n"
+                     + servicioService.findById(datosTurno.getIdServicio()).getNombre() + "\n"+ datosTurno.getFecha() + "\n"+ turno.getHora() + ".\n\n¡Gracias por elegirnos!";
+
+        String[] destinatarios = { email }; // Convertir a array
+        mailService.sendEmail(destinatarios, asunto, mensaje);
+        }
 	    return "redirect:/index";
 	}
 	
+
+	
+	
+	
+
 	@GetMapping("/lista-turnos")
 	@PreAuthorize("hasAnyRole('CLIENT', 'EMPLOYEE')")
 	public String listaTurnosPersona(Model model, @PageableDefault(size = 5) Pageable pageable) {
@@ -229,4 +247,5 @@ public class TurnoController {
         model.addAttribute("turnos", turnos);
 		return ViewRouteHelper.TURNO_LISTA;
 	}
+
 }
