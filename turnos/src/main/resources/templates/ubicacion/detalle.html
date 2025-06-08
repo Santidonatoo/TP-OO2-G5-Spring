@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+	<head>
+	    <title>Detalle del Ubicacion</title>
+	    <style>
+	        body {
+	            display: flex;
+	            flex-direction: column;
+	            justify-content: center;
+	            align-items: center;
+	            height: 100vh;
+	            background-color: #f8f9fa;
+	            font-family: Arial, sans-serif;
+	            padding: 20px;
+	        }
+
+	        .detalle-container {
+	            background: white;
+	            padding: 30px;
+	            border-radius: 10px;
+	            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+	            text-align: center;
+	            width: 90%;
+	            max-width: 600px;
+	        }
+
+	        h1 {
+	            color: #007bff;
+	            margin-bottom: 20px;
+	        }
+
+	        p {
+	            font-size: 18px;
+	            color: #333;
+	            margin-bottom: 10px;
+	        }
+
+	        .servicios-container {
+	            margin-top: 20px;
+	            padding: 15px;
+	            border: 1px solid #ccc;
+	            border-radius: 5px;
+	            text-align: left;
+	        }
+
+	        .servicio-item {
+	            font-size: 16px;
+	            color: #333;
+	        }
+			button {
+				background-color: #dc3545;
+				color: white;
+				border: none;
+				cursor: pointer;
+			}
+
+			button:hover {
+				background-color: #bb2d3b;
+			}
+	        a {
+	            display: inline-block;
+	            padding: 10px 15px;
+	            text-decoration: none;
+	            border-radius: 5px;
+	            background-color: #28a745;
+	            color: white;
+	            margin-top: 15px;
+	        }
+
+	        a:hover {
+	            background-color: #218838;
+	        }
+	    </style>
+	</head>
+	<body>
+	    <div class="detalle-container">
+	        <h1>Detalle del Ubicacion</h1>
+	        <p><strong>Localidad:</strong> <span th:text="${ubicacion.localidad}"></span></p>
+	       	<p><strong>Calle:</strong> <span th:text="${ubicacion.calle}"></span></p>
+			<p><strong>Numero:</strong> <span th:text="${ubicacion.numero}"></span></p>
+
+
+	        <br>
+	        <a th:href="@{/ubicacion/edit/{idUbicacion}(idUbicacion=${ubicacion.idUbicacion})}">Editar</a>
+			<form th:if="!${ubicacion.softDeleted}" th:action="@{/ubicacion/delete/{idUbicacion}(idUbicacion=${ubicacion.idUbicacion})}" method="post" style="display:inline;">
+				 <button type="submit">Eliminar</button>
+			</form>
+			<form th:if="${ubicacion.softDeleted}" th:action="@{/ubicacion/restore/{idUbicacion}(idUbicacion=${ubicacion.idUbicacion})}" method="post" style="display:inline;">
+				 <button type="submit">Restaurar</button>
+			</form>
+	        <a th:href="@{/ubicacion/admin/list}">Volver a la lista de clientes</a>
+	    </div>
+	</body>
+	</html>

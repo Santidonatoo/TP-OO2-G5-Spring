@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import oo2.grupo5.turnos.dtos.requests.UbicacionRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.UbicacionResponseDTO;
 import oo2.grupo5.turnos.entities.Ubicacion;
+import oo2.grupo5.turnos.exceptions.UbicacionNotFoundException;
 import oo2.grupo5.turnos.repositories.IUbicacionRepository;
 import oo2.grupo5.turnos.services.interfaces.IUbicacionService;
 
@@ -35,7 +36,7 @@ public class UbicacionServiceImp implements IUbicacionService {
     @Override
     public UbicacionResponseDTO findById(Integer idUbicacion) {
         Ubicacion ubicacion = ubicacionRepository.findById(idUbicacion)
-            .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Ubicación con id {0} no encontrada", idUbicacion)));
+            .orElseThrow(() -> new UbicacionNotFoundException(idUbicacion));
         return modelMapper.map(ubicacion, UbicacionResponseDTO.class);
     }
     
