@@ -33,6 +33,7 @@ public class ViewRouteHelper {
 	    public static final String TURNO_FECHA = "turno/elegirFecha";
 	    public static final String TURNO_HORARIO = "turno/elegirHorario";
 	    public static final String TURNO_CONFIRMAR = "turno/confirmarTurno";
+	    public static final String TURNO_LISTA = "turno/listaTurnos";
 	      
 	    //Home
 	    public static final String HOME_INDEX = "home/index";

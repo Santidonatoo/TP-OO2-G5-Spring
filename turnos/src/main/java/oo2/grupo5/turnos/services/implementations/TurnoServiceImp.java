@@ -1,17 +1,19 @@
 package oo2.grupo5.turnos.services.implementations;
 
-import java.text.MessageFormat;
+import java.text.MessageFormat;	
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import oo2.grupo5.turnos.dtos.requests.TurnoRequestDTO;
-import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
-import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.TurnoResponseDTO;
 import oo2.grupo5.turnos.entities.DatosTurno;
 import oo2.grupo5.turnos.entities.Empleado;
@@ -114,6 +116,18 @@ public class TurnoServiceImp implements ITurnoService {
 		
 		return turnoRepository.findByDatosTurno_ServicioAndDatosTurno_Fecha(servicio, fecha, pageable)
 				.map(entity -> modelMapper.map(entity, TurnoResponseDTO.class));
+	}
+
+	@Override
+	public Page<TurnoResponseDTO> findTurnosByPersona(Pageable pageable, Integer idPersona) {
+		 Page<Turno> turnosCliente = turnoRepository.findByDatosTurno_Cliente_IdPersona(idPersona, pageable);
+		 Page<Turno> turnosEmpleado = turnoRepository.findByDatosTurno_Empleado_IdPersona(idPersona, pageable);
+		 
+		 List<TurnoResponseDTO> turnos = Stream.concat(turnosCliente.stream(), turnosEmpleado.stream())
+			        .map(turno -> modelMapper.map(turno, TurnoResponseDTO.class))
+			        .collect(Collectors.toList());
+
+		 return new PageImpl<>(turnos, pageable, turnos.size());
 	}
 	
 }

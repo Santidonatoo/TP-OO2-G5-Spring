@@ -71,11 +71,16 @@
         </form>
         <a th:href="@{/servicio/list}">Ver Servicios</a>
         <a th:href="@{/turno/elegir-servicio}">Pedir Turno</a>
+		
+		<div sec:authorize="hasAnyRole('CLIENT', 'EMPLOYEE')">
+		    <a th:href="@{/turno/lista-turnos}">Ver Turnos</a>
+		</div>
 
         <div sec:authorize="hasRole('ADMIN')" class="admin-links">
             <a th:href="@{/cliente/list}">Ver Clientes</a>
             <a th:href="@{/empleado/list}">Ver Empleados</a>
             <a th:href="@{/ubicacion/list}">Ver Ubicaciones</a>
+			<a th:href="@{/turno/lista-turnos-admin}">Ver Turnos</a>
         </div>
     </div>
 </body>

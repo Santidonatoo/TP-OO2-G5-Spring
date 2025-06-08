@@ -19,4 +19,7 @@ public interface ITurnoRepository extends JpaRepository<Turno, Integer> {
 	
 	Page<Turno> findByDatosTurno_ServicioAndDatosTurno_Fecha(Servicio servicio, LocalDate fecha, Pageable pageable);
 	
+	Page<Turno> findByDatosTurno_Empleado_IdPersona(Integer idPersona, Pageable pageable);
+	
+	Page<Turno> findByDatosTurno_Cliente_IdPersona(Integer idPersona, Pageable pageable);
 }

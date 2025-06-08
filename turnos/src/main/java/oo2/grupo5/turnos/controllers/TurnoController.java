@@ -1,5 +1,6 @@
 package oo2.grupo5.turnos.controllers;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -123,16 +124,17 @@ public class TurnoController {
 	@GetMapping("/elegir-horario")
 	@PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'EMPLOYEE')")
 	public String mostrarHorarios(Model model, @ModelAttribute("DatosTurnoRequestDTO") DatosTurnoRequestDTO datosTurno, @PageableDefault(size = 5) Pageable pageable) {
-	    int frecuencia = servicioService.findById(datosTurno.getIdServicio()).getDuracion();
+	    ServicioResponseDTO servicio = servicioService.findById(datosTurno.getIdServicio());
+	    int frecuencia = servicio.getDuracion();
 	    
+	    // Obtener los turnos ocupados
 	    Page<TurnoResponseDTO> turnos;
-	    
-	    if(servicioService.findById(datosTurno.getIdServicio()).isRequiereEmpleado()) {
-	    	turnos = turnoService.findTurnosByEmpleadoFecha(pageable, datosTurno.getIdEmpleado(), datosTurno.getFecha());
-	    } else {turnos = turnoService.findTurnosByServicioFecha(pageable, datosTurno.getIdServicio(), datosTurno.getFecha());}
-	    
-	    
-	    
+	    if (servicio.isRequiereEmpleado()) {
+	        turnos = turnoService.findTurnosByEmpleadoFecha(pageable, datosTurno.getIdEmpleado(), datosTurno.getFecha());
+	    } else {
+	        turnos = turnoService.findTurnosByServicioFecha(pageable, datosTurno.getIdServicio(), datosTurno.getFecha());
+	    }
+
 	    // Convertimos los turnos ocupados en una lista de LocalTime para facilitar la comparación
 	    List<LocalTime> turnosBloqueados = new ArrayList<>();
 	    for (TurnoResponseDTO turno : turnos.getContent()) {
@@ -141,19 +143,25 @@ public class TurnoController {
 	            turnosBloqueados.add(inicioTurno.plusMinutes(minutos));
 	        }
 	    }
-	    
+
+	    // Obtener la disponibilidad del servicio para el día de la semana correspondiente
+	    DayOfWeek diaSeleccionado = datosTurno.getFecha().getDayOfWeek();
 	    List<LocalTime> horariosDisponibles = new ArrayList<>();
-	    LocalTime horaInicio = LocalTime.of(10, 0);
-	    LocalTime horaFin = LocalTime.of(18, 0);
 
-	    while (horaInicio.isBefore(horaFin) || horaInicio.equals(horaFin)) {
-	        if (!turnosBloqueados.contains(horaInicio)) { // Agrega solo si no está ocupado
-	            horariosDisponibles.add(horaInicio);
-	        }
-	        horaInicio = horaInicio.plusMinutes(frecuencia);
-	    }
+	    servicio.getListaDisponibilidades().stream()
+	        .filter(disponibilidad -> disponibilidad.getDiaSemana().equals(diaSeleccionado))
+	        .forEach(disponibilidad -> {
+	            LocalTime horaInicio = disponibilidad.getHoraInicio();
+	            LocalTime horaFin = disponibilidad.getHoraFin();
 
-	    System.out.println(horariosDisponibles);
+	            while (horaInicio.isBefore(horaFin) || horaInicio.equals(horaFin)) {
+	                if (!turnosBloqueados.contains(horaInicio)) { // Agrega solo si no está ocupado
+	                    horariosDisponibles.add(horaInicio);
+	                }
+	                horaInicio = horaInicio.plusMinutes(frecuencia);
+	            }
+	        });
+
 	    model.addAttribute("horarios", horariosDisponibles);
 	    return ViewRouteHelper.TURNO_HORARIO; // Vista para elegir fecha.
 	}
@@ -193,5 +201,30 @@ public class TurnoController {
         turnoService.save(turno);
         
 	    return "redirect:/index";
+	}
+	
+	@GetMapping("/lista-turnos")
+	@PreAuthorize("hasAnyRole('CLIENT', 'EMPLOYEE')")
+	public String listaTurnosPersona(Model model, @PageableDefault(size = 5) Pageable pageable) {
+		Integer idPersona = null;
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof User) {
+            User user = (User) authentication.getPrincipal();
+            idPersona = user.getPersona().getIdPersona();
+        }
+        
+        Page<TurnoResponseDTO> turnos = turnoService.findTurnosByPersona(pageable, idPersona);
+        model.addAttribute("turnos", turnos);
+		return ViewRouteHelper.TURNO_LISTA;
+	}
+	
+	@GetMapping("/lista-turnos-admin")
+	@PreAuthorize("hasRole('ADMIN')")
+	public String listaTurnos(Model model, @PageableDefault(size = 5) Pageable pageable) {
+
+        Page<TurnoResponseDTO> turnos = turnoService.findAll(pageable);
+        model.addAttribute("turnos", turnos);
+		return ViewRouteHelper.TURNO_LISTA;
 	}
 }
