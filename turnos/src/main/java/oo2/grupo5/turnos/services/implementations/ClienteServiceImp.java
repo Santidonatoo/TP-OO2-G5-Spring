@@ -1,19 +1,22 @@
 package oo2.grupo5.turnos.services.implementations;
 
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 import oo2.grupo5.turnos.dtos.requests.ClienteRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.RegistroClienteRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.ClienteResponseDTO;
-import oo2.grupo5.turnos.dtos.responses.RegistroClienteResponseDTO;
 import oo2.grupo5.turnos.entities.Cliente;
 import oo2.grupo5.turnos.entities.Contacto;
 import oo2.grupo5.turnos.entities.Role;
@@ -37,7 +40,7 @@ public class ClienteServiceImp implements IClienteService{
 	private final IPersonaRepository personaRepository;
 	
 	public ClienteServiceImp(IClienteRepository clienteRepository, ModelMapper modelMapper, IUserRepository userRepository,
-			IRoleRepository roleRepository, PasswordEncoder passwordEncoder, IPersonaRepository personaRepository) {
+			IRoleRepository roleRepository, @Lazy PasswordEncoder passwordEncoder, IPersonaRepository personaRepository) {
 		this.clienteRepository = clienteRepository;
 		this.modelMapper = modelMapper;
 		this.userRepository = userRepository;
@@ -169,4 +172,28 @@ public class ClienteServiceImp implements IClienteService{
     	Cliente restored = clienteRepository.save(cliente);
     	return modelMapper.map(restored, ClienteResponseDTO.class);
 	}
+	
+	@Transactional
+	public void actualizarUltimoInicioSesion(Integer idPersona) {
+		 // Verificar que realmente sea un cliente antes de actualizar
+	    Optional<Cliente> cliente = clienteRepository.findByIdPersonaAndSoftDeletedFalse(idPersona);
+	    if (cliente.isPresent()) {
+	        clienteRepository.actualizarUltimoInicioSesion(idPersona, LocalDateTime.now());
+	    } else {
+	        throw new IllegalArgumentException("No se encontró cliente con ID: " + idPersona);
+	    }
+	}
+	
+	@Transactional
+	public void actualizarUltimoInicioSesionPorUsername(String username) {
+	    Optional<Cliente> cliente = clienteRepository.findByUsername(username);
+	    if (cliente.isPresent() && !cliente.get().isSoftDeleted()) {
+	        clienteRepository.actualizarUltimoInicioSesion(cliente.get().getIdPersona(), LocalDateTime.now());
+	    } else {
+	        // No es un error crítico - puede ser que el usuario sea empleado
+	        System.out.println("No se encontró cliente activo con username: " + username + 
+	                          " (puede ser empleado o cliente inactivo)");
+	    }
+	}
+	
 }
