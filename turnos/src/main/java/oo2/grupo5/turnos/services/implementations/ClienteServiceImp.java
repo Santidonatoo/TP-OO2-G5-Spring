@@ -23,6 +23,7 @@ import oo2.grupo5.turnos.entities.Role;
 import oo2.grupo5.turnos.entities.User;
 import oo2.grupo5.turnos.enums.RoleType;
 import oo2.grupo5.turnos.exceptions.ClienteNotFoundException;
+import oo2.grupo5.turnos.exceptions.DniDuplicadoException;
 import oo2.grupo5.turnos.repositories.IClienteRepository;
 import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.repositories.IRoleRepository;
@@ -53,7 +54,7 @@ public class ClienteServiceImp implements IClienteService{
 		Role rolCliente = roleRepository.findByType(RoleType.CLIENT).orElseThrow();
 		
     	if (personaRepository.existsByDni(dto.getDni())) {
-	        throw new IllegalArgumentException("Ya existe una persona con el mismo dni.");
+	        throw new DniDuplicadoException(dto.getDni());
     	}
     	
         if (userRepository.existsByUsername(dto.getUsername())) {
@@ -127,7 +128,7 @@ public class ClienteServiceImp implements IClienteService{
 	@Override
 	public ClienteResponseDTO update(Integer idPersona, ClienteRequestDTO clienteRequestDTO) {
 		Cliente cliente = clienteRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Cliente with id {0} not found",idPersona)));
+                .orElseThrow(() -> new ClienteNotFoundException(idPersona));
 		
 		if (personaRepository.existsByDni(clienteRequestDTO.getDni())&&
     		    personaRepository.findById(idPersona).get().getDni() != clienteRequestDTO.getDni()) {
@@ -153,7 +154,7 @@ public class ClienteServiceImp implements IClienteService{
 	@Override
 	public void deleteById(Integer idPersona) {
 		Cliente cliente = clienteRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
-    			.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Cliente with id {0} not found", idPersona)));
+    			.orElseThrow(() -> new ClienteNotFoundException(idPersona));
     	
     	cliente.setSoftDeleted(true);
     	clienteRepository.save(cliente);
@@ -162,7 +163,7 @@ public class ClienteServiceImp implements IClienteService{
 	@Override
 	public ClienteResponseDTO restoreById(Integer idPersona) {
 		Cliente cliente = clienteRepository.findById(idPersona)
-    			.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Cliente with id {0} not found", idPersona)));
+    			.orElseThrow(() -> new ClienteNotFoundException(idPersona));
     	
     	if(!cliente.isSoftDeleted()) {
     		throw new IllegalStateException(MessageFormat.format("Cliente with id {0} not found", idPersona));

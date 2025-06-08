@@ -49,5 +49,6 @@ public class ViewRouteHelper {
 	    public static final String ERROR_NOT_FOUND_CLIENTE = "error/not-found-cliente";
 	    public static final String ERROR_NOT_FOUND_EMPLEADO = "error/not-found-empleado";
 	    public static final String ERROR_NOT_FOUND_UBICACION = "error/not-found-ubicacion";
+	    public static final String ERROR_DNI_REGISTRO = "error/error-registro";
 
 }

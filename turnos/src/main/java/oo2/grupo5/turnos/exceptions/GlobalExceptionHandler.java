@@ -29,10 +29,17 @@ public class GlobalExceptionHandler {
         model.addAttribute("errorMessage", ex.getMessage());
         return ViewRouteHelper.ERROR_NOT_FOUND_UBICACION;
     }
+
 	@ExceptionHandler(NoDisponibilidadException.class)
     public ModelAndView handleNoDisponibilidadException(NoDisponibilidadException ex) {
         ModelAndView mav = new ModelAndView(ViewRouteHelper.TURNO_FECHA);
         mav.addObject("errorMessage", ex.getMessage());
         return mav;
     }
+
+	@ExceptionHandler(DniDuplicadoException.class)
+	public String handleDniDuplicadoException(DniDuplicadoException ex, Model model) {
+	    model.addAttribute("errorMessage", ex.getMessage());
+	    return ViewRouteHelper.ERROR_DNI_REGISTRO; 
+	  }
 }
