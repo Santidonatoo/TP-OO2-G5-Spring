@@ -52,6 +52,10 @@ public class ClienteServiceImp implements IClienteService{
     	if (personaRepository.existsByDni(dto.getDni())) {
 	        throw new IllegalArgumentException("Ya existe una persona con el mismo dni.");
     	}
+    	
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new IllegalArgumentException("Ya existe un usuario con el mismo nombre de usuario.");
+        }
 		
 		//Creo un contacto
 		Contacto contacto = Contacto.builder()

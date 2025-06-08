@@ -21,6 +21,7 @@ import oo2.grupo5.turnos.dtos.responses.ClienteResponseDTO;
 import oo2.grupo5.turnos.exceptions.ClienteNotFoundException;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.repositories.IPersonaRepository;
+import oo2.grupo5.turnos.repositories.IUserRepository;
 import oo2.grupo5.turnos.services.interfaces.IClienteService;
 
 @Controller
@@ -29,10 +30,12 @@ public class ClienteController {
 
 	private final IClienteService clienteService;
 	private final IPersonaRepository personaRepository;
+	private final IUserRepository userRepository;
 	
-	public ClienteController(IClienteService clienteService, IPersonaRepository personaRepository) {
+	public ClienteController(IClienteService clienteService, IPersonaRepository personaRepository, IUserRepository userRepository) {
 		this.clienteService = clienteService;
 		this.personaRepository = personaRepository;
+		this.userRepository = userRepository;
 	}
 	
     @GetMapping("/list")
@@ -77,9 +80,15 @@ public class ClienteController {
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public String save(@Valid @ModelAttribute ClienteRequestDTO clienteRequestDTO, BindingResult bindingResult, Model model) {
+    	//Validacion dni repetido
     	if (personaRepository.existsByDni(clienteRequestDTO.getDni())) {
             bindingResult.rejectValue("dni", "error.persona", "Ya existe una persona con el mismo dni.");
         }
+    	
+    	//Validacion username repetido
+    	if (userRepository.existsByUsername(clienteRequestDTO.getUsername())){
+    			bindingResult.rejectValue("username", "error.persona", "Ya existe otra persona con este username.");
+    	}
     	
     	if (bindingResult.hasErrors()) {
         	model.addAttribute("clienteRequestDTO", clienteRequestDTO);
@@ -114,9 +123,16 @@ public class ClienteController {
     public String update(@PathVariable Integer idPersona,
                          @Valid @ModelAttribute ClienteRequestDTO clienteRequestDTO,
                          BindingResult bindingResult) {
+    	//Validacion dni repetido
     	if (personaRepository.existsByDni(clienteRequestDTO.getDni()) &&
     		    personaRepository.findById(idPersona).get().getDni() == clienteRequestDTO.getDni()) {
     			bindingResult.rejectValue("dni", "error.persona", "Ya existe otra persona con este dni.");
+    	}
+    	
+    	//Validacion username repetido
+    	if (userRepository.existsByUsername(clienteRequestDTO.getUsername()) &&
+    		    !userRepository.findById(idPersona).get().getUsername().equals(clienteRequestDTO.getUsername())) {
+    			bindingResult.rejectValue("username", "error.persona", "Ya existe otra persona con este username.");
     	}
     	
     	if (bindingResult.hasErrors()) {

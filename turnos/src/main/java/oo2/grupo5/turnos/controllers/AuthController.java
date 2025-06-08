@@ -14,6 +14,7 @@ import oo2.grupo5.turnos.dtos.requests.RegistroClienteRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.RegistroClienteResponseDTO;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.repositories.IPersonaRepository;
+import oo2.grupo5.turnos.repositories.IUserRepository;
 import oo2.grupo5.turnos.services.implementations.ClienteServiceImp;
 
 @Controller
@@ -22,10 +23,12 @@ public class AuthController {
 	
 	private final ClienteServiceImp clienteService;
 	private final IPersonaRepository personaRepository;
+	private final IUserRepository userRepository;
 	
-	public AuthController(ClienteServiceImp clienteService, IPersonaRepository personaRepository) {
+	public AuthController(ClienteServiceImp clienteService, IPersonaRepository personaRepository, IUserRepository userRepository) {
 		this.clienteService = clienteService;
 		this.personaRepository = personaRepository;
+		this.userRepository = userRepository;
 	}
 	
     //GET auth/login --> Return the view in path authentication/login
@@ -49,6 +52,11 @@ public class AuthController {
     	// Validar si el DNI ya existe en cualquier tipo de persona (empleado o cliente)
         if (personaRepository.existsByDni(dto.getDni())) {
             bindingResult.rejectValue("dni", "error.cliente", "Este DNI ya está registrado en el sistema.");
+        }
+        
+        //Validar si existe el username en el sistema
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            bindingResult.rejectValue("username", "error.cliente", "Este nombre de usuario ya está en uso.");
         }
         
         // Si hay errores, volver al formulario de registro con los mensajes

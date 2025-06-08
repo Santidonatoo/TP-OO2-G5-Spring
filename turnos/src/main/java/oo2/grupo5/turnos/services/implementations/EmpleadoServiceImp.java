@@ -58,6 +58,10 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	        throw new IllegalArgumentException("Ya existe una persona con el mismo dni.");
     	}
     	
+        if (userRepository.existsByUsername(empleadoRequestDTO.getUsername())) {
+            throw new IllegalArgumentException("Ya existe un usuario con el mismo nombre de usuario.");
+        }
+    	
 		Empleado empleado = modelMapper.map(empleadoRequestDTO, Empleado.class);
 		
 		Contacto contacto = Contacto.builder()
