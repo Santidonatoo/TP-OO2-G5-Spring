@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Enviar Correo</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Enviar Correo Electrónico</h1>
+
+    <form th:action="@{/mail/send-view}" method="post">
+        <label>Destinatario(s):</label><br>
+        <input type="text" name="toUser" placeholder="correo1@gmail.com,correo2@gmail.com" size="50"/><br><br>
+
+        <label>Asunto:</label><br>
+        <input type="text" name="subject" size="50"/><br><br>
+
+        <label>Mensaje:</label><br>
+        <textarea name="message" rows="6" cols="50"></textarea><br><br>
+
+        <button type="submit">Enviar</button>
+    </form>
+
+    <p th:if="${estado}" th:text="'Resultado: ' + ${estado}"></p>
+</body>
+</html>
