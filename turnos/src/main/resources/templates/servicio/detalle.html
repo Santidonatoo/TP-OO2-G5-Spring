@@ -47,7 +47,17 @@
             font-size: 16px;
             color: #333;
         }
+		
+		button {
+			background-color: #dc3545;
+			color: white;
+			border: none;
+			cursor: pointer;
+		}
 
+		button:hover {
+			background-color: #bb2d3b;
+		}
         a {
             display: inline-block;
             padding: 10px 15px;
@@ -83,6 +93,12 @@
 
         <br>
         <a th:href="@{/servicio/edit/{idServicio}(idServicio=${servicio.idServicio})}">Editar</a>
+		<form th:if="!${servicio.softDeleted}" th:action="@{/servicio/delete/{idServicio}(idServicio=${servicio.idServicio})}" method="post" style="display:inline;">
+			<button type="submit">Eliminar</button>
+		</form>
+		<form th:if="${servicio.softDeleted}" th:action="@{/servicio/restore/{idServicio}(idServicio=${servicio.idServicio})}" method="post" style="display:inline;">
+			<button type="submit">Restaurar</button>
+		</form>
         <a th:href="@{/servicio/admin/list}">Volver a la lista de servicios</a>
     </div>
 </body>

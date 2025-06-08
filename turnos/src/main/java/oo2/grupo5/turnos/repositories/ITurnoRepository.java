@@ -15,8 +15,11 @@ import oo2.grupo5.turnos.entities.Turno;
 public interface ITurnoRepository extends JpaRepository<Turno, Integer> {
 	
 	//Trae los turnos con un cierto empleado, servicio y fecha
-	Page<Turno> findByDatosTurno_EmpleadoAndDatosTurno_ServicioAndDatosTurno_Fecha(Empleado empleado, Servicio servicio, LocalDate fecha, Pageable pageable);
+	Page<Turno> findByDatosTurno_EmpleadoAndDatosTurno_Fecha(Empleado empleado, LocalDate fecha, Pageable pageable);
 	
 	Page<Turno> findByDatosTurno_ServicioAndDatosTurno_Fecha(Servicio servicio, LocalDate fecha, Pageable pageable);
 	
+	Page<Turno> findByDatosTurno_Empleado_IdPersona(Integer idPersona, Pageable pageable);
+	
+	Page<Turno> findByDatosTurno_Cliente_IdPersona(Integer idPersona, Pageable pageable);
 }

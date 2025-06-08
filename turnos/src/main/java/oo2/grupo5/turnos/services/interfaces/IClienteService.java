@@ -26,4 +26,8 @@ public interface IClienteService {
 	void deleteById(Integer idPersona);
 	
 	ClienteResponseDTO restoreById(Integer idPersona);
+	
+	void actualizarUltimoInicioSesion(Integer idPersona);
+	
+	void actualizarUltimoInicioSesionPorUsername(String username);
 }

@@ -23,4 +23,9 @@ public class GlobalExceptionHandler {
         model.addAttribute("errorMessage", ex.getMessage());
         return ViewRouteHelper.ERROR_NOT_FOUND_CLIENTE;
     }
+	@ExceptionHandler(UbicacionNotFoundException.class)
+    public String handleUbicacionNotFoundException(UbicacionNotFoundException ex, Model model) {
+        model.addAttribute("errorMessage", ex.getMessage());
+        return ViewRouteHelper.ERROR_NOT_FOUND_UBICACION;
+    }
 }

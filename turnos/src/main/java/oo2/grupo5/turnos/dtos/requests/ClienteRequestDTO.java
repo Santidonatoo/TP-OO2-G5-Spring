@@ -1,7 +1,10 @@
 package oo2.grupo5.turnos.dtos.requests;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +12,7 @@ import lombok.experimental.SuperBuilder;
 
 @Getter @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder
 public class ClienteRequestDTO extends PersonaRequestDTO{
 	
@@ -19,4 +23,6 @@ public class ClienteRequestDTO extends PersonaRequestDTO{
 	@NotBlank(message="La contraseña no puede estar vacia")
 	@Size(min = 7, max = 100, message = "La contraseña debe tener al menos 7 caracteres")
 	private String password;
+	
+	private LocalDateTime ultimoInicioSesion;
 }

@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 import oo2.grupo5.turnos.dtos.requests.UbicacionRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.UbicacionResponseDTO;
+import oo2.grupo5.turnos.exceptions.UbicacionNotFoundException;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.services.interfaces.IUbicacionService;
 
@@ -44,6 +46,18 @@ public class UbicacionController {
         return ViewRouteHelper.UBICACION_ADMIN_LIST;
     }
 
+    @GetMapping("/buscar")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String buscarUbicacion(@RequestParam Integer idUbicacion, Model model) {
+        try {
+            UbicacionResponseDTO ubicacion = ubicacionService.findById(idUbicacion);
+            model.addAttribute("ubicacion", ubicacion);
+            return ViewRouteHelper.UBICACION_DETALLE;
+        } catch (UbicacionNotFoundException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            return ViewRouteHelper.ERROR_NOT_FOUND_UBICACION;
+        }
+    }
     @GetMapping("/form")
     @PreAuthorize("hasRole('ADMIN')")
     public String createForm(Model model) {

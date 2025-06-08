@@ -96,6 +96,7 @@
 	            <th>Apellido</th>
 	            <th>Dni</th>
 	            <th>Fecha de nacimiento</th>
+	            <th>Ultimo Inicio</th>
 				<th>Email</th>
 				<th>Teléfono</th>
 	            <th>Acciones</th>
@@ -108,6 +109,7 @@
 	            <td th:text="${cliente.apellido}"></td>
 	            <td th:text="${cliente.dni}"></td>
 	            <td th:text="${cliente.fechaDeNacimiento}"></td>
+	            <td th:text="${#temporals.format(cliente.ultimoInicioSesion, 'yyyy-MM-dd / HH:mm')}"></td>
 				<td th:text="${cliente.contacto.email}"></td>
 				<td th:text="${cliente.contacto.telefono}"></td>
 	            <td>
