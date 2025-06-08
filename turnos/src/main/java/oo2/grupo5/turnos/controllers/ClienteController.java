@@ -109,6 +109,13 @@ public class ClienteController {
         requestDTO.setNombre(dto.getNombre());
         requestDTO.setApellido(dto.getApellido());
         requestDTO.setDni(dto.getDni());
+        
+        if (dto.getContacto() != null) {
+            requestDTO.setContacto(new ContactoRequestDTO());
+            requestDTO.getContacto().setEmail(dto.getContacto().getEmail());
+            requestDTO.getContacto().setTelefono(dto.getContacto().getTelefono());
+        }
+
      
         model.addAttribute("clienteRequestDTO", requestDTO);
         return ViewRouteHelper.CLIENTE_FORM;

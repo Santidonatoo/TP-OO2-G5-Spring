@@ -74,6 +74,7 @@
 		
 		<div sec:authorize="hasAnyRole('CLIENT', 'EMPLOYEE')">
 			<a th:href="@{/turno/lista-turnos}">Ver Turnos</a>
+			<a th:href="@{/contacto/mis-datosContacto}">Ver mis datos de contacto</a>
 		</div>
 
         <div sec:authorize="hasRole('ADMIN')" class="admin-links">
