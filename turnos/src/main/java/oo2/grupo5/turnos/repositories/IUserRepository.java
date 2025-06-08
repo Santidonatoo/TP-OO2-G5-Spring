@@ -20,4 +20,6 @@ public interface IUserRepository extends JpaRepository<User, Integer>{
 	List<User> findAll();
 	
 	List<User> findAllByActive(boolean active);
+	
+	boolean existsByUsername(String username);
 }

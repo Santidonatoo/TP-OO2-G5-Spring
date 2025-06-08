@@ -23,6 +23,7 @@ import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.repositories.IPersonaRepository;
+import oo2.grupo5.turnos.repositories.IUserRepository;
 import oo2.grupo5.turnos.services.interfaces.IEmpleadoService;
 import oo2.grupo5.turnos.services.interfaces.IServicioService;
 
@@ -33,12 +34,14 @@ public class EmpleadoController {
 	private final IEmpleadoService empleadoService;
 	private final IServicioService servicioService;
 	private final IPersonaRepository personaRepository;
+	private final IUserRepository userRepository;
 
 	public EmpleadoController(IEmpleadoService empleadoService, IServicioService servicioService, 
-			IPersonaRepository personaRepository) {
+			IPersonaRepository personaRepository, IUserRepository userRepository) {
 		this.empleadoService = empleadoService;
 		this.servicioService = servicioService;
 		this.personaRepository = personaRepository;
+		this.userRepository = userRepository;
 	}
 	
     @GetMapping("/list")
@@ -72,8 +75,14 @@ public class EmpleadoController {
     @PostMapping("/save")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public String save(@Valid @ModelAttribute EmpleadoRequestDTO empleadoRequestDTO, BindingResult bindingResult) {
+    	//Validacion dni repetido
     	if (personaRepository.existsByDni(empleadoRequestDTO.getDni())) {
             bindingResult.rejectValue("dni", "error.persona", "Ya existe una persona con el mismo dni.");
+        }
+    	
+    	//Validacion username repetido
+    	if (userRepository.existsByUsername(empleadoRequestDTO.getUsername())) {
+            bindingResult.rejectValue("username", "error.persona", "Ya existe una persona con el mismo username.");
         }
     	
     	if (bindingResult.hasErrors()) {
@@ -112,8 +121,15 @@ public class EmpleadoController {
     public String update(@PathVariable Integer idPersona,
                          @Valid @ModelAttribute EmpleadoRequestDTO empleadoRequestDTO,
                          BindingResult bindingResult) {
+    	//Validacion dni repetido
     	if (personaRepository.existsByDni(empleadoRequestDTO.getDni()) &&
     		    personaRepository.findById(idPersona).get().getDni() == empleadoRequestDTO.getDni()) {
+    			bindingResult.rejectValue("dni", "error.persona", "Ya existe otra persona con este dni.");
+    	}
+    	
+    	//Validacion username repetido
+    	if (userRepository.existsByUsername(empleadoRequestDTO.getUsername()) &&
+    		    !userRepository.findById(idPersona).get().getUsername().equals(empleadoRequestDTO.getUsername())) {
     			bindingResult.rejectValue("dni", "error.persona", "Ya existe otra persona con este dni.");
     	}
     	
