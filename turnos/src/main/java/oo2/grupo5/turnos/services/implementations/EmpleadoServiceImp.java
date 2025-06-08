@@ -127,7 +127,7 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	@Override
 	public EmpleadoResponseDTO update(Integer idPersona, EmpleadoRequestDTO empleadoRequestDTO) {
 		Empleado empleado = empleadoRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Empleado with id {0} not found",idPersona)));
+                .orElseThrow(() -> new EmpleadoNotFoundException(idPersona));
 		
 		if (personaRepository.existsByDni(empleadoRequestDTO.getDni())&&
     		    personaRepository.findById(idPersona).get().getDni() != empleadoRequestDTO.getDni()) {
@@ -152,7 +152,7 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	@Override
 	public void deleteById(Integer idPersona) {
 		Empleado empleado = empleadoRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
-    			.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Empleado with id {0} not found", idPersona)));
+    			.orElseThrow(() -> new EmpleadoNotFoundException(idPersona));
     	
     	empleado.setSoftDeleted(true);
     	empleadoRepository.save(empleado);
@@ -161,10 +161,10 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	@Override
 	public EmpleadoResponseDTO restoreById(Integer idPersona) {
 		Empleado empleado = empleadoRepository.findById(idPersona)
-    			.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Empleado with id {0} not found", idPersona)));
+    			.orElseThrow(() -> new EmpleadoNotFoundException(idPersona));
     	
     	if(!empleado.isSoftDeleted()) {
-    		throw new IllegalStateException(MessageFormat.format("Empleado with id {0} not found", idPersona));
+    		throw new IllegalStateException(MessageFormat.format("Empleado with id {0} is not deleted",idPersona));
     	}
     	
     	empleado.setSoftDeleted(false);

@@ -31,6 +31,7 @@ import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.TurnoResponseDTO;
 import oo2.grupo5.turnos.entities.User;
 import oo2.grupo5.turnos.enums.EstadoTurno;
+import oo2.grupo5.turnos.exceptions.NoDisponibilidadException;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.repositories.IServicioRepository;
 import oo2.grupo5.turnos.services.interfaces.IClienteService;
@@ -166,7 +167,11 @@ public class TurnoController {
 		            }
 	            }
 	        });
-
+	    
+	    if (horariosDisponibles.isEmpty()) {
+	        throw new NoDisponibilidadException("No hay disponibilidad en ese fecha. Por favor, elija otra.");
+	    }
+	    
 	    model.addAttribute("horarios", horariosDisponibles);
 	    return ViewRouteHelper.TURNO_HORARIO; // Vista para elegir fecha.
 	}
@@ -182,6 +187,10 @@ public class TurnoController {
 	@GetMapping("/confirmar-turno")
 	@PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'EMPLOYEE')")
 	public String confirmarTurno(Model model, @ModelAttribute("TurnoRequestDTO") TurnoRequestDTO turno, @ModelAttribute("DatosTurnoRequestDTO") DatosTurnoRequestDTO datosTurno) {
+		model.addAttribute("servicio", servicioService.findById(datosTurno.getIdServicio()).getNombre());
+		if (datosTurno.getIdEmpleado() != null) {
+			model.addAttribute("empleado", empleadoService.findById(datosTurno.getIdEmpleado()));
+		} else model.addAttribute("empleado", null);
 		model.addAttribute("datosTurno", datosTurno);
 		model.addAttribute("turno", turno);
 		return ViewRouteHelper.TURNO_CONFIRMAR;
@@ -217,11 +226,6 @@ public class TurnoController {
         }
 	    return "redirect:/index";
 	}
-	
-
-	
-	
-	
 
 	@GetMapping("/lista-turnos")
 	@PreAuthorize("hasAnyRole('CLIENT', 'EMPLOYEE')")
@@ -245,7 +249,7 @@ public class TurnoController {
 
         Page<TurnoResponseDTO> turnos = turnoService.findAll(pageable);
         model.addAttribute("turnos", turnos);
-		return ViewRouteHelper.TURNO_LISTA;
+		return ViewRouteHelper.TURNO_LISTA_ADMIN;
 	}
 
 }

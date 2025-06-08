@@ -64,14 +64,10 @@ public class EmpleadoController {
 	@GetMapping("/buscar")
     @PreAuthorize("hasRole('ADMIN')")
     public String buscarEmpleado(@RequestParam Integer idPersona, Model model) {
-        try {
-        	EmpleadoResponseDTO empleado = empleadoService.findById(idPersona);
-            model.addAttribute("empleado", empleado);
-            return ViewRouteHelper.EMPLEADO_DETALLE;
-        } catch (EmpleadoNotFoundException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return ViewRouteHelper.ERROR_NOT_FOUND_EMPLEADO;
-        }
+
+		EmpleadoResponseDTO empleado = empleadoService.findById(idPersona);
+      	model.addAttribute("empleado", empleado);
+      	return ViewRouteHelper.EMPLEADO_DETALLE;
     }
 	@GetMapping("/form")
 	@PreAuthorize("hasAnyRole('ADMIN')")
