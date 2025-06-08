@@ -76,10 +76,15 @@
 <br>
 <a th:href="@{/ubicacion/form}">Nueva Ubicación</a>
 <a th:href="@{/ubicacion/list}">Ver activos</a>
-<br>
+<form th:action="@{/ubicacion/buscar}" method="get">
+			<label for="idUbicacion">Buscar por ID:</label>
+			<input type="number" id="idUbicacion" name="idUbicacion" required />
+			<button type="submit">Buscar</button>
+		</form>
 <table>
     <thead>
         <tr>
+			<th>ID</th>
             <th>Localidad</th>
             <th>Calle</th>
             <th>Número</th>
@@ -89,6 +94,7 @@
     </thead>
     <tbody>
         <tr th:each="ubicacion : ${ubicaciones}">
+			<td th:text="${ubicacion.idUbicacion}"></td>
             <td th:text="${ubicacion.localidad}"></td>
             <td th:text="${ubicacion.calle}"></td>
             <td th:text="${ubicacion.numero}"></td>
