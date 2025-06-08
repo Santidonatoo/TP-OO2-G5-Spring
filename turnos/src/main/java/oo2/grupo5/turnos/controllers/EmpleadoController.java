@@ -130,7 +130,7 @@ public class EmpleadoController {
     	//Validacion username repetido
     	if (userRepository.existsByUsername(empleadoRequestDTO.getUsername()) &&
     		    !userRepository.findById(idPersona).get().getUsername().equals(empleadoRequestDTO.getUsername())) {
-    			bindingResult.rejectValue("dni", "error.persona", "Ya existe otra persona con este dni.");
+    			bindingResult.rejectValue("username", "error.persona", "Ya existe otra persona con este username.");
     	}
     	
     	if (bindingResult.hasErrors()) {

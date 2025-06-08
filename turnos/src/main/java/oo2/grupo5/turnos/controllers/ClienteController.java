@@ -74,7 +74,7 @@ public class ClienteController {
     	
     	//Validacion username repetido
     	if (userRepository.existsByUsername(clienteRequestDTO.getUsername())){
-    			bindingResult.rejectValue("dni", "error.persona", "Ya existe otra persona con este username.");
+    			bindingResult.rejectValue("username", "error.persona", "Ya existe otra persona con este username.");
     	}
     	
     	if (bindingResult.hasErrors()) {
@@ -119,7 +119,7 @@ public class ClienteController {
     	//Validacion username repetido
     	if (userRepository.existsByUsername(clienteRequestDTO.getUsername()) &&
     		    !userRepository.findById(idPersona).get().getUsername().equals(clienteRequestDTO.getUsername())) {
-    			bindingResult.rejectValue("dni", "error.persona", "Ya existe otra persona con este username.");
+    			bindingResult.rejectValue("username", "error.persona", "Ya existe otra persona con este username.");
     	}
     	
     	if (bindingResult.hasErrors()) {
