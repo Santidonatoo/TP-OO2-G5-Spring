@@ -28,4 +28,10 @@ public class GlobalExceptionHandler {
         model.addAttribute("errorMessage", ex.getMessage());
         return ViewRouteHelper.ERROR_NOT_FOUND_UBICACION;
     }
+	
+	@ExceptionHandler(DniDuplicadoException.class)
+	public String handleDniDuplicadoException(DniDuplicadoException ex, Model model) {
+	    model.addAttribute("errorMessage", ex.getMessage());
+	    return ViewRouteHelper.ERROR_DNI_REGISTRO; 
+	}
 }

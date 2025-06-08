@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.validation.Valid;
 import oo2.grupo5.turnos.dtos.requests.RegistroClienteRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.RegistroClienteResponseDTO;
+import oo2.grupo5.turnos.exceptions.DniDuplicadoException;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.repositories.IUserRepository;
@@ -48,37 +49,22 @@ public class AuthController {
     }
     
     @PostMapping("/registro-cliente")
-    public String registrarNuevoCliente(@Valid @ModelAttribute RegistroClienteRequestDTO dto, BindingResult bindingResult, Model model) {
-    	// Validar si el DNI ya existe en cualquier tipo de persona (empleado o cliente)
-        if (personaRepository.existsByDni(dto.getDni())) {
-            bindingResult.rejectValue("dni", "error.cliente", "Este DNI ya está registrado en el sistema.");
-        }
-        
-        //Validar si existe el username en el sistema
+    public String registrarNuevoCliente(@Valid @ModelAttribute("clienteDTO") RegistroClienteRequestDTO dto,
+                                       BindingResult bindingResult, Model model) {
+
+        // Validar si el username ya está en uso
         if (userRepository.existsByUsername(dto.getUsername())) {
             bindingResult.rejectValue("username", "error.cliente", "Este nombre de usuario ya está en uso.");
         }
-        
-        // Si hay errores, volver al formulario de registro con los mensajes
+
+        // Si hay errores, retornar al formulario de registro
         if (bindingResult.hasErrors()) {
             model.addAttribute("clienteDTO", dto);
             return ViewRouteHelper.USER_REGISTER;
         }
-        
-        try {
-            clienteService.registrarCliente(dto);
-            return "redirect:/auth/login?registro=success";
-        } catch (IllegalArgumentException e) {
-            // En caso de que la validación del service también capture algo
-            bindingResult.rejectValue("dni", "error.cliente", e.getMessage());
-            model.addAttribute("clienteDTO", dto);
-            return ViewRouteHelper.USER_REGISTER;
-        } catch (Exception e) {
-            // Manejar cualquier otra excepción
-            bindingResult.rejectValue("dni", "error.cliente", "Ha ocurrido un error inesperado. Intente nuevamente.");
-            model.addAttribute("clienteDTO", dto);
-            return ViewRouteHelper.USER_REGISTER;
-        }
+
+        clienteService.registrarCliente(dto); // Si el DNI ya existe, lanzará DniDuplicadoException
+        return "redirect:/auth/login?registro=success";
     }
     
 

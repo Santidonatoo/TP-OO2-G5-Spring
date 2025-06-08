@@ -23,6 +23,7 @@ import oo2.grupo5.turnos.entities.Role;
 import oo2.grupo5.turnos.entities.User;
 import oo2.grupo5.turnos.enums.RoleType;
 import oo2.grupo5.turnos.exceptions.ClienteNotFoundException;
+import oo2.grupo5.turnos.exceptions.DniDuplicadoException;
 import oo2.grupo5.turnos.repositories.IClienteRepository;
 import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.repositories.IRoleRepository;
@@ -53,7 +54,7 @@ public class ClienteServiceImp implements IClienteService{
 		Role rolCliente = roleRepository.findByType(RoleType.CLIENT).orElseThrow();
 		
     	if (personaRepository.existsByDni(dto.getDni())) {
-	        throw new IllegalArgumentException("Ya existe una persona con el mismo dni.");
+	        throw new DniDuplicadoException(dto.getDni());
     	}
     	
         if (userRepository.existsByUsername(dto.getUsername())) {
