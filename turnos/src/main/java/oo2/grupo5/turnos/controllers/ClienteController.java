@@ -56,15 +56,11 @@ public class ClienteController {
 	@GetMapping("/buscar")
     @PreAuthorize("hasRole('ADMIN')")
     public String buscarCliente(@RequestParam Integer idPersona, Model model) {
-        try {
-        	ClienteResponseDTO cliente = clienteService.findById(idPersona);
-            model.addAttribute("cliente", cliente);
-            return ViewRouteHelper.CLIENTE_DETALLE;
-        } catch (ClienteNotFoundException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return ViewRouteHelper.ERROR_NOT_FOUND_CLIENTE;
-        }
+        ClienteResponseDTO cliente = clienteService.findById(idPersona);
+        model.addAttribute("cliente", cliente);
+        return ViewRouteHelper.CLIENTE_DETALLE;
     }
+	
 	@GetMapping("/form")
 	@PreAuthorize("hasRole('ADMIN')")
 	public String createForm(Model model) {

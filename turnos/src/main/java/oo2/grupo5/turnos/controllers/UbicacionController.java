@@ -49,14 +49,10 @@ public class UbicacionController {
     @GetMapping("/buscar")
     @PreAuthorize("hasRole('ADMIN')")
     public String buscarUbicacion(@RequestParam Integer idUbicacion, Model model) {
-        try {
-            UbicacionResponseDTO ubicacion = ubicacionService.findById(idUbicacion);
-            model.addAttribute("ubicacion", ubicacion);
-            return ViewRouteHelper.UBICACION_DETALLE;
-        } catch (UbicacionNotFoundException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return ViewRouteHelper.ERROR_NOT_FOUND_UBICACION;
-        }
+      	UbicacionResponseDTO ubicacion = ubicacionService.findById(idUbicacion);
+       	model.addAttribute("ubicacion", ubicacion);
+     	return ViewRouteHelper.UBICACION_DETALLE;
+       
     }
     @GetMapping("/form")
     @PreAuthorize("hasRole('ADMIN')")

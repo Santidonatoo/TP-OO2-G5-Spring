@@ -127,7 +127,7 @@ public class ClienteServiceImp implements IClienteService{
 	@Override
 	public ClienteResponseDTO update(Integer idPersona, ClienteRequestDTO clienteRequestDTO) {
 		Cliente cliente = clienteRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Cliente with id {0} not found",idPersona)));
+                .orElseThrow(() -> new ClienteNotFoundException(idPersona));
 		
 		if (personaRepository.existsByDni(clienteRequestDTO.getDni())&&
     		    personaRepository.findById(idPersona).get().getDni() != clienteRequestDTO.getDni()) {
@@ -153,7 +153,7 @@ public class ClienteServiceImp implements IClienteService{
 	@Override
 	public void deleteById(Integer idPersona) {
 		Cliente cliente = clienteRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
-    			.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Cliente with id {0} not found", idPersona)));
+    			.orElseThrow(() -> new ClienteNotFoundException(idPersona));
     	
     	cliente.setSoftDeleted(true);
     	clienteRepository.save(cliente);
@@ -162,7 +162,7 @@ public class ClienteServiceImp implements IClienteService{
 	@Override
 	public ClienteResponseDTO restoreById(Integer idPersona) {
 		Cliente cliente = clienteRepository.findById(idPersona)
-    			.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Cliente with id {0} not found", idPersona)));
+    			.orElseThrow(() -> new ClienteNotFoundException(idPersona));
     	
     	if(!cliente.isSoftDeleted()) {
     		throw new IllegalStateException(MessageFormat.format("Cliente with id {0} not found", idPersona));

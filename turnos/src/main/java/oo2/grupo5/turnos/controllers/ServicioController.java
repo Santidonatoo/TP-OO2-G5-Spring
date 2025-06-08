@@ -73,14 +73,9 @@ public class ServicioController {
     @GetMapping("/buscar")
     @PreAuthorize("hasRole('ADMIN')")
     public String buscarServicio(@RequestParam Integer idServicio, Model model) {
-        try {
-            ServicioResponseDTO servicio = servicioService.findById(idServicio);
-            model.addAttribute("servicio", servicio);
-            return ViewRouteHelper.SERVICIO_DETALLE;
-        } catch (ServicioNotFoundException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return ViewRouteHelper.ERROR_NOT_FOUND_SERVICIO;
-        }
+        ServicioResponseDTO servicio = servicioService.findById(idServicio); // Si no existe, lanzará ServicioNotFoundException
+        model.addAttribute("servicio", servicio);
+        return ViewRouteHelper.SERVICIO_DETALLE;
     }
     @GetMapping("/form")    
     @PreAuthorize("hasRole('ADMIN')")

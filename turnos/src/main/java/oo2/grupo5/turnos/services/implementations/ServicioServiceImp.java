@@ -22,6 +22,7 @@ import oo2.grupo5.turnos.entities.Empleado;
 import oo2.grupo5.turnos.entities.Servicio;
 import oo2.grupo5.turnos.entities.Ubicacion;
 import oo2.grupo5.turnos.exceptions.ServicioNotFoundException;
+import oo2.grupo5.turnos.exceptions.UbicacionNotFoundException;
 import oo2.grupo5.turnos.repositories.IDisponibilidadRepository;
 import oo2.grupo5.turnos.repositories.IEmpleadoRepository;
 import oo2.grupo5.turnos.repositories.IServicioRepository;
@@ -58,7 +59,7 @@ public class ServicioServiceImp implements IServicioService {
     			    throw new IllegalArgumentException("El servicio no puede tener empleados asignados si no requiere empleados.");
     	}
     	Ubicacion ubicacion = ubicacionRepository.findById(servicioRequestDTO.getIdUbicacion())
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Ubicación con id {0} no encontrada", servicioRequestDTO.getIdUbicacion())));
+                .orElseThrow(() -> new UbicacionNotFoundException(servicioRequestDTO.getIdUbicacion()));
 
         Servicio servicio = modelMapper.map(servicioRequestDTO, Servicio.class);
         servicio.setUbicacion(ubicacion);
@@ -155,11 +156,11 @@ public class ServicioServiceImp implements IServicioService {
     @Override
     public ServicioResponseDTO update(Integer idServicio, ServicioRequestDTO servicioRequestDTO, List<Integer> eliminarDisponibilidades) {
         Servicio servicio = servicioRepository.findByIdServicioAndSoftDeletedFalse(idServicio)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio con id {0} no encontrado", idServicio)));
+                .orElseThrow(() -> new ServicioNotFoundException(idServicio));
 
         // Buscar la nueva ubicación si se proporciona
         Ubicacion nuevaUbicacion = ubicacionRepository.findById(servicioRequestDTO.getIdUbicacion())
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Ubicación con id {0} no encontrada", servicioRequestDTO.getIdUbicacion())));
+                .orElseThrow(() -> new UbicacionNotFoundException(servicioRequestDTO.getIdUbicacion()));
         if (servicioRepository.existsByNombre(servicioRequestDTO.getNombre())&&
     		    !servicioRepository.findById(idServicio).get().getNombre().equals(servicioRequestDTO.getNombre())) {
 	        throw new IllegalArgumentException("Ya existe un servicio con el mismo nombre.");
@@ -228,7 +229,7 @@ public class ServicioServiceImp implements IServicioService {
     @Override
     public void deleteById(Integer idServicio) {
     	Servicio servicio = servicioRepository.findByIdServicioAndSoftDeletedFalse(idServicio)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",idServicio)));
+                .orElseThrow(() -> new ServicioNotFoundException(idServicio));
 
     	servicio.setSoftDeleted(true);
     	servicioRepository.save(servicio);
@@ -237,7 +238,7 @@ public class ServicioServiceImp implements IServicioService {
     @Override
     public ServicioResponseDTO restoreById(Integer idServicio) {
     	Servicio servicio = servicioRepository.findById(idServicio)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Servicio with id {0} not found",idServicio)));
+                .orElseThrow(() -> new ServicioNotFoundException(idServicio));
 
         if (!servicio.isSoftDeleted()) {
             throw new IllegalStateException(MessageFormat.format("Servicio with id {0} is not deleted",idServicio));
