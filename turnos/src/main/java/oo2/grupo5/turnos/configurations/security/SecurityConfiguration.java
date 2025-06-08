@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import oo2.grupo5.turnos.security.CustomAuthenticationSuccessHandler;
 import oo2.grupo5.turnos.services.implementations.UserServiceImp;
 
 @Configuration
@@ -22,9 +23,11 @@ import oo2.grupo5.turnos.services.implementations.UserServiceImp;
 public class SecurityConfiguration {
 
 	private final UserServiceImp userServiceImp;
+	private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 	
-	public SecurityConfiguration(UserServiceImp userServiceImp) {
+	public SecurityConfiguration(UserServiceImp userServiceImp, CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
 		this.userServiceImp = userServiceImp;
+		this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
 	}
 	
     @Bean
@@ -52,7 +55,7 @@ public class SecurityConfiguration {
                     login.loginProcessingUrl("/auth/loginProcess");//POST
                     login.usernameParameter("username");
                     login.passwordParameter("password");
-                    login.defaultSuccessUrl("/auth/loginSuccess", true);
+                    login.successHandler(customAuthenticationSuccessHandler);
                     login.permitAll();
                 })
                 .logout(logout -> {
