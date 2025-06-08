@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 import oo2.grupo5.turnos.dtos.requests.ClienteRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.ContactoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.ClienteResponseDTO;
+import oo2.grupo5.turnos.exceptions.ClienteNotFoundException;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.services.interfaces.IClienteService;
 
@@ -45,7 +47,18 @@ public class ClienteController {
         model.addAttribute("clientes", clientes);
         return ViewRouteHelper.CLIENTE_ADMIN_LIST;
     }
-	
+	@GetMapping("/buscar")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String buscarCliente(@RequestParam Integer idPersona, Model model) {
+        try {
+        	ClienteResponseDTO cliente = clienteService.findById(idPersona);
+            model.addAttribute("cliente", cliente);
+            return ViewRouteHelper.CLIENTE_DETALLE;
+        } catch (ClienteNotFoundException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            return ViewRouteHelper.ERROR_NOT_FOUND_CLIENTE;
+        }
+    }
 	@GetMapping("/form")
 	@PreAuthorize("hasRole('ADMIN')")
 	public String createForm(Model model) {

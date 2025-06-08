@@ -25,6 +25,7 @@ import oo2.grupo5.turnos.dtos.requests.DisponibilidadRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.ServicioRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
+import oo2.grupo5.turnos.exceptions.ServicioNotFoundException;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.repositories.IDisponibilidadRepository;
 import oo2.grupo5.turnos.repositories.IServicioRepository;
@@ -67,6 +68,19 @@ public class ServicioController {
         Page<ServicioResponseDTO> servicios = servicioService.findAll(pageable);
         model.addAttribute("servicios", servicios);
         return ViewRouteHelper.SERVICIO_ADMIN_LIST;
+    }
+    
+    @GetMapping("/buscar")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String buscarServicio(@RequestParam Integer idServicio, Model model) {
+        try {
+            ServicioResponseDTO servicio = servicioService.findById(idServicio);
+            model.addAttribute("servicio", servicio);
+            return ViewRouteHelper.SERVICIO_DETALLE;
+        } catch (ServicioNotFoundException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            return ViewRouteHelper.ERROR_NOT_FOUND_SERVICIO;
+        }
     }
     @GetMapping("/form")    
     @PreAuthorize("hasRole('ADMIN')")
