@@ -53,35 +53,4 @@ public class MailServiceImp implements IMailService{
 		 return new MailResponseDTO(status, description);
 	}
 	
-	@Override
-	public MailResponseDTO sendEmailWithFile(String[] toUser, String subject, String message, File file) {
-		
-		String status;
-	    String description;
-		
-		try {
-			MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.name());
-			
-			mimeMessageHelper.setFrom(fromEmail);
-			mimeMessageHelper.setTo(toUser);
-			mimeMessageHelper.setSubject(subject);
-			mimeMessageHelper.setText(message);
-			mimeMessageHelper.addAttachment(file.getName(), file);
-			
-			javaMailSender.send(mimeMessage);
-			
-			status = "SUCCESS";
-	        description = "Correo con archivo adjunto enviado con éxito.";
-			
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			 status = "FAILURE";
-		     description = "Error al enviar correo con archivo: " + e.getMessage();
-			//e.printStackTrace();
-		}
-		
-		return new MailResponseDTO(status, description);	
-	}
-
 }
