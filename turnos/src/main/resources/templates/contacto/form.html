@@ -52,6 +52,7 @@
         <h1>Mis Datos de Contacto</h1>
         <p><strong>Correo electrónico:</strong> <span th:text="${mail}"></span></p>
         <p><strong>Teléfono:</strong> <span th:text="${telefono}"></span></p>
+		<a th:href="@{/contacto/edit}" class="btn btn-warning">Editar</a>
         <a th:href="@{/index}">Volver al inicio</a>
     </div>
 </body>
