@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Detalle del Servicio</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .detalle-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .empleados-container {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        .empleado-item {
+            font-size: 16px;
+            color: #333;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+            margin-top: 15px;
+        }
+
+        a:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="detalle-container">
+        <h1>Detalle del Servicio</h1>
+        <p><strong>Nombre:</strong> <span th:text="${servicio.nombre}"></span></p>
+        <p><strong>Duración:</strong> <span th:text="${servicio.duracion} + ' min'"></span></p>
+        <p><strong>Ubicación:</strong> <span th:text="${servicio.ubicacion.localidad} + ', ' + ${servicio.ubicacion.calle} + ' ' + ${servicio.ubicacion.numero}"></span></p>
+
+        <div th:if="${servicio.requiereEmpleado}" class="empleados-container">
+            <h2>Empleados asignados</h2>
+            <div th:each="empleado : ${servicio.listaEmpleados}" class="empleado-item">
+				<p>
+				    <span style="margin-right: 10px;" th:text="${empleado.nombre}"></span>
+				    <span th:text="${empleado.apellido}"></span>
+				</p>
+                <hr>
+            </div>
+        </div>
+
+        <br>
+        <a th:href="@{/servicio/edit/{idServicio}(idServicio=${servicio.idServicio})}">Editar</a>
+        <a th:href="@{/servicio/admin/list}">Volver a la lista de servicios</a>
+    </div>
+</body>
+</html>

@@ -19,6 +19,7 @@ import oo2.grupo5.turnos.entities.Contacto;
 import oo2.grupo5.turnos.entities.Role;
 import oo2.grupo5.turnos.entities.User;
 import oo2.grupo5.turnos.enums.RoleType;
+import oo2.grupo5.turnos.exceptions.ClienteNotFoundException;
 import oo2.grupo5.turnos.repositories.IClienteRepository;
 import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.repositories.IRoleRepository;
@@ -93,14 +94,14 @@ public class ClienteServiceImp implements IClienteService{
 	@Override
 	public ClienteResponseDTO findById(Integer idPersona) {
 		Cliente cliente = clienteRepository.findById(idPersona)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Cliente with id {0} not found",idPersona)));
+                .orElseThrow(() -> new ClienteNotFoundException(idPersona));
         return modelMapper.map(cliente, ClienteResponseDTO.class);
 	}
 	
 	@Override
 	public ClienteResponseDTO findByIdNotDeleted(Integer idPersona) {
 		Cliente cliente = clienteRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
-    			.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Cliente with id {0} not found", idPersona)));
+    			.orElseThrow(() -> new ClienteNotFoundException(idPersona));
     	return modelMapper.map(cliente, ClienteResponseDTO.class);
 	}
 	

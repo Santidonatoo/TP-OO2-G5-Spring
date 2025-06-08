@@ -19,6 +19,8 @@ import oo2.grupo5.turnos.entities.Role;
 import oo2.grupo5.turnos.entities.Servicio;
 import oo2.grupo5.turnos.entities.User;
 import oo2.grupo5.turnos.enums.RoleType;
+import oo2.grupo5.turnos.exceptions.EmpleadoNotFoundException;
+import oo2.grupo5.turnos.exceptions.ServicioNotFoundException;
 import oo2.grupo5.turnos.repositories.IEmpleadoRepository;
 import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.repositories.IRoleRepository;
@@ -90,14 +92,14 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	@Override
 	public EmpleadoResponseDTO findById(Integer idPersona) {
 		Empleado empleado = empleadoRepository.findById(idPersona)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Empleado with id {0} not found",idPersona)));
+                .orElseThrow(() -> new EmpleadoNotFoundException(idPersona));
         return modelMapper.map(empleado, EmpleadoResponseDTO.class);
 	}
 	
 	@Override
 	public EmpleadoResponseDTO findByIdNotDeleted(Integer idPersona) {
 		Empleado empleado = empleadoRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
-    			.orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Empleado with id {0} not found", idPersona)));
+    			.orElseThrow(() -> new EmpleadoNotFoundException(idPersona));
     	return modelMapper.map(empleado, EmpleadoResponseDTO.class);
 	}
 	

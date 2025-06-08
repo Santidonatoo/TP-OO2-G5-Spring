@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 import oo2.grupo5.turnos.dtos.requests.ContactoRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.EmpleadoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
+import oo2.grupo5.turnos.exceptions.EmpleadoNotFoundException;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.services.interfaces.IEmpleadoService;
@@ -56,7 +58,18 @@ public class EmpleadoController {
         model.addAttribute("empleados", empleados);
         return ViewRouteHelper.EMPLEADO_ADMIN_LIST;
     }
-	
+	@GetMapping("/buscar")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String buscarEmpleado(@RequestParam Integer idPersona, Model model) {
+        try {
+        	EmpleadoResponseDTO empleado = empleadoService.findById(idPersona);
+            model.addAttribute("empleado", empleado);
+            return ViewRouteHelper.EMPLEADO_DETALLE;
+        } catch (EmpleadoNotFoundException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            return ViewRouteHelper.ERROR_NOT_FOUND_EMPLEADO;
+        }
+    }
 	@GetMapping("/form")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	public String createForm(Model model) {
