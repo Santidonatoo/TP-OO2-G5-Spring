@@ -3,6 +3,7 @@ package oo2.grupo5.turnos.exceptions;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.ModelAndView;
 
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
 
@@ -27,5 +28,11 @@ public class GlobalExceptionHandler {
     public String handleUbicacionNotFoundException(UbicacionNotFoundException ex, Model model) {
         model.addAttribute("errorMessage", ex.getMessage());
         return ViewRouteHelper.ERROR_NOT_FOUND_UBICACION;
+    }
+	@ExceptionHandler(NoDisponibilidadException.class)
+    public ModelAndView handleNoDisponibilidadException(NoDisponibilidadException ex) {
+        ModelAndView mav = new ModelAndView(ViewRouteHelper.TURNO_FECHA);
+        mav.addObject("errorMessage", ex.getMessage());
+        return mav;
     }
 }

@@ -84,6 +84,12 @@
 </head>
 <body>
     <h1>Elige una fecha para tu turno</h1>
+    
+    <!-- Bloque para mostrar el mensaje de error, si existe -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+    
     <form th:action="@{/turno/guardar-fecha}" method="post">
         <div>
             <label for="fecha">Fecha:</label>
