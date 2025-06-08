@@ -47,7 +47,16 @@
 	            font-size: 16px;
 	            color: #333;
 	        }
+			button {
+				background-color: #dc3545;
+				color: white;
+				border: none;
+				cursor: pointer;
+			}
 
+			button:hover {
+				background-color: #bb2d3b;
+			}
 	        a {
 	            display: inline-block;
 	            padding: 10px 15px;
@@ -79,6 +88,12 @@
 
 	        <br>
 	        <a th:href="@{/cliente/edit/{idPersona}(idPersona=${cliente.idPersona})}">Editar</a>
+			<form th:if="!${cliente.softDeleted}" th:action="@{/cliente/delete/{idPersona}(idPersona=${cliente.idPersona})}" method="post" style="display:inline;">
+				 <button type="submit">Eliminar</button>
+			</form>
+			<form th:if="${cliente.softDeleted}" th:action="@{/cliente/restore/{idPersona}(idPersona=${cliente.idPersona})}" method="post" style="display:inline;">
+				 <button type="submit">Restaurar</button>
+			</form>
 	        <a th:href="@{/cliente/admin/list}">Volver a la lista de clientes</a>
 	    </div>
 	</body>
