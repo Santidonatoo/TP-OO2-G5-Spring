@@ -117,6 +117,14 @@ public class EmpleadoController {
         requestDTO.setApellido(dto.getApellido());
         requestDTO.setDni(dto.getDni());
         requestDTO.setPuesto(dto.getPuesto());
+        
+        if (dto.getContacto() != null) {
+            requestDTO.setContacto(new ContactoRequestDTO());
+            requestDTO.getContacto().setEmail(dto.getContacto().getEmail());
+            requestDTO.getContacto().setTelefono(dto.getContacto().getTelefono());
+        }
+
+        
         requestDTO.setIdServicios(dto.getListaServicios().stream().map(ServicioResponseDTO::getIdServicio).collect(Collectors.toSet()));
 
         model.addAttribute("empleadoRequestDTO", requestDTO);

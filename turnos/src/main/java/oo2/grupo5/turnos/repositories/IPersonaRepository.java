@@ -19,4 +19,6 @@ public interface IPersonaRepository extends JpaRepository<Persona, Integer> {
 	Optional<Persona> findByIdPersonaAndSoftDeletedFalse(Integer idPersona);
 	
 	boolean existsByDni(int dni);
+	
+	
 }
