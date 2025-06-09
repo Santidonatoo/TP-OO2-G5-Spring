@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +32,6 @@ import oo2.grupo5.turnos.entities.User;
 import oo2.grupo5.turnos.enums.EstadoTurno;
 import oo2.grupo5.turnos.exceptions.NoDisponibilidadException;
 import oo2.grupo5.turnos.helpers.ViewRouteHelper;
-import oo2.grupo5.turnos.repositories.IServicioRepository;
 import oo2.grupo5.turnos.services.interfaces.IClienteService;
 import oo2.grupo5.turnos.services.interfaces.IDatosTurnoService;
 import oo2.grupo5.turnos.services.interfaces.IEmpleadoService;
