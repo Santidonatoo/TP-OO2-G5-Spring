@@ -53,7 +53,7 @@ public class UbicacionServiceImp implements IUbicacionService {
     @Override
     public UbicacionResponseDTO update(Integer idUbicacion, UbicacionRequestDTO ubicacionRequestDTO) {
     	Ubicacion ubicacion = ubicacionRepository.findByIdUbicacionAndSoftDeletedFalse(idUbicacion)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Ubicacion with id {0} not found",idUbicacion)));
+                .orElseThrow(() -> new UbicacionNotFoundException(idUbicacion));
 
     	ubicacion.setLocalidad(ubicacionRequestDTO.getLocalidad());
     	ubicacion.setCalle(ubicacionRequestDTO.getCalle());
@@ -65,7 +65,7 @@ public class UbicacionServiceImp implements IUbicacionService {
     @Override
     public void deleteById(Integer idUbicacion) {
     	Ubicacion ubicacion = ubicacionRepository.findByIdUbicacionAndSoftDeletedFalse(idUbicacion)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Ubicacion with id {0} not found",idUbicacion)));
+                .orElseThrow(() -> new UbicacionNotFoundException(idUbicacion));
 
     	ubicacion.setSoftDeleted(true);
     	ubicacionRepository.save(ubicacion);
@@ -74,7 +74,7 @@ public class UbicacionServiceImp implements IUbicacionService {
     @Override
     public UbicacionResponseDTO restoreById(Integer idUbicacion) {
     	Ubicacion ubicacion = ubicacionRepository.findById(idUbicacion)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Ubicacion with id {0} not found",idUbicacion)));
+                .orElseThrow(() -> new UbicacionNotFoundException(idUbicacion));
 
         if (!ubicacion.isSoftDeleted()) {
             throw new IllegalStateException(MessageFormat.format("Ubicacion with id {0} is not deleted",idUbicacion));
