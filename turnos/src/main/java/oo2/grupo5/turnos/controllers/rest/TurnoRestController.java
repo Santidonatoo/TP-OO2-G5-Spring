@@ -1,4 +1,4 @@
-package oo2.grupo5.turnos.controllers;
+package oo2.grupo5.turnos.controllers.rest;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
