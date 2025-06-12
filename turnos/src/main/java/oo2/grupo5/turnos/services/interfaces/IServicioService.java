@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import oo2.grupo5.turnos.dtos.requests.ServicioRequestDTO;
+import oo2.grupo5.turnos.dtos.responses.ServicioApiResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.entities.Servicio;
 
@@ -37,4 +38,7 @@ public interface IServicioService {
 
     ServicioResponseDTO restoreById(Integer idServicio);
     
+    ServicioApiResponseDTO findByIdApi(Integer id);
+
+    //ServicioApiResponseDTO crearServicioDesdeApi(ServicioApiRequestDTO dto);
 }
