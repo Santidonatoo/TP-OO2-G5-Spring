@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="${empleadoRequestDTO.idPersona != null} ? 'Editar Empleado' : 'Nuevo Empleado'">Formulario Empleados</title>
+	<style>
+	       body {
+	           display: flex;
+	           flex-direction: column;
+	           align-items: center;
+	           background-color: #f8f9fa;
+	           font-family: Arial, sans-serif;
+	           padding: 20px;
+	       }
+
+	       h1 {
+	           margin-bottom: 20px;
+	       }
+
+	       form {
+	           width: 90%;
+	           max-width: 600px;
+	           padding: 20px;
+	           background: white;
+	           border-radius: 10px;
+	           box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+	       }
+
+	       label {
+	           display: block;
+	           margin-top: 10px;
+	           font-weight: bold;
+	       }
+
+	       input, select {
+	           width: 100%;
+	           padding: 8px;
+	           margin-top: 5px;
+	           border: 1px solid #ccc;
+	           border-radius: 5px;
+	       }
+
+	       button {
+	           background-color: #007bff;
+	           color: white;
+	           padding: 10px 20px;
+	           border: none;
+	           border-radius: 5px;
+	           cursor: pointer;
+	           margin-top: 15px;
+	           width: 100%;
+	       }
+
+	       button:hover {
+	           background-color: #0056b3;
+	       }
+
+	       a {
+	           display: inline-block;
+	           margin-top: 20px;
+	           color: #007bff;
+	           text-decoration: none;
+	       }
+
+	       a:hover {
+	           text-decoration: underline;
+	       }
+
+	       fieldset {
+	           border: 1px solid #ccc;
+	           padding: 10px;
+	           margin-top: 15px;
+	           border-radius: 5px;
+	       }
+
+	       legend {
+	           font-weight: bold;
+	       }
+		   
+	   </style>
+	   <script>
+			document.addEventListener('DOMContentLoaded', function() {
+		    	const fechaInput = document.querySelector('input[type="date"]');
+		        if (fechaInput) {
+		        	// Establecer la fecha máxima
+		           	const today = new Date().toISOString().split('T')[0];
+		            fechaInput.setAttribute('max', today);
+		               
+		            // Prevenir selección de fechas futuras
+		            fechaInput.addEventListener('input', function() {
+		            	const selectedDate = new Date(this.value);
+		                const currentDate = new Date();
+		                currentDate.setHours(0, 0, 0, 0);
+		                   
+		                if (selectedDate > currentDate) {
+		                	this.value = '';
+		                    alert('No se pueden seleccionar fechas futuras');
+		                }
+		       	});
+		               
+		        // Prevenir navegación con teclado a fechas futuras
+		        fechaInput.addEventListener('keydown', function(e) {
+		        	// Prevenir el uso de flechas para ir a fechas futuras
+		            if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
+		            	const currentValue = this.value;
+		                setTimeout(() => {
+		                	const newValue = this.value;
+		                    const selectedDate = new Date(newValue);
+		                    const currentDate = new Date();
+		                    currentDate.setHours(0, 0, 0, 0);
+		                           
+		                    if (selectedDate > currentDate) {
+		                    	this.value = currentValue;
+		                    }
+		                }, 0);
+		          	}
+		     	});
+		  	}
+		});
+	</script>
+</head>
+<body>
+<h1 th:text="${empleadoRequestDTO.idPersona != null} ? 'Editar Empleado' : 'Nuevo Empleado'"></h1>
+<br>
+
+<form th:action="${empleadoRequestDTO.idPersona != null} ? @{/empleado/update/{idPersona}(idPersona=${empleadoRequestDTO.idPersona})} : @{/empleado/save}" 
+      method="post" th:object="${empleadoRequestDTO}">
+    
+    <input type="hidden" th:if="${empleadoRequestDTO.idPersona != null}" th:field="*{idPersona}" />
+
+    <label>Nombre:</label>
+    <input type="text" th:field="*{nombre}" required />
+    <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+
+    <label>Apellido:</label>
+    <input type="text" th:field="*{apellido}" required />
+    <div th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></div>
+
+    <label>Dni:</label>
+    <input type="number" th:field="*{dni}" required />
+    <div th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
+    
+    <div th:if="${empleadoRequestDTO.idPersona == null}">
+	    <label>Fecha de nacimiento:</label>
+	    <input type="date" th:field="*{fechaDeNacimiento}" th:value="${#temporals.format(empleadoRequestDTO.fechaDeNacimiento, 'yyyy-MM-dd')}" required />
+	    <div th:if="${#fields.hasErrors('fechaDeNacimiento')}" th:errors="*{fechaDeNacimiento}"></div>
+    </div>
+    
+    <label>Puesto:</label>
+    <input type="text" th:field="*{puesto}" required />
+    <div th:if="${#fields.hasErrors('puesto')}" th:errors="*{puesto}"></div>
+    
+    <div th:if="${empleadoRequestDTO.idPersona == null}">
+	    <label>Nombre de usuario:</label>
+		<input type="text" th:field="*{username}" required />
+		<div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+		
+		<label>Contraseña:</label>
+		<input type="password" th:field="*{password}" required />
+		<div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+	</div>
+	
+	<fieldset>
+	     <legend>Contacto</legend>
+	        
+	     <label>Email:</label>
+	     <input type="email" th:field="*{contacto.email}" required />
+	     <div th:if="${#fields.hasErrors('contacto.email')}" th:errors="*{contacto.email}"></div>
+
+	     <label>Teléfono:</label>
+	     <input type="text" th:field="*{contacto.telefono}" required />
+	     <div th:if="${#fields.hasErrors('contacto.telefono')}" th:errors="*{contacto.telefono}"></div>
+	 </fieldset>
+	
+	
+	 <fieldset>
+	     <legend>Servicios</legend>
+	     <div class="servicios-container">
+	         <div th:each="servicio : ${servicios}" class="servicio-item">
+	             <input type="checkbox" th:field="*{idServicios}" th:value="${servicio.idServicio}" id="servicio-${servicio.idServicio}" />
+	             <label th:for="'servicio-' + ${servicio.idServicio}" th:text="${servicio.nombre} + ' (' + ${servicio.duracion} + ' min)'"></label>
+	         </div>
+	     </div>
+	     <div th:if="${#fields.hasErrors('idServicios')}" th:errors="*{idServicios}"></div>
+	 </fieldset>
+    <button type="submit">Guardar</button>
+</form>
+
+<br>
+<a th:href="@{/empleado/admin/list}">Volver</a>
+</body>
+</html>

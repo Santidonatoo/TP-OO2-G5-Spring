@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="${servicioRequestDTO.idServicio != null} ? 'Editar' : 'Nuevo'">Formulario</title>
+	<style>
+		       body {
+		           display: flex;
+		           flex-direction: column;
+		           align-items: center;
+		           background-color: #f8f9fa;
+		           font-family: Arial, sans-serif;
+		           padding: 20px;
+		       }
+
+		       h1 {
+		           margin-bottom: 20px;
+		       }
+
+		       form {
+		           width: 90%;
+		           max-width: 600px;
+		           padding: 20px;
+		           background: white;
+		           border-radius: 10px;
+		           box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+		       }
+
+		       label {
+		           display: block;
+		           margin-top: 10px;
+		           font-weight: bold;
+		       }
+
+		       input, select {
+		           width: 100%;
+		           padding: 8px;
+		           margin-top: 5px;
+		           border: 1px solid #ccc;
+		           border-radius: 5px;
+		       }
+
+		       button {
+		           background-color: #007bff;
+		           color: white;
+		           padding: 10px 20px;
+		           border: none;
+		           border-radius: 5px;
+		           cursor: pointer;
+		           margin-top: 15px;
+		           width: 100%;
+		       }
+
+		       button:hover {
+		           background-color: #0056b3;
+		       }
+			   /* Botones para agregar y eliminar disponibilidades */
+			          .btn-add, .btn-remove {
+			              width: auto;
+			              padding: 8px 12px;
+			              margin-top: 10px;
+			              margin-right: 5px;
+			          }
+			          /* Estilo para la tabla de disponibilidades a eliminar */
+			          #elimDisponibilidades {
+			              margin-top: 10px;
+			              border: 1px solid #ccc;
+			              padding: 10px;
+			              display: none;
+			          }
+			          #elimDisponibilidades table {
+			              width: 100%;
+			              border-collapse: collapse;
+			          }
+			          #elimDisponibilidades th, #elimDisponibilidades td {
+			              padding: 5px;
+			              border: 1px solid #ddd;
+			              text-align: center;
+			          }
+
+		      
+			   
+		   </style>
+	</head>
+<body>
+<h1 th:text="${servicioRequestDTO.idServicio != null} ? 'Editar Servicio' : 'Nuevo Servicio'"></h1>
+<br>
+<form th:action="${servicioRequestDTO.idServicio != null} ? @{/servicio/update/{idServicio}(idServicio=${servicioRequestDTO.idServicio})} : @{/servicio/save}" method="post" th:object="${servicioRequestDTO}">
+    <input type="hidden" th:if="${servicioRequestDTO.idServicio != null}" th:field="*{idServicio}" />
+
+    <label>Nombre:</label>
+    <input type="text" th:field="*{nombre}" />
+    <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+
+    <label>Duracion:</label>
+    <input type="number" th:field="*{duracion}" step="15" min="15"/>
+    <div th:if="${#fields.hasErrors('duracion')}" th:errors="*{duracion}"></div>
+
+    <label>Requiere Empleado:</label>
+    <input type="checkbox" th:field="*{requiereEmpleado}" />
+    <div th:if="${#fields.hasErrors('requiereEmpleado')}" th:errors="*{requiereEmpleado}"></div>
+
+	<label for="ubicacion">Ubicación:</label>
+	<select name="idUbicacion" id="ubicacion" th:field="*{idUbicacion}" required>
+	    <option value="">Seleccione una ubicación</option>
+	    <th:block th:each="ubicacion : ${ubicaciones}">
+	        <option th:value="${ubicacion.idUbicacion}" th:text="${ubicacion.localidad} + ', ' + ${ubicacion.calle} + ' ' + ${ubicacion.numero}"></option>
+	    </th:block>
+	</select>
+	<div th:if="${#fields.hasErrors('idUbicacion')}" th:errors="*{idUbicacion}"></div>
+	<br>
+	
+	<fieldset>
+	<label>Empleados:</label>
+	<div th:each="empleado : ${empleados}">
+	    <input type="checkbox" th:field="*{idEmpleados}" th:value="${empleado.idPersona}" />
+	    <label th:text="${empleado.nombre} + ' ' + ${empleado.apellido} + ' (' + ${empleado.puesto} + ')'"></label>
+	</div>
+	<div th:if="${#fields.hasErrors('idEmpleados')}" th:errors="*{idEmpleados}"></div>
+	</fieldset>
+	
+	<br>
+
+	   <h3>Selecciona los días y horarios de tu servicio</h3>
+	       <table id="tablaHorarios">
+	           <thead>
+	               <tr>
+	                   <th>Día</th>
+	                   <th>Hora de inicio</th>
+	                   <th>Hora finalización</th>
+	               </tr>
+	           </thead>
+	           <tbody>
+	               <!-- Las filas se agregarán dinámicamente -->
+	           </tbody>
+	       </table>
+	       <button type="button" class="btn-add" id="agregarHorario">+ Agregar</button>
+		   <!-- Solo en modo edición se muestra el botón para eliminar disponibilidades -->
+		          <div th:if="${servicioRequestDTO.idServicio != null}">
+		              <button type="button" class="btn-remove" id="btnToggleEliminar">- Eliminar Disponibilidad</button>
+		              <!-- Sección oculta que muestra las disponibilidades preexistentes -->
+		              <div id="elimDisponibilidades">
+		                  <p><b>Disponibilidades existentes:</b></p>
+		                  <table>
+		                      <thead>
+		                          <tr>
+		                              <th>Eliminar</th>
+		                              <th>Día</th>
+		                              <th>Hora de inicio</th>
+		                              <th>Hora de finalización</th>
+		                          </tr>
+		                      </thead>
+		                      <tbody>
+		                          <tr th:each="disp : ${servicioRequestDTO.disponibilidades}">
+		                              <!-- El valor será el id de la disponibilidad; el controlador podrá recibir una lista de id a eliminar -->
+		                              <td><input type="checkbox" name="eliminarDisponibilidades" th:value="${disp.idDisponibilidad}" /></td>
+		                              <td>
+		                                  <span th:switch="${disp.diaSemana}">
+		                                      <span th:case="'MONDAY'">Lunes</span>
+		                                      <span th:case="'TUESDAY'">Martes</span>
+		                                      <span th:case="'WEDNESDAY'">Miércoles</span>
+		                                      <span th:case="'THURSDAY'">Jueves</span>
+		                                      <span th:case="'FRIDAY'">Viernes</span>
+		                                      <span th:case="'SATURDAY'">Sábado</span>
+		                                      <span th:case="'SUNDAY'">Domingo</span>
+		                                      <span th:case="*">[[${disp.diaSemana}]]</span>
+		                                  </span>
+		                              </td>
+		                              <td th:text="${#temporals.format(disp.horaInicio, 'HH:mm')}"></td>
+		                              <td th:text="${#temporals.format(disp.horaFin, 'HH:mm')}"></td>
+		                          </tr>
+		                      </tbody>
+		                  </table>
+		              </div>
+		          </div>
+	       <br>
+	
+	
+    <button type="submit">Guardar</button>
+</form>
+<br>
+<a th:href="@{/servicio/admin/list}">Volver</a>
+<a th:href="@{/ubicacion/form}">Crear nueva ubicación</a>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const requiereEmpleadoCheckbox = document.querySelector("input[name='requiereEmpleado']");
+        const empleadosCheckboxes = document.querySelectorAll("input[name='idEmpleados']");
+
+        function toggleEmpleados() {
+            const habilitado = requiereEmpleadoCheckbox.checked;
+            empleadosCheckboxes.forEach(checkbox => checkbox.disabled = !habilitado);
+        }
+
+        // Ejecutar al cargar la página
+        toggleEmpleados();
+
+        // Escuchar cambios en el checkbox "Requiere Empleado"
+        requiereEmpleadoCheckbox.addEventListener("change", toggleEmpleados);
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const diasMap = {
+            'lunes': 'MONDAY',
+            'martes': 'TUESDAY',
+            'miércoles': 'WEDNESDAY',
+            'miercoles': 'WEDNESDAY',
+            'jueves': 'THURSDAY',
+            'viernes': 'FRIDAY',
+            'sábado': 'SATURDAY',
+            'sabado': 'SATURDAY',
+            'domingo': 'SUNDAY'
+        };
+
+        let horarioIndex = 0;
+        const tbody = document.getElementById('tablaHorarios').querySelector('tbody');
+        const btnAgregar = document.getElementById('agregarHorario');
+
+        btnAgregar.addEventListener('click', function () {
+            const fila = document.createElement('tr');
+
+            const celdaDia = document.createElement('td');
+            celdaDia.innerHTML = `
+                <input type="text" name="disponibilidades[${horarioIndex}].diaInput" placeholder="Ej: lunes" required />
+                <input type="hidden" name="disponibilidades[${horarioIndex}].diaSemana" class="diaHidden" />
+            `;
+            fila.appendChild(celdaDia);
+
+            const celdaInicio = document.createElement('td');
+            celdaInicio.innerHTML = `<input type="time" name="disponibilidades[${horarioIndex}].horaInicio" required />`;
+            fila.appendChild(celdaInicio);
+
+            const celdaFin = document.createElement('td');
+            celdaFin.innerHTML = `<input type="time" name="disponibilidades[${horarioIndex}].horaFin" required />`;
+            fila.appendChild(celdaFin);
+
+            tbody.appendChild(fila);
+
+            const inputDia = fila.querySelector(`input[name="disponibilidades[${horarioIndex}].diaInput"]`);
+            const inputDiaHidden = fila.querySelector('.diaHidden');
+
+            inputDia.addEventListener('blur', function () {
+                const valor = this.value.trim().toLowerCase();
+                inputDiaHidden.value = diasMap[valor] || valor;
+            });
+            horarioIndex++;
+        });
+    });
+</script>
+<script>
+        // Botón para togglear la sección de eliminación de disponibilidades (solo en edición)
+        document.addEventListener("DOMContentLoaded", function () {
+            const btnToggle = document.getElementById("btnToggleEliminar");
+            if(btnToggle){
+                btnToggle.addEventListener("click", function(){
+                    const div = document.getElementById("elimDisponibilidades");
+                    div.style.display = (div.style.display==='none' || div.style.display==='') ? 'block' : 'none';
+                });
+            }
+        });
+</script>
+</body>
+
+</html>

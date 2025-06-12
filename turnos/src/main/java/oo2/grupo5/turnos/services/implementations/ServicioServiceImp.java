@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import oo2.grupo5.turnos.dtos.requests.DisponibilidadRequestDTO;
+import oo2.grupo5.turnos.dtos.requests.ServicioApiRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.ServicioRequestDTO;
+import oo2.grupo5.turnos.dtos.responses.ServicioApiResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.entities.Disponibilidad;
 import oo2.grupo5.turnos.entities.Empleado;
@@ -262,4 +264,28 @@ public class ServicioServiceImp implements IServicioService {
         return modelMapper.map(restored, ServicioResponseDTO.class);
     }
     
+    
+    //Rest
+    public ServicioApiResponseDTO findByIdApi(Integer id) {
+        Servicio servicio = servicioRepository.findById(id)
+            .orElseThrow(() -> new ServicioNotFoundException(id));
+        return new ServicioApiResponseDTO( 
+        		servicio.getIdServicio(),
+        		servicio.getNombre(),
+        		servicio.getDuracion(),
+        		servicio.isRequiereEmpleado(),
+        		servicio.getUbicacion().getLocalidad() + ", " + servicio.getUbicacion().getCalle()
+        		);
+    
+    }
+
+    /*public ServicioApiResponseDTO crearServicioDesdeApi(ServicioApiRequestDTO dto) {
+        Servicio nuevo = new Servicio();
+        nuevo.setNombre(dto.getNombre());
+        nuevo.setDuracion(dto.getDuracion());
+    
+        servicioRepository.save(nuevo);
+        return modelMapper.map(nuevo, ServicioApiResponseDTO.class);
+    }
+*/
 }

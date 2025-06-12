@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <title>Lista de Empleados todos los roles</title>
+	<style>
+	        body {
+	            display: flex;
+	            flex-direction: column;
+	            justify-content: center;
+	            align-items: center;
+	            background-color: #f8f9fa;
+	            font-family: Arial, sans-serif;
+	            padding: 20px;
+	        }
+
+
+	        h1 {
+	            margin-bottom: 20px;
+	        }
+
+	        a {
+	            display: inline-block;
+	            padding: 10px;
+	            margin: 5px;
+	            text-decoration: none;
+	            border-radius: 5px;
+	            background-color: #28a745;
+	            color: white;
+	        }
+
+	        a:hover {
+	            background-color: #218838;
+	        }
+
+	        table {
+	            width: 100%;
+	            border-collapse: collapse;
+	            margin-top: 20px;
+	        }
+
+	        th, td {
+	            padding: 10px;
+	            border: 1px solid #ddd;
+	            text-align: center;
+	        }
+
+	        th {
+	            background-color: #007bff;
+	            color: white;
+	        }
+	    </style>
+</head>
+<body>
+<h1>Empleados que no estan eliminados</h1>
+<br>
+    <div sec:authorize="hasRole('ADMIN')">
+       <a th:href="@{/empleado/form}">Nuevo</a>
+    	<a th:href="@{/empleado/admin/list}">Ver todo</a> 
+    </div>
+<br>
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Dni</th>
+            <th>Fecha de nacimiento</th>
+            <th>Puesto</th> 
+			<th>Email</th>
+			<th>Teléfono</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="empleado : ${empleados}">
+            <td th:text="${empleado.nombre}"></td>
+            <td th:text="${empleado.apellido}"></td>
+            <td th:text="${empleado.dni}"></td>
+            <td th:text="${empleado.fechaDeNacimiento}"></td>
+            <td th:text="${empleado.puesto}"></td>
+			<td th:text="${empleado.contacto.email}"></td>
+			<td th:text="${empleado.contacto.telefono}"></td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<br>
+<a th:href="@{/index}">Volver</a>
+
+</body>
+</html>

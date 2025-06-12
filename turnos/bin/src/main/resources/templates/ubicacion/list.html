@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <title>Lista de Ubicaciones todos los roles</title>
+	<style>
+	        body {
+	            display: flex;
+	            flex-direction: column;
+	            justify-content: center;
+	            align-items: center;
+	            background-color: #f8f9fa;
+	            font-family: Arial, sans-serif;
+	            padding: 20px;
+	        }
+
+
+	        h1 {
+	            margin-bottom: 20px;
+	        }
+
+	        a {
+	            display: inline-block;
+	            padding: 10px;
+	            margin: 5px;
+	            text-decoration: none;
+	            border-radius: 5px;
+	            background-color: #28a745;
+	            color: white;
+	        }
+
+	        a:hover {
+	            background-color: #218838;
+	        }
+
+	        table {
+	            width: 100%;
+	            border-collapse: collapse;
+	            margin-top: 20px;
+	        }
+
+	        th, td {
+	            padding: 10px;
+	            border: 1px solid #ddd;
+	            text-align: center;
+	        }
+
+	        th {
+	            background-color: #007bff;
+	            color: white;
+	        }
+	    </style>
+</head>
+<body>
+<h1>Ubicaciones que no estan eliminadas</h1>
+<br>
+    <div sec:authorize="hasRole('ADMIN')">
+       <a th:href="@{/ubicacion/form}">Nuevo</a>
+    	<a th:href="@{/ubicacion/admin/list}">Ver todo</a> 
+    </div>
+<br>
+<table>
+    <thead>
+        <tr>
+            <th>Localidad</th>
+			<th>Calle</th>
+			<th>Número</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="ubicacion : ${ubicaciones}">
+			<td th:text="${ubicacion.localidad}"></td>
+			<td th:text="${ubicacion.calle}"></td>
+			<td th:text="${ubicacion.numero}"></td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<br>
+<a th:href="@{/index}">Volver</a>
+
+</body>
+</html>
