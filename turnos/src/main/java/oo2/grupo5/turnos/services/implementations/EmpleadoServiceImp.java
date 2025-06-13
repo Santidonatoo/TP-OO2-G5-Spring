@@ -1,6 +1,7 @@
 package oo2.grupo5.turnos.services.implementations;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import oo2.grupo5.turnos.dtos.requests.EmpleadoRequestDTO;
+import oo2.grupo5.turnos.dtos.responses.EmpleadoApiResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
 import oo2.grupo5.turnos.entities.Contacto;
 import oo2.grupo5.turnos.entities.Empleado;
@@ -100,6 +102,27 @@ public class EmpleadoServiceImp implements IEmpleadoService{
         return modelMapper.map(empleado, EmpleadoResponseDTO.class);
 	}
 	
+	//API REST CONTROLLER
+	public EmpleadoApiResponseDTO findByIdApi(Integer idPersona) {
+		Empleado empleado = empleadoRepository.findById(idPersona)
+				.orElseThrow(() -> new EmpleadoNotFoundException(idPersona));
+		//Mapeo manual
+	    return new EmpleadoApiResponseDTO(
+	            empleado.getIdPersona(),           
+	            empleado.getNombre(),              
+	            empleado.getApellido(),            
+	            String.valueOf(empleado.getDni()),                 
+	            empleado.getContacto() != null ? 
+	                empleado.getContacto().getEmail() : null,
+	            empleado.getContacto() != null ? 
+	                empleado.getContacto().getTelefono() : null,
+	            empleado.getUser() != null ? 
+	                empleado.getUser().getUsername() : null,
+	            empleado.getPuesto(),              
+	            Collections.emptySet()            // Set vacío de servicios
+	        );
+	}
+	
 	@Override
 	public EmpleadoResponseDTO findByIdNotDeleted(Integer idPersona) {
 		Empleado empleado = empleadoRepository.findByIdPersonaAndSoftDeletedFalse(idPersona)
@@ -117,6 +140,12 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	public Page<EmpleadoResponseDTO> findAllNotDeleted(Pageable pageable){
     	return empleadoRepository.findAllBySoftDeletedFalse(pageable)
     			.map(entity -> modelMapper.map(entity, EmpleadoResponseDTO.class));
+	}
+	
+	//API REST CONTROLLER
+	public Page<EmpleadoApiResponseDTO> findAllNotDeletedApi(Pageable pageable){
+		return empleadoRepository.findAllBySoftDeletedFalse(pageable)
+				.map(entity -> modelMapper.map(entity, EmpleadoApiResponseDTO.class));
 	}
 	
     public Page<EmpleadoResponseDTO> findAllEmpleadosbyServicio(Integer idServicio, Pageable pageable){

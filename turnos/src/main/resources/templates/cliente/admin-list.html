@@ -99,6 +99,7 @@
 	            <th>Ultimo Inicio</th>
 				<th>Email</th>
 				<th>Teléfono</th>
+				<th>Eliminado</th>
 	            <th>Acciones</th>
 	        </tr>
 	    </thead>
@@ -112,6 +113,7 @@
 	            <td th:text="${#temporals.format(cliente.ultimoInicioSesion, 'yyyy-MM-dd / HH:mm')}"></td>
 				<td th:text="${cliente.contacto.email}"></td>
 				<td th:text="${cliente.contacto.telefono}"></td>
+				<td th:text="${cliente.softDeleted} ? 'Sí' : 'No'"></td>
 	            <td>
 	                <a th:href="@{/cliente/edit/{idPersona}(idPersona=${cliente.idPersona})}">Editar</a>
 	                <form th:if="!${cliente.softDeleted}" th:action="@{/cliente/delete/{idPersona}(idPersona=${cliente.idPersona})}" method="post" style="display:inline;">
