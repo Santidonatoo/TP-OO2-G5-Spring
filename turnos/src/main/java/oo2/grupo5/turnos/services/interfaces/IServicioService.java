@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import oo2.grupo5.turnos.dtos.requests.ServicioApiRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.ServicioRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioApiResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
@@ -40,5 +41,5 @@ public interface IServicioService {
     
     ServicioApiResponseDTO findByIdApi(Integer id);
 
-    //ServicioApiResponseDTO crearServicioDesdeApi(ServicioApiRequestDTO dto);
+    ServicioApiResponseDTO crearServicioDesdeApi(ServicioApiRequestDTO dto);
 }
