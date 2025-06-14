@@ -16,7 +16,7 @@ public interface IClienteService {
 	ClienteResponseDTO findByIdNotDeleted(Integer idPersona);
 	
 	//FindAll
-	Page<ClienteResponseDTO> findAll(Pageable pageable);
+	Page<ClienteResponseDTO> findAll(Pageable pageable, String sortBy);
 	
 	//FindAll not deleted
 	Page<ClienteResponseDTO> findAllNotDeleted(Pageable pageable);

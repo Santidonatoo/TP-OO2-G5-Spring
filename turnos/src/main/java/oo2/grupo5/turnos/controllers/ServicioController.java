@@ -64,9 +64,11 @@ public class ServicioController {
     }
     @GetMapping("/admin/list")
     @PreAuthorize("hasRole('ADMIN')")
-    public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {
-        Page<ServicioResponseDTO> servicios = servicioService.findAll(pageable);
+    public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable,
+    		@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
+        Page<ServicioResponseDTO> servicios = servicioService.findAll(pageable, sortBy);
         model.addAttribute("servicios", servicios);
+        model.addAttribute("ordenActual", sortBy);
         return ViewRouteHelper.SERVICIO_ADMIN_LIST;
     }
     

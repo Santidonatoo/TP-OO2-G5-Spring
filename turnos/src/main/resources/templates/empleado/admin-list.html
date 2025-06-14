@@ -81,6 +81,20 @@
 			<input type="number" id="idPersona" name="idPersona" required />
 			<button type="submit">Buscar</button>
 		</form>
+		<div class="ordenamiento">
+				    <form method="get" th:action="@{/empleado/admin/list}" class="form-inline">
+				        <input type="hidden" name="page" th:value="${empleados.number}" />
+				        
+				        <label for="orden" class="me-2">Ordenar por:</label>
+				        <select name="sortBy" id="orden" class="form-select d-inline w-auto me-2">
+				            <option value="id" th:selected="${ordenActual == 'id'}">ID</option>
+				            <option value="apellido" th:selected="${ordenActual == 'apellido'}">Apellido</option>
+							<option value="dni" th:selected="${ordenActual == 'dni'}">DNI</option>
+						</select>
+				        
+				        <button type="submit" class="btn btn-primary">Aplicar</button>
+				    </form>
+				</div>
 		<table>
 		    <thead>
 		        <tr>
@@ -119,6 +133,22 @@
 		        </tr>
 		    </tbody>
 		</table>
+		<div class="paginacion" style="margin-top: 20px;">
+				    <span th:if="${empleados.hasPrevious()}">
+				        <a th:href="@{/empleado/admin/list(page=${empleados.number - 1}, sortBy=${ordenActual})}">Anterior</a>
+				    </span>
+				    
+				    <span th:each="i : ${#numbers.sequence(0, empleados.totalPages - 1)}" style="margin: 0 5px;">
+				        <a th:if="${i != empleados.number}"
+				           th:href="@{/empleado/admin/list(page=${i}, sortBy=${ordenActual})}"
+				           th:text="${i + 1}">1</a>
+				        <span th:if="${i == empleados.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
+				    </span>
+
+				    <span th:if="${empleados.hasNext()}">
+				        <a th:href="@{/empleado/admin/list(page=${empleados.number + 1}, sortBy=${ordenActual})}">Siguiente</a>
+				    </span>
+				</div>
 		<br>
 		<a th:href="@{/index}">Volver</a>
 		

@@ -13,7 +13,7 @@ public interface IUbicacionService {
 
     UbicacionResponseDTO findById(Integer idUbicacion);
 
-    Page<UbicacionResponseDTO> findAll(Pageable pageable);
+    Page<UbicacionResponseDTO> findAll(Pageable pageable, String sortBy);
     
     Page<UbicacionResponseDTO> findAllNotDeleted(Pageable pageable);
 

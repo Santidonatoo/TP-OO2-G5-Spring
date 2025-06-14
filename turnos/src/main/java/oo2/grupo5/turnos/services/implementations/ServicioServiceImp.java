@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -133,19 +135,24 @@ public class ServicioServiceImp implements IServicioService {
 	}
     
 
-
     @Override
-    public Page<ServicioResponseDTO> findAll(Pageable pageable) {
-        return servicioRepository.findAll(pageable)
-                .map(entity -> modelMapper.map(entity, ServicioResponseDTO.class));
-
+    public Page<ServicioResponseDTO> findAll(Pageable pageable, String sortBy) {
+    	Sort sort = switch (sortBy.toLowerCase()) {
+        case "nombre" -> Sort.by("nombre").ascending();
+        default -> Sort.by("idServicio").ascending();
+    	};
+    Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+    return servicioRepository.findAll(sortedPageable)
+    	.map(entity -> modelMapper.map(entity, ServicioResponseDTO.class));
     }
+    
     @Override
     public Page<ServicioResponseDTO> findAllNotDeleted(Pageable pageable) {
         return servicioRepository.findAllBySoftDeletedFalse(pageable)
                 .map(entity -> modelMapper.map(entity, ServicioResponseDTO.class));
 
     }
+    
     @Override
     public Page<ServicioResponseDTO> findAllByNotDeletedAndRequiereEmpleadoTrue(Pageable pageable) {
     	return servicioRepository.findAllBySoftDeletedFalseAndRequiereEmpleadoTrue(pageable)
