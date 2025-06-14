@@ -21,7 +21,7 @@ public interface IEmpleadoService {
 	EmpleadoResponseDTO findByIdNotDeleted(Integer idPersona);
 	
 	//FindAll
-	Page<EmpleadoResponseDTO> findAll(Pageable pageable);
+	Page<EmpleadoResponseDTO> findAll(Pageable pageable, String sortBy);
 	
 	//FindAll not deleted
 	Page<EmpleadoResponseDTO> findAllNotDeleted(Pageable pageable);

@@ -74,6 +74,22 @@
         </tr>
     </tbody>
 </table>
+<div class="paginacion" style="margin-top: 20px;">
+		    <span th:if="${ubicaciones.hasPrevious()}">
+		        <a th:href="@{/ubicacion/list(page=${ubicaciones.number - 1})}">Anterior</a>
+		    </span>
+
+		    <span th:each="i : ${#numbers.sequence(0, ubicaciones.totalPages - 1)}" style="margin: 0 5px;">
+		        <a th:if="${i != ubicaciones.number}"
+		           th:href="@{/ubicacion/list(page=${i})}"
+		           th:text="${i + 1}">1</a>
+		        <span th:if="${i == ubicaciones.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
+		    </span>
+
+		    <span th:if="${ubicaciones.hasNext()}">
+		        <a th:href="@{/ubicacion/list(page=${ubicaciones.number + 1})}">Siguiente</a>
+		    </span> 
+		</div>
 <br>
 <br>
 <a th:href="@{/index}">Volver</a>

@@ -81,6 +81,22 @@
         </tr>
     </tbody>
 </table>
+<div class="paginacion" style="margin-top: 20px;">
+		    <span th:if="${clientes.hasPrevious()}">
+		        <a th:href="@{/cliente/list(page=${clientes.number - 1})}">Anterior</a>
+		    </span>
+
+		    <span th:each="i : ${#numbers.sequence(0, clientes.totalPages - 1)}" style="margin: 0 5px;">
+		        <a th:if="${i != clientes.number}"
+		           th:href="@{/cliente/list(page=${i})}"
+		           th:text="${i + 1}">1</a>
+		        <span th:if="${i == clientes.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
+		    </span>
+
+		    <span th:if="${clientes.hasNext()}">
+		        <a th:href="@{/cliente/list(page=${clientes.number + 1})}">Siguiente</a>
+		    </span> 
+		</div>
 <br>
 <br>
 <a th:href="@{/index}">Volver</a>

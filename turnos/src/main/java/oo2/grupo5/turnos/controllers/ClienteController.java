@@ -48,9 +48,11 @@ public class ClienteController {
 	
 	@GetMapping("/admin/list")
 	@PreAuthorize("hasRole('ADMIN')")
-    public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {
-        Page<ClienteResponseDTO> clientes = clienteService.findAll(pageable);
+    public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable,
+    		@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
+        Page<ClienteResponseDTO> clientes = clienteService.findAll(pageable, sortBy);
         model.addAttribute("clientes", clientes);
+        model.addAttribute("ordenActual", sortBy);
         return ViewRouteHelper.CLIENTE_ADMIN_LIST;
     }
 	@GetMapping("/buscar")
