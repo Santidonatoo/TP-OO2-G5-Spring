@@ -1,23 +1,46 @@
 package oo2.grupo5.turnos.controllers.rest;
 
+import java.util.Enumeration;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import oo2.grupo5.turnos.dtos.requests.CrearTurnoApiRequestDTO;
+import oo2.grupo5.turnos.dtos.requests.DatosTurnoApiRequestDTO;
+import oo2.grupo5.turnos.dtos.requests.TurnoApiRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.TurnoRequestDTO;
+import oo2.grupo5.turnos.dtos.responses.DatosTurnoApiResponseDTO;
+import oo2.grupo5.turnos.dtos.responses.TurnoApiResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.TurnoResponseDTO;
 import oo2.grupo5.turnos.entities.User;
+import oo2.grupo5.turnos.enums.EstadoTurno;
+import oo2.grupo5.turnos.services.interfaces.IDatosTurnoService;
 import oo2.grupo5.turnos.services.interfaces.ITurnoService;
 
 @RestController
@@ -26,35 +49,63 @@ import oo2.grupo5.turnos.services.interfaces.ITurnoService;
 public class TurnoRestController {
 	
 	private final ITurnoService turnoService;
-    
-    public TurnoRestController(ITurnoService turnoService) {
+	private final IDatosTurnoService datosTurnoService;
+	private final ModelMapper modelMapper;
+	
+    public TurnoRestController(ITurnoService turnoService, ModelMapper modelMapper, IDatosTurnoService datosTurnoService) {
         this.turnoService = turnoService;
+		this.datosTurnoService = datosTurnoService;
+		this.modelMapper = modelMapper;
     }
     
-    @Operation(summary = "Lista de turnos de una persona", description = "Devuelve la lista de turnos del usuario autenticado")
-    @GetMapping("/lista-turnos")
-    @PreAuthorize("hasAnyRole('CLIENT', 'EMPLOYEE')")
-    public ResponseEntity<Page<TurnoResponseDTO>> listaTurnosPersona(Pageable pageable) {
-    	
-    	Integer idPersona = null;
-		
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof User) {
-            User user = (User) authentication.getPrincipal();
-            idPersona = user.getPersona().getIdPersona();
+    @Operation(summary = "Turno por id", description = "Devuelve un turno por su id")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CLIENT', 'EMPLOYEE', 'ADMIN')")
+    public ResponseEntity<TurnoApiResponseDTO> getTurnoById(@PathVariable Integer id) {
+        try {
+            TurnoApiResponseDTO turno = turnoService.findByIdApi(id);
+            return ResponseEntity.ok(turno);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
         }
-        
-    	Page<TurnoResponseDTO> turnos = turnoService.findTurnosByPersona(pageable, idPersona);
-    	return ResponseEntity.ok(turnos);
     }
     
-    @Operation(summary = "Guardado de un turno", description = "Guarda un turno en base a un turnoRequestDTO")
-    @PostMapping("/guardar-turno")
-    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
-    public ResponseEntity<TurnoResponseDTO> guardarTurno(@RequestBody TurnoRequestDTO turno) {
-    	
-    	TurnoResponseDTO turnoCreado = turnoService.save(turno);
-    	
-    	 return ResponseEntity.status(HttpStatus.CREATED).body(turnoCreado);
+    @Operation(summary = "Crear un nuevo turno", description = "Crea un turno con sus datos asociados a partir de los datos enviados")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Turno creado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Error de validación o datos incorrectos"),
+        @ApiResponse(responseCode = "403", description = "No autorizado"),
+        @ApiResponse(responseCode = "404", description = "Cliente, empleado o servicio no encontrado")
+    })
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<TurnoApiResponseDTO> crearTurno(
+            @Valid @RequestBody CrearTurnoApiRequestDTO dto) {
+        
+        System.out.println("_____Creando Turno_____");
+        System.out.println("Hora: " + dto.hora());
+        System.out.println("Estado: " + dto.estado());
+        System.out.println("Fecha: " + dto.fecha());
+        System.out.println("ID Cliente: " + dto.idCliente());
+        System.out.println("ID Empleado: " + dto.idEmpleado());
+        System.out.println("ID Servicio: " + dto.idServicio());
+
+        // Crear los DTOs separados para el service
+        DatosTurnoApiRequestDTO datosTurnoRequest = new DatosTurnoApiRequestDTO(
+            dto.fecha(),
+            dto.idCliente(),
+            dto.idEmpleado(),
+            dto.idServicio()
+        );
+        
+        TurnoApiRequestDTO turnoRequest = new TurnoApiRequestDTO(
+            dto.hora(),
+            dto.estado() != null ? dto.estado() : EstadoTurno.PENDIENTE, 
+            null 
+        );
+
+        TurnoApiResponseDTO creado = turnoService.saveApi(turnoRequest, datosTurnoRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
+
 }
