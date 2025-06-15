@@ -56,9 +56,11 @@ public class EmpleadoController {
 	
 	@GetMapping("/admin/list")
 	@PreAuthorize("hasAnyRole('ADMIN')")
-    public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {
-        Page<EmpleadoResponseDTO> empleados = empleadoService.findAll(pageable);
+    public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable,
+    		@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
+        Page<EmpleadoResponseDTO> empleados = empleadoService.findAll(pageable, sortBy);
         model.addAttribute("empleados", empleados);
+        model.addAttribute("ordenActual", sortBy);
         return ViewRouteHelper.EMPLEADO_ADMIN_LIST;
     }
 	@GetMapping("/buscar")

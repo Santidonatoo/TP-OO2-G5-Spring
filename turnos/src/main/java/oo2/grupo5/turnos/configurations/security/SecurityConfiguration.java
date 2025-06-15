@@ -46,6 +46,13 @@ public class SecurityConfiguration {
                         "/auth/registro", "/auth/registro-cliente"
                     ).permitAll();
                     
+                    auth.requestMatchers(
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/swagger-resources/**",
+                        "/webjars/**"
+                    ).hasRole("ADMIN");
+                    
                     auth.requestMatchers("/empleado/save").hasRole("ADMIN");
                     
                     auth.anyRequest().authenticated();

@@ -8,7 +8,9 @@ import java.util.Set;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,8 +116,14 @@ public class ClienteServiceImp implements IClienteService{
 	}
 	
 	@Override
-    public Page<ClienteResponseDTO> findAll(Pageable pageable) {
-    	return clienteRepository.findAll(pageable)
+    public Page<ClienteResponseDTO> findAll(Pageable pageable, String sortBy) {
+		Sort sort = switch (sortBy.toLowerCase()) {
+        case "apellido" -> Sort.by("apellido").ascending();
+        case "dni" -> Sort.by("dni").ascending();
+        default -> Sort.by("idPersona").ascending();
+    	};
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+    	return clienteRepository.findAll(sortedPageable)
     			.map(entity -> modelMapper.map(entity, ClienteResponseDTO.class));
     }
 	

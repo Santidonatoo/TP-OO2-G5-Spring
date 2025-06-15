@@ -1,6 +1,7 @@
 package oo2.grupo5.turnos.services.implementations;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -9,13 +10,17 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
 import jakarta.persistence.EntityNotFoundException;
 import oo2.grupo5.turnos.dtos.requests.DisponibilidadRequestDTO;
+import oo2.grupo5.turnos.dtos.requests.ServicioApiRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.ServicioRequestDTO;
+import oo2.grupo5.turnos.dtos.responses.ServicioApiResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.entities.Disponibilidad;
 import oo2.grupo5.turnos.entities.Empleado;
@@ -130,19 +135,24 @@ public class ServicioServiceImp implements IServicioService {
 	}
     
 
-
     @Override
-    public Page<ServicioResponseDTO> findAll(Pageable pageable) {
-        return servicioRepository.findAll(pageable)
-                .map(entity -> modelMapper.map(entity, ServicioResponseDTO.class));
-
+    public Page<ServicioResponseDTO> findAll(Pageable pageable, String sortBy) {
+    	Sort sort = switch (sortBy.toLowerCase()) {
+        case "nombre" -> Sort.by("nombre").ascending();
+        default -> Sort.by("idServicio").ascending();
+    	};
+    Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+    return servicioRepository.findAll(sortedPageable)
+    	.map(entity -> modelMapper.map(entity, ServicioResponseDTO.class));
     }
+    
     @Override
     public Page<ServicioResponseDTO> findAllNotDeleted(Pageable pageable) {
         return servicioRepository.findAllBySoftDeletedFalse(pageable)
                 .map(entity -> modelMapper.map(entity, ServicioResponseDTO.class));
 
     }
+    
     @Override
     public Page<ServicioResponseDTO> findAllByNotDeletedAndRequiereEmpleadoTrue(Pageable pageable) {
     	return servicioRepository.findAllBySoftDeletedFalseAndRequiereEmpleadoTrue(pageable)
@@ -262,4 +272,44 @@ public class ServicioServiceImp implements IServicioService {
         return modelMapper.map(restored, ServicioResponseDTO.class);
     }
     
+  //RestAdd commentMore actions
+    public ServicioApiResponseDTO findByIdApi(Integer id) {
+        Servicio servicio = servicioRepository.findById(id)
+            .orElseThrow(() -> new ServicioNotFoundException(id));
+        List<String> empleados = servicio.getListaEmpleados().stream()
+                .map(e -> e.getNombre() + " " + e.getApellido())
+                .toList();
+        return new ServicioApiResponseDTO( 
+        		servicio.getIdServicio(),
+        		servicio.getNombre(),
+        		servicio.getDuracion(),
+        		servicio.isRequiereEmpleado(),
+        		servicio.getUbicacion().getLocalidad() + ", " + servicio.getUbicacion().getCalle(),
+        		empleados
+        		);
+    
+    }
+
+    public ServicioApiResponseDTO crearServicioDesdeApi(ServicioApiRequestDTO dto) {
+        Servicio servicio = new Servicio();
+        servicio.setNombre(dto.nombre());
+        servicio.setDuracion(dto.duracion());
+        servicio.setRequiereEmpleado(dto.requiereEmpleado());
+
+        Ubicacion ubicacion = ubicacionRepository.findById(dto.idUbicacion())
+            .orElseThrow(() -> new UbicacionNotFoundException(dto.idUbicacion()));
+        servicio.setUbicacion(ubicacion);
+        
+        servicioRepository.save(servicio);
+        List<String> empleados = new ArrayList<String>();
+
+        return new ServicioApiResponseDTO(
+            servicio.getIdServicio(),
+            servicio.getNombre(),
+            servicio.getDuracion(),
+    		servicio.isRequiereEmpleado(),
+            ubicacion.getLocalidad() + ", " + ubicacion.getCalle(),
+            empleados
+        );
+    }
 }

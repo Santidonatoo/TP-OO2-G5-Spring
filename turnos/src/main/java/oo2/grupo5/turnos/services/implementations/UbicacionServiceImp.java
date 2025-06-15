@@ -4,7 +4,9 @@ import java.text.MessageFormat;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -41,8 +43,13 @@ public class UbicacionServiceImp implements IUbicacionService {
     }
     
     @Override
-    public Page<UbicacionResponseDTO> findAll(Pageable pageable) {
-        return ubicacionRepository.findAll(pageable)
+    public Page<UbicacionResponseDTO> findAll(Pageable pageable, String sortBy) {
+    	Sort sort = switch (sortBy.toLowerCase()) {
+        case "localidad" -> Sort.by("localidad").ascending();
+        default -> Sort.by("idUbicacion").ascending();
+    	};
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        return ubicacionRepository.findAll(sortedPageable)
             .map(entity -> modelMapper.map(entity, UbicacionResponseDTO.class));
     }
     @Override

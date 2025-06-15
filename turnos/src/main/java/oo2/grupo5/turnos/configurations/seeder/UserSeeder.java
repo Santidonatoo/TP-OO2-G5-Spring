@@ -36,8 +36,8 @@ public class UserSeeder implements CommandLineRunner {
 	//Carga los usuarios con sus roles a la base de datos
 	private void loadUsers() {
 		loadUserAdmin();
-		loadUserEmployee();
-		loadUserClient();
+		//loadUserEmployee();
+		//loadUserClient();
 	}
 	
 	//Carga los roles existentes a la Base de datos
@@ -49,6 +49,7 @@ public class UserSeeder implements CommandLineRunner {
 		}
 	}
 	
+	/*
 	private void loadUserClient() {
 		if (userRepository.findByUsername("client").isEmpty()) {
 			userRepository.save(buildUserClient("client", passwordGeneric));
@@ -78,6 +79,7 @@ public class UserSeeder implements CommandLineRunner {
 				.roleEntities(Set.of(roleRepository.findByType(RoleType.EMPLOYEE).get()))
 				.build();
 	}
+	*/
 	
 	private void loadUserAdmin() {
 		if (userRepository.findByUsername("admin").isEmpty()) {
