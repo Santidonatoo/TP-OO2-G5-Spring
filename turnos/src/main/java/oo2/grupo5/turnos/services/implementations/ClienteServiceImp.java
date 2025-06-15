@@ -2,6 +2,8 @@ package oo2.grupo5.turnos.services.implementations;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -16,16 +18,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
+import oo2.grupo5.turnos.dtos.requests.ClienteApiRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.ClienteRequestDTO;
+import oo2.grupo5.turnos.dtos.requests.EmpleadoApiRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.RegistroClienteRequestDTO;
+import oo2.grupo5.turnos.dtos.responses.ClienteApiResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.ClienteResponseDTO;
+import oo2.grupo5.turnos.dtos.responses.EmpleadoApiResponseDTO;
 import oo2.grupo5.turnos.entities.Cliente;
 import oo2.grupo5.turnos.entities.Contacto;
+import oo2.grupo5.turnos.entities.Empleado;
 import oo2.grupo5.turnos.entities.Role;
 import oo2.grupo5.turnos.entities.User;
 import oo2.grupo5.turnos.enums.RoleType;
 import oo2.grupo5.turnos.exceptions.ClienteNotFoundException;
 import oo2.grupo5.turnos.exceptions.DniDuplicadoException;
+import oo2.grupo5.turnos.exceptions.EmpleadoNotFoundException;
 import oo2.grupo5.turnos.repositories.IClienteRepository;
 import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.repositories.IRoleRepository;
@@ -204,5 +212,118 @@ public class ClienteServiceImp implements IClienteService{
 	                          " (puede ser empleado o cliente inactivo)");
 	    }
 	}
+	
+	//METODOS PARA API REST CONTROLLER
+	
+	public ClienteApiResponseDTO saveApi (ClienteApiRequestDTO clienteApiRequestDTO) {
+		
+		String dniStr = clienteApiRequestDTO.dni();
+		int dni = Integer.parseInt(dniStr);
+		
+		if (personaRepository.existsByDni(dni)) {
+	        throw new IllegalArgumentException("Ya existe una persona con el mismo dni.");
+    	}
+    	if(userRepository.existsByUsername(clienteApiRequestDTO.username())) {
+    		 throw new IllegalArgumentException("Ya existe un usuario con el mismo nombre de usuario.");
+    	}
+    	
+    	Cliente cliente = new Cliente();
+    	cliente.setNombre(clienteApiRequestDTO.nombre());
+    	cliente.setApellido(clienteApiRequestDTO.apellido());
+    	cliente.setDni(Integer.parseInt(clienteApiRequestDTO.dni()));
+    	cliente.setUltimoInicioSesion(clienteApiRequestDTO.ultimoInicioSesion());
+    	
+    	Contacto contacto = Contacto.builder()
+    			.email(clienteApiRequestDTO.email())
+    			.telefono(clienteApiRequestDTO.telefono())
+    			.build();
+    	cliente.setContacto(contacto);
+    	
+    	Cliente saved = clienteRepository.save(cliente);
+    	
+    	Role rolCliente = roleRepository.findByType(RoleType.CLIENT)
+    			.orElseThrow(() -> new RuntimeException("Rol CLIENT no encontrado"));
+    	
+    	User user = User.builder()
+        		.username(clienteApiRequestDTO.username())
+        		.password(clienteApiRequestDTO.password())
+        		.active(true)
+        		.roleEntities(Set.of(rolCliente))        		
+        		.persona(saved)
+        		.build();
+    	
+    	 userRepository.save(user);
+    	 
+    	 return new ClienteApiResponseDTO(
+    			 saved.getIdPersona(),
+         		saved.getNombre(),
+         		saved.getApellido(),
+         		String.valueOf(saved.getDni()),
+         		contacto.getEmail(),
+         		contacto.getTelefono(),
+         		user.getUsername(),
+         		saved.getUltimoInicioSesion() 
+    			 );
+    	
+	}
+
+	/*
+	public Page<ClienteApiResponseDTO> findAllNotDeletedApi(Pageable pageable){
+		return clienteRepository.findAllBySoftDeletedFalse(pageable)
+    			.map(entity -> modelMapper.map(entity, ClienteApiResponseDTO.class));
+	} 
+	*/
+		
+	public ClienteApiResponseDTO findByIdApi(Integer idPersona) {
+		
+		Cliente cliente = clienteRepository.findById(idPersona)
+				.orElseThrow(() -> new ClienteNotFoundException(idPersona));
+		
+		return new ClienteApiResponseDTO(
+				cliente.getIdPersona(),
+				cliente.getNombre(),
+				cliente.getApellido(),
+				String.valueOf(cliente.getDni()),
+				cliente.getContacto() != null ? 
+						cliente.getContacto().getEmail() : null,
+			    cliente.getContacto() != null ? 
+			    		cliente.getContacto().getTelefono() : null,
+			    cliente.getUser() != null ? 
+			                cliente.getUser().getUsername() : null,
+			    cliente.getUltimoInicioSesion()
+				);
+	}
+	
+	
+	@Override
+    public List<ClienteApiResponseDTO> findAllApi(String sortBy) {
+		
+		Sort sort = switch (sortBy.toLowerCase()) {
+        case "nombre" -> Sort.by("nombre").ascending();
+        case "dni" -> Sort.by("dni").ascending();
+        default -> Sort.by("idPersona").ascending();
+    };
+		
+        List<Cliente> clientes = clienteRepository.findAll(sort);
+
+        return clientes.stream()
+                .map(cliente -> {
+
+                    return new ClienteApiResponseDTO(
+                    		cliente.getIdPersona(),
+                    		cliente.getNombre(),
+                    		cliente.getApellido(),
+                            String.valueOf(cliente.getDni()),
+                            cliente.getContacto() != null ?
+                            cliente.getContacto().getEmail() : null,
+                            	cliente.getContacto() != null ?
+                            cliente.getContacto().getTelefono() : null,
+                            		cliente.getUser() != null ?
+                            cliente.getUser().getUsername() : null,
+                            cliente.getUltimoInicioSesion()
+                            );
+                })
+                .toList();
+    }
 	
 }
