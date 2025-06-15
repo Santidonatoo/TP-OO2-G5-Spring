@@ -1,5 +1,7 @@
 package oo2.grupo5.turnos.services.interfaces;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -25,6 +27,10 @@ public interface IEmpleadoService {
 	
 	//FindAll
 	Page<EmpleadoResponseDTO> findAll(Pageable pageable, String sortBy);
+	
+	
+	//FindAll for Api Rest Controller
+	List<EmpleadoApiResponseDTO> findAllApi(String sortBy);
 	
 	//FindAll not deleted
 	Page<EmpleadoResponseDTO> findAllNotDeleted(Pageable pageable);

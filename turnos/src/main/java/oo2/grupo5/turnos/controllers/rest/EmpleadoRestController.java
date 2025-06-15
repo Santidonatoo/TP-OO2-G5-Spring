@@ -1,5 +1,8 @@
 package oo2.grupo5.turnos.controllers.rest;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -8,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +28,10 @@ import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.repositories.IUserRepository;
 import oo2.grupo5.turnos.services.interfaces.IEmpleadoService;
 import oo2.grupo5.turnos.services.interfaces.IServicioService;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,34 +56,8 @@ public class EmpleadoRestController {
 		this.userRepository = userRepository;
 	}
 	
-    /* POR EL MOMENTO NO FUNCIONA, SI TENGO TIEMPO LO SOLUCIONO
-    @Operation(summary = "Obtener todos los empleados activos", 
-    		description = "Retorna una lista paginada de empleados que no están eliminados")
-    @ApiResponses(value = {
-    		@ApiResponse(responseCode = "200", description = "Lista de empleados obtenida exitosamente"),
-    		@ApiResponse(responseCode = "403", description = "No autorizado para acceder a este recurso")
-    })
-    @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
-    public ResponseEntity<Page<EmpleadoApiResponseDTO>> getAllEmpleados(
-    		@Parameter(description = "Número de página (empezando en 0)")
-    		@RequestParam(defaultValue = "0") int page,
-    		
-    		@Parameter(description = "Tamaño de página")
-    		@RequestParam(defaultValue = "10") int size){
-    	
-    	try {
-    		Pageable pageable = PageRequest.of(page, size);
-    		Page<EmpleadoApiResponseDTO> empleados = empleadoService.findAllNotDeletedApi(pageable);
-    		return ResponseEntity.ok(empleados);
-    	} catch (Exception e) {
-    		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    	}
-    }
-    */
     
-	    @Operation(summary = "Obtener empleado por ID", 
-	            description = "Retorna los datos de un empleado específico por su ID")
+	 @Operation(summary = "Obtener empleado por ID", description = "Retorna los datos de un empleado específico por su ID")
 	 @ApiResponses(value = {
 	     @ApiResponse(responseCode = "200", description = "Empleado encontrado"),
 	     @ApiResponse(responseCode = "404", description = "Empleado no encontrado"),
@@ -96,21 +78,47 @@ public class EmpleadoRestController {
 		         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		     }
 	    }
+	 
+	 
+	 @Operation(summary = "Obtener lista de empleados", 
+	           description = "Retorna una lista de todos los empleados del sistema, ordenados segun el filtro (idPersona o nombre)")
+	@ApiResponses(value = {
+	    @ApiResponse(responseCode = "200", description = "Lista de empleados obtenida exitosamente"),
+	    @ApiResponse(responseCode = "403", description = "No autorizado"),
+	    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+	})
+	@GetMapping
+	@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+	public ResponseEntity<List<EmpleadoApiResponseDTO>> getListaEmpleados(
+			@Parameter(
+                    description = "Campo por el cual ordenar",
+                    schema = @Schema(allowableValues = {"idPersona", "nombre", "dni"})
+                )
+            @RequestParam(defaultValue = "idServicio") String sortBy){
+	    try {
+	        List<EmpleadoApiResponseDTO> empleados = empleadoService.findAllApi(sortBy);
+	        return ResponseEntity.ok(empleados);
+	    } catch (Exception e) {
+	        log.error("Error al obtener la lista de empleados: {}", e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
+	}
     
-	    @Operation(summary = "Crear nuevo empleado", 
+	 
+	   @Operation(summary = "Crear nuevo empleado", 
 	               description = "Crea un nuevo empleado en el sistema")
-	    @ApiResponses(value = {
-	        @ApiResponse(responseCode = "201", description = "Empleado creado exitosamente"),
-	        @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
-	        @ApiResponse(responseCode = "409", description = "Conflicto: DNI o username ya existe"),
-	        @ApiResponse(responseCode = "403", description = "No autorizado")
-	    })
-	    @PostMapping
-	    @PreAuthorize("hasRole('ADMIN')")
-	    public ResponseEntity<?> createEmpleado(@Valid @RequestBody EmpleadoApiRequestDTO empleadoApiRequestDTO) {
-	    	//log.info("Datos recibidos en la solicitud: {}", empleadoApiRequestDTO);
+	   @ApiResponses(value = {
+	       @ApiResponse(responseCode = "201", description = "Empleado creado exitosamente"),
+	       @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
+	       @ApiResponse(responseCode = "409", description = "Conflicto: DNI o username ya existe"),
+	       @ApiResponse(responseCode = "403", description = "No autorizado")
+	   })
+	   @PostMapping
+	   @PreAuthorize("hasRole('ADMIN')")
+	   public ResponseEntity<?> createEmpleado(@Valid @RequestBody EmpleadoApiRequestDTO empleadoApiRequestDTO) {
+	    //log.info("Datos recibidos en la solicitud: {}", empleadoApiRequestDTO);
 	    	try {
-	            // Validación de DNI duplicado
+	    		// Validación de DNI duplicado
 	        	String dniStr = empleadoApiRequestDTO.dni();
 	        	int dni = Integer.parseInt(dniStr);
 	            if (personaRepository.existsByDni(dni)) {
