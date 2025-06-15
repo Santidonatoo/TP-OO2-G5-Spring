@@ -8,8 +8,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import oo2.grupo5.turnos.dtos.requests.DatosTurnoApiRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.DatosTurnoRequestDTO;
+import oo2.grupo5.turnos.dtos.responses.ClienteResponseDTO;
+import oo2.grupo5.turnos.dtos.responses.DatosTurnoApiResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.DatosTurnoResponseDTO;
+import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
+import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
 import oo2.grupo5.turnos.entities.Cliente;
 import oo2.grupo5.turnos.entities.Servicio;
 import oo2.grupo5.turnos.entities.DatosTurno;
@@ -102,6 +107,58 @@ public class DatosTurnoServiceImp implements IDatosTurnoService {
 		
 		datosTurnoRepository.deleteById(idDatosTurno);
 		
+	}
+
+	@Override
+	public DatosTurnoApiResponseDTO saveDatosTurnoApi(DatosTurnoApiRequestDTO datosTurnoRequestDTO) {
+		// Obtenemos las entidades relacionadas que necesitamos
+	    
+		if (datosTurnoRequestDTO.idCliente() == null) {
+	        throw new IllegalArgumentException("El ID del cliente no puede ser null");
+	    }
+	    if (datosTurnoRequestDTO.idEmpleado() == null) {
+	        throw new IllegalArgumentException("El ID del empleado no puede ser null");
+	    }
+	    if (datosTurnoRequestDTO.idServicio() == null) {
+	        throw new IllegalArgumentException("El ID del servicio no puede ser null");
+	    }
+		
+		Cliente cliente = clienteRepository.findById(datosTurnoRequestDTO.idCliente())
+	        .orElseThrow(() -> new EntityNotFoundException(
+	            MessageFormat.format("El cliente con id {0} no ha sido encontrado", 
+	                                datosTurnoRequestDTO.idCliente())));
+	    
+	    Empleado empleado = empleadoRepository.findById(datosTurnoRequestDTO.idEmpleado())
+	        .orElseThrow(() -> new EntityNotFoundException(
+	            MessageFormat.format("El empleado con id {0} no ha sido encontrado", 
+	                                datosTurnoRequestDTO.idEmpleado())));
+	    
+	    Servicio servicio = servicioRepository.findById(datosTurnoRequestDTO.idServicio())
+	        .orElseThrow(() -> new EntityNotFoundException(
+	            MessageFormat.format("El servicio con id {0} no ha sido encontrado", 
+	                                datosTurnoRequestDTO.idServicio())));
+
+	    // Creamos la entidad DatosTurno manualmente desde el record
+	    DatosTurno datosTurno = new DatosTurno();
+	    datosTurno.setFecha(datosTurnoRequestDTO.fecha());
+	    datosTurno.setCliente(cliente);
+	    datosTurno.setEmpleado(empleado);
+	    datosTurno.setServicio(servicio);
+
+	    // Persistimos los datos del turno
+	    DatosTurno savedDatosTurno = datosTurnoRepository.save(datosTurno);
+	    
+	    // Mapeo manual inline para la respuesta
+	    return new DatosTurnoApiResponseDTO(
+	        savedDatosTurno.getIdDatosTurno(),
+	        savedDatosTurno.getFecha(),
+	        savedDatosTurno.getCliente() != null ? 
+	        	savedDatosTurno.getCliente().getNombre() : null,
+	        savedDatosTurno.getEmpleado() != null ? 
+	        	savedDatosTurno.getEmpleado().getNombre() : null,
+	        savedDatosTurno.getServicio() != null ? 
+	        	savedDatosTurno.getServicio().getNombre() : null
+	    );
 	}
 
 }

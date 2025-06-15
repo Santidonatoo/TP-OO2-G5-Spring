@@ -1,6 +1,6 @@
 package oo2.grupo5.turnos.services.implementations;
 
-import java.text.MessageFormat;	
+import java.text.MessageFormat;		
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +13,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import oo2.grupo5.turnos.dtos.requests.DatosTurnoApiRequestDTO;
+import oo2.grupo5.turnos.dtos.requests.TurnoApiRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.TurnoRequestDTO;
+import oo2.grupo5.turnos.dtos.responses.ClienteResponseDTO;
+import oo2.grupo5.turnos.dtos.responses.DatosTurnoApiResponseDTO;
+import oo2.grupo5.turnos.dtos.responses.DatosTurnoResponseDTO;
+import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
+import oo2.grupo5.turnos.dtos.responses.ServicioResponseDTO;
+import oo2.grupo5.turnos.dtos.responses.TurnoApiResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.TurnoResponseDTO;
 import oo2.grupo5.turnos.entities.DatosTurno;
 import oo2.grupo5.turnos.entities.Empleado;
@@ -24,6 +32,7 @@ import oo2.grupo5.turnos.repositories.IDatosTurnoRepository;
 import oo2.grupo5.turnos.repositories.IEmpleadoRepository;
 import oo2.grupo5.turnos.repositories.IServicioRepository;
 import oo2.grupo5.turnos.repositories.ITurnoRepository;
+import oo2.grupo5.turnos.services.interfaces.IDatosTurnoService;
 import oo2.grupo5.turnos.services.interfaces.ITurnoService;
 
 @Service
@@ -33,14 +42,16 @@ public class TurnoServiceImp implements ITurnoService {
 	private final ITurnoRepository turnoRepository;
 	private final IServicioRepository servicioRepository;
 	private final IEmpleadoRepository empleadoRepository;
+	private final IDatosTurnoService datosTurnoService;
 	private final ModelMapper modelMapper;
 	
-	public TurnoServiceImp(ITurnoRepository turnoRepository, IDatosTurnoRepository datosTurnoRepository, IServicioRepository servicioRepository, IEmpleadoRepository empleadoRepository, ModelMapper modelMapper) {
+	public TurnoServiceImp(IDatosTurnoService datosTurnoService, ITurnoRepository turnoRepository, IDatosTurnoRepository datosTurnoRepository, IServicioRepository servicioRepository, IEmpleadoRepository empleadoRepository, ModelMapper modelMapper) {
         
 		this.turnoRepository = turnoRepository;
 		this.datosTurnoRepository = datosTurnoRepository;
 		this.servicioRepository = servicioRepository;
 		this.empleadoRepository = empleadoRepository;
+		this.datosTurnoService = datosTurnoService;
         this.modelMapper = modelMapper;
     }
 	
@@ -130,4 +141,67 @@ public class TurnoServiceImp implements ITurnoService {
 		 return new PageImpl<>(turnos, pageable, turnos.size());
 	}
 	
+
+	@Override
+	public TurnoApiResponseDTO saveApi(TurnoApiRequestDTO turnoApiRequestDTO, 
+            DatosTurnoApiRequestDTO datosTurnoRequestDTO) {
+
+		DatosTurnoApiResponseDTO datosTurnoResponse = datosTurnoService.saveDatosTurnoApi(datosTurnoRequestDTO);
+
+		// Obtenemos la entidad DatosTurno recién creada para asociarla
+		DatosTurno datosTurno = datosTurnoRepository.findById(datosTurnoResponse.idDatosTurno())
+				.orElseThrow(() -> new EntityNotFoundException("Error al recuperar los datos del turno creados"));
+
+		// Creamos la entidad Turno manualmente desde el record
+		Turno turno = new Turno();
+		turno.setHora(turnoApiRequestDTO.hora());
+		turno.setEstado(turnoApiRequestDTO.estado());
+		turno.setDatosTurno(datosTurno);  // Asociamos los datos recién creados
+
+		// Persistimos la entidad Turno
+		Turno saved = turnoRepository.save(turno);
+
+		// Mapeo manual inline para la respuesta
+		return new TurnoApiResponseDTO(
+				saved.getIdTurno(),
+				saved.getHora(),
+				saved.getEstado(),
+				saved.getDatosTurno() != null ?
+						new DatosTurnoApiResponseDTO(
+				                turno.getDatosTurno().getIdDatosTurno(),
+				                turno.getDatosTurno().getFecha(),
+				                turno.getDatosTurno().getCliente() != null ? 
+				                		turno.getDatosTurno().getCliente().getNombre() : null,
+				                turno.getDatosTurno().getEmpleado() != null ? 
+				                		turno.getDatosTurno().getEmpleado().getNombre() : null,
+				                turno.getDatosTurno().getServicio() != null ? 
+				                		turno.getDatosTurno().getServicio().getNombre() : null
+				) : null
+			);
+	}
+	
+	@Override
+	public TurnoApiResponseDTO findByIdApi(Integer idTurno) {
+
+	    Turno turno = turnoRepository.findById(idTurno)
+	        .orElseThrow(() -> new EntityNotFoundException(
+	            MessageFormat.format("El turno con id {0} no ha sido encontrado", idTurno)));
+	    
+	    return new TurnoApiResponseDTO(
+	        turno.getIdTurno(),              
+	        turno.getHora(),                  
+	        turno.getEstado(),                
+	        turno.getDatosTurno() != null ?
+	            new DatosTurnoApiResponseDTO(
+	                turno.getDatosTurno().getIdDatosTurno(),
+	                turno.getDatosTurno().getFecha(),
+	                turno.getDatosTurno().getCliente() != null ? 
+	                		turno.getDatosTurno().getCliente().getNombre() : null,
+	                turno.getDatosTurno().getEmpleado() != null ? 
+	                		turno.getDatosTurno().getEmpleado().getNombre() : null,
+	                turno.getDatosTurno().getServicio() != null ? 
+	                		turno.getDatosTurno().getServicio().getNombre() : null
+	            ) : null
+	    );
+	}
 }
