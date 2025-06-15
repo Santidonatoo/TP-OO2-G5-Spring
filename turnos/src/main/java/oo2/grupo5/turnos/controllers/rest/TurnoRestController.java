@@ -78,7 +78,6 @@ public class TurnoRestController {
         System.out.println("ID Empleado: " + dto.idEmpleado());
         System.out.println("ID Servicio: " + dto.idServicio());
 
-        // Crear los DTOs separados para el service
         DatosTurnoApiRequestDTO datosTurnoRequest = new DatosTurnoApiRequestDTO(
             dto.fecha(),
             dto.idCliente(),
@@ -104,7 +103,7 @@ public class TurnoRestController {
             @RequestParam(defaultValue = "10") int size,
             @Parameter(
                     description = "Campo por el cual ordenar",
-                    schema = @Schema(allowableValues = {"idTurno", "nombre"})
+                    schema = @Schema(allowableValues = {"idTurno", "hora"})
                 )
             @RequestParam(defaultValue = "idTurno") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
