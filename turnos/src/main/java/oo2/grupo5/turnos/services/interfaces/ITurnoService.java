@@ -35,5 +35,6 @@ public interface ITurnoService {
 	
 	public Page<TurnoResponseDTO> findTurnosByPersona(Pageable pageable, Integer idPersona);
 	
+	public Page<TurnoApiResponseDTO> findAllApiPaginated(int page, int size, String sortBy, String sortDir);
 	
 }

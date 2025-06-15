@@ -9,7 +9,9 @@ import java.util.stream.Stream;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -203,5 +205,32 @@ public class TurnoServiceImp implements ITurnoService {
 	                		turno.getDatosTurno().getServicio().getNombre() : null
 	            ) : null
 	    );
+	}
+	
+	@Override
+	public Page<TurnoApiResponseDTO> findAllApiPaginated(int page, int size, String sortBy, String sortDir) {
+	    Sort sort = sortDir.equalsIgnoreCase("desc") ? 
+	            Sort.by(sortBy).descending() : 
+	            Sort.by(sortBy).ascending();
+	    
+	    Pageable pageable = PageRequest.of(page, size, sort);
+	    Page<Turno> turnosPage = turnoRepository.findAll(pageable);
+	    
+	    return turnosPage.map(turno -> new TurnoApiResponseDTO(
+	            turno.getIdTurno(),
+	            turno.getHora(),
+	            turno.getEstado(),
+	            turno.getDatosTurno() != null ?
+	                    new DatosTurnoApiResponseDTO(
+	                            turno.getDatosTurno().getIdDatosTurno(),
+	                            turno.getDatosTurno().getFecha(),
+	                            turno.getDatosTurno().getCliente() != null ?
+	                                    turno.getDatosTurno().getCliente().getNombre() : null,
+	                            turno.getDatosTurno().getEmpleado() != null ?
+	                                    turno.getDatosTurno().getEmpleado().getNombre() : null,
+	                            turno.getDatosTurno().getServicio() != null ?
+	                                    turno.getDatosTurno().getServicio().getNombre() : null
+	                    ) : null
+	    ));
 	}
 }

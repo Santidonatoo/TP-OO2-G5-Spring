@@ -107,5 +107,20 @@ public class TurnoRestController {
         TurnoApiResponseDTO creado = turnoService.saveApi(turnoRequest, datosTurnoRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
-
+    
+    @Operation(summary = "Lista de turnos paginada", description = "Devuelve una lista paginada de turnos")
+    @GetMapping("/page")
+    @PreAuthorize("hasAnyRole('CLIENT', 'EMPLOYEE', 'ADMIN')")
+    public ResponseEntity<Page<TurnoApiResponseDTO>> getAllTurnosPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "idTurno") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        try {
+            Page<TurnoApiResponseDTO> turnos = turnoService.findAllApiPaginated(page, size, sortBy, sortDir);
+            return ResponseEntity.ok(turnos);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
