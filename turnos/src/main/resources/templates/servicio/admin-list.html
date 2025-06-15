@@ -118,7 +118,7 @@
 					<td>
 						<div th:if="${servicio.listaDisponibilidades != null}">
 							<span th:each="disp : ${servicio.listaDisponibilidades}">
-								<span th:switch="${disp.diaSemana}">
+								<span th:switch="${disp.diaSemana.toString().toUpperCase()}">
 									<span th:case="'MONDAY'">Lunes</span>
 									<span th:case="'TUESDAY'">Martes</span>
 									<span th:case="'WEDNESDAY'">Miércoles</span>

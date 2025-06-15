@@ -76,8 +76,40 @@
 			              border: 1px solid #ddd;
 			              text-align: center;
 			          }
+					  /* Estilos para el selector de días */
+					  .btn-dia {
+					       background-color: #6c757d;
+				           color: white;
+				           padding: 8px;
+				           border: none;
+				           border-radius: 5px;
+				           cursor: pointer;
+				           width: 100%;
+				     }
+					 .btn-dia:hover {
+					 	background-color: #5a6268;
+					 }
 
-		      
+					 .dropdown {
+					   	 display: none;
+					     position: absolute;
+					     background: white;
+			             border: 1px solid #ccc;
+				         width: 150px;
+				         box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+				         z-index: 100;
+				         border-radius: 5px;					         
+						 transition: opacity 0.3s ease-in-out;
+					}
+
+					.dropdown div {
+					     padding: 10px;
+					     cursor: pointer;
+					}
+
+					.dropdown div:hover {
+					     background-color: #f0f0f0;
+					}
 			   
 		   </style>
 	</head>
@@ -196,67 +228,68 @@
         requiereEmpleadoCheckbox.addEventListener("change", toggleEmpleados);
     });
 </script>
-
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const diasMap = {
-            'lunes': 'MONDAY',
-            'martes': 'TUESDAY',
-            'miércoles': 'WEDNESDAY',
-            'miercoles': 'WEDNESDAY',
-            'jueves': 'THURSDAY',
-            'viernes': 'FRIDAY',
-            'sábado': 'SATURDAY',
-            'sabado': 'SATURDAY',
-            'domingo': 'SUNDAY'
-        };
+document.addEventListener("DOMContentLoaded", function () {
+    let horarioIndex = 0;
+    const tbody = document.getElementById('tablaHorarios').querySelector('tbody');
+    const btnAgregar = document.getElementById('agregarHorario');
+    
+    btnAgregar.addEventListener('click', function () {
+        const fila = document.createElement('tr');
 
-        let horarioIndex = 0;
-        const tbody = document.getElementById('tablaHorarios').querySelector('tbody');
-        const btnAgregar = document.getElementById('agregarHorario');
+        // Celda para el botón del día y su lista desplegable
+        const celdaDia = document.createElement('td');
+        celdaDia.innerHTML = `
+            <button type="button" class="btn-dia" onclick="toggleDropdown(this)">Día</button>
+            <div class="dropdown" style="display: none;">
+                <div onclick="selectDay(this, 'Lunes', 'MONDAY')">Lunes</div>
+                <div onclick="selectDay(this, 'Martes', 'TUESDAY')">Martes</div>
+                <div onclick="selectDay(this, 'Miércoles', 'WEDNESDAY')">Miércoles</div>
+                <div onclick="selectDay(this, 'Jueves', 'THURSDAY')">Jueves</div>
+                <div onclick="selectDay(this, 'Viernes', 'FRIDAY')">Viernes</div>
+                <div onclick="selectDay(this, 'Sábado', 'SATURDAY')">Sábado</div>
+                <div onclick="selectDay(this, 'Domingo', 'SUNDAY')">Domingo</div>
+            </div>
+            <input type="hidden" name="disponibilidades[${horarioIndex}].diaSemana" class="diaHidden"/>
+        `;
+        fila.appendChild(celdaDia);
 
-        btnAgregar.addEventListener('click', function () {
-            const fila = document.createElement('tr');
+        // Celdas para hora de inicio y fin
+        fila.innerHTML += `<td><input type="time" name="disponibilidades[${horarioIndex}].horaInicio" required /></td>`;
+        fila.innerHTML += `<td><input type="time" name="disponibilidades[${horarioIndex}].horaFin" required /></td>`;
 
-            const celdaDia = document.createElement('td');
-            celdaDia.innerHTML = `
-                <input type="text" name="disponibilidades[${horarioIndex}].diaInput" placeholder="Ej: lunes" required />
-                <input type="hidden" name="disponibilidades[${horarioIndex}].diaSemana" class="diaHidden" />
-            `;
-            fila.appendChild(celdaDia);
-
-            const celdaInicio = document.createElement('td');
-            celdaInicio.innerHTML = `<input type="time" name="disponibilidades[${horarioIndex}].horaInicio" required />`;
-            fila.appendChild(celdaInicio);
-
-            const celdaFin = document.createElement('td');
-            celdaFin.innerHTML = `<input type="time" name="disponibilidades[${horarioIndex}].horaFin" required />`;
-            fila.appendChild(celdaFin);
-
-            tbody.appendChild(fila);
-
-            const inputDia = fila.querySelector(`input[name="disponibilidades[${horarioIndex}].diaInput"]`);
-            const inputDiaHidden = fila.querySelector('.diaHidden');
-
-            inputDia.addEventListener('blur', function () {
-                const valor = this.value.trim().toLowerCase();
-                inputDiaHidden.value = diasMap[valor] || valor;
-            });
-            horarioIndex++;
-        });
+        tbody.appendChild(fila);
+        horarioIndex++;
     });
-</script>
-<script>
-        // Botón para togglear la sección de eliminación de disponibilidades (solo en edición)
-        document.addEventListener("DOMContentLoaded", function () {
-            const btnToggle = document.getElementById("btnToggleEliminar");
-            if(btnToggle){
-                btnToggle.addEventListener("click", function(){
-                    const div = document.getElementById("elimDisponibilidades");
-                    div.style.display = (div.style.display==='none' || div.style.display==='') ? 'block' : 'none';
-                });
-            }
+});
+
+function toggleDropdown(button) {
+    const dropdown = button.nextElementSibling;
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+}
+
+function selectDay(element, dayDisplay, dayValue) {
+    const dropdownDiv = element.parentElement;
+    const button = dropdownDiv.previousElementSibling;
+    const hiddenInput = dropdownDiv.nextElementSibling;
+    
+	// Actualiza la visualización del botón y asigna el valor (enum) al input oculto
+    button.innerText = dayDisplay;
+    hiddenInput.value = dayValue;
+	// Oculta el menú desplegable
+    dropdownDiv.style.display = "none";
+}
+
+// Botón para togglear la sección de eliminación de disponibilidades
+document.addEventListener("DOMContentLoaded", function () {
+    const btnToggle = document.getElementById("btnToggleEliminar");
+    if(btnToggle){
+        btnToggle.addEventListener("click", function(){
+            const div = document.getElementById("elimDisponibilidades");
+            div.style.display = (div.style.display==='none' || div.style.display==='') ? 'block' : 'none';
         });
+    }
+});
 </script>
 </body>
 
