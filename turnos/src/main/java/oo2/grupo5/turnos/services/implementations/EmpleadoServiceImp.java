@@ -206,6 +206,39 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	}
 	
 	@Override
+	public List<EmpleadoApiResponseDTO> findAllApi(String sortBy) {
+		
+		Sort sort = switch (sortBy.toLowerCase()) {
+			case "nombre" -> Sort.by("nombre").ascending();
+			case "dni" -> Sort.by("dni").ascending();
+			default -> Sort.by("idPersona").ascending();
+		};
+		List<Empleado> empleados = empleadoRepository.findAll(sort);
+		
+		return empleados.stream()
+				.map(empleado -> {
+					List<String> servicios = empleado.getListaServicios().stream()
+							.map(servicio -> servicio.getNombre())
+							.toList();
+					
+					return new EmpleadoApiResponseDTO(
+							empleado.getIdPersona(),
+							empleado.getNombre(),
+							empleado.getApellido(),
+							String.valueOf(empleado.getDni()),
+							empleado.getContacto() != null ?
+									empleado.getContacto().getEmail() : null,
+							empleado.getContacto() != null ?
+									empleado.getContacto().getTelefono() : null,
+							empleado.getUser() != null ?
+									empleado.getUser().getUsername() : null,
+							empleado.getPuesto(),
+							servicios);
+				})
+				.toList();
+	}
+	
+	@Override
 	public Page<EmpleadoResponseDTO> findAllNotDeleted(Pageable pageable){
     	return empleadoRepository.findAllBySoftDeletedFalse(pageable)
     			.map(entity -> modelMapper.map(entity, EmpleadoResponseDTO.class));
