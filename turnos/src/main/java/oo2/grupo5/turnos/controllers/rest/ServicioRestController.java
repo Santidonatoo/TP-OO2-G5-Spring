@@ -2,9 +2,7 @@ package oo2.grupo5.turnos.controllers.rest;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +25,8 @@ import oo2.grupo5.turnos.dtos.requests.ServicioApiRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.ServicioApiResponseDTO;
 import oo2.grupo5.turnos.exceptions.ServicioNotFoundException;
 import oo2.grupo5.turnos.services.interfaces.IServicioService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/servicios")
@@ -34,6 +34,7 @@ import oo2.grupo5.turnos.services.interfaces.IServicioService;
 public class ServicioRestController {
 
     private final IServicioService servicioService;
+    private static final Logger log = LoggerFactory.getLogger(EmpleadoRestController.class);
 
 	public ServicioRestController(IServicioService servicioService) {
 		this.servicioService = servicioService;
@@ -76,10 +77,13 @@ public class ServicioRestController {
 			        schema = @Schema(allowableValues = {"idServicio", "nombre"})
 			    )
 	        @RequestParam(defaultValue = "idServicio") String sortBy) {
-   
-		List<ServicioApiResponseDTO> servicios = servicioService.findAllApi(sortBy);
-		return ResponseEntity.ok(servicios);
-     
+	   try {
+			List<ServicioApiResponseDTO> servicios = servicioService.findAllApi(sortBy);
+			return ResponseEntity.ok(servicios);
+		} catch (Exception e) {
+	        log.error("Error al obtener la lista de empleados: {}", e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
  }
 
 	
