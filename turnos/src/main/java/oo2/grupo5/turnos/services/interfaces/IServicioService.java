@@ -40,6 +40,8 @@ public interface IServicioService {
     ServicioResponseDTO restoreById(Integer idServicio);
     
     ServicioApiResponseDTO findByIdApi(Integer id);
+    
+	List<ServicioApiResponseDTO> findAllApi(String sortBy);
 
     ServicioApiResponseDTO crearServicioDesdeApi(ServicioApiRequestDTO dto);
 }

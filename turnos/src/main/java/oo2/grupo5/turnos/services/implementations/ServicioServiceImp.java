@@ -289,6 +289,31 @@ public class ServicioServiceImp implements IServicioService {
         		);
     
     }
+    
+    public List<ServicioApiResponseDTO> findAllApi(String sortBy) {
+    	Sort sort = switch (sortBy.toLowerCase()) {
+        	case "nombre" -> Sort.by("nombre").ascending();
+        	default -> Sort.by("idServicio").ascending();
+    	};
+        List<Servicio> servicios = servicioRepository.findAll(sort);
+
+        return servicios.stream()
+                .map(servicio -> {
+                	List<String> empleados = servicio.getListaEmpleados().stream()
+                            .map(e -> e.getNombre() + " " + e.getApellido())
+                            .toList();
+
+                    return new ServicioApiResponseDTO(
+                    		servicio.getIdServicio(),
+                    		servicio.getNombre(),
+                    		servicio.getDuracion(),
+                    		servicio.isRequiereEmpleado(),
+                    		servicio.getUbicacion().getLocalidad() + ", " + servicio.getUbicacion().getCalle(),
+                    		empleados
+                    		);
+                })
+                .toList();
+    }
 
     public ServicioApiResponseDTO crearServicioDesdeApi(ServicioApiRequestDTO dto) {
         Servicio servicio = new Servicio();
