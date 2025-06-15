@@ -1,17 +1,20 @@
 package oo2.grupo5.turnos.services.implementations;
 
 import java.text.MessageFormat;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import jakarta.persistence.EntityNotFoundException;
+import oo2.grupo5.turnos.dtos.requests.EmpleadoApiRequestDTO;
 import oo2.grupo5.turnos.dtos.requests.EmpleadoRequestDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoApiResponseDTO;
 import oo2.grupo5.turnos.dtos.responses.EmpleadoResponseDTO;
@@ -22,7 +25,6 @@ import oo2.grupo5.turnos.entities.Servicio;
 import oo2.grupo5.turnos.entities.User;
 import oo2.grupo5.turnos.enums.RoleType;
 import oo2.grupo5.turnos.exceptions.EmpleadoNotFoundException;
-import oo2.grupo5.turnos.exceptions.ServicioNotFoundException;
 import oo2.grupo5.turnos.repositories.IEmpleadoRepository;
 import oo2.grupo5.turnos.repositories.IPersonaRepository;
 import oo2.grupo5.turnos.repositories.IRoleRepository;
@@ -95,6 +97,63 @@ public class EmpleadoServiceImp implements IEmpleadoService{
     	return modelMapper.map(saved, EmpleadoResponseDTO.class);
 	}
 	
+	//API REST CONTROLLER
+	public EmpleadoApiResponseDTO saveApi(EmpleadoApiRequestDTO empleadoApiRequestDTO) {
+    	
+		String dniStr = empleadoApiRequestDTO.dni();
+		int dni = Integer.parseInt(dniStr);
+		
+		if (personaRepository.existsByDni(dni)) {
+	        throw new IllegalArgumentException("Ya existe una persona con el mismo dni.");
+    	}
+    	
+        if (userRepository.existsByUsername(empleadoApiRequestDTO.username())) {
+            throw new IllegalArgumentException("Ya existe un usuario con el mismo nombre de usuario.");
+        }
+        
+        Empleado empleado = new Empleado();
+        empleado.setNombre(empleadoApiRequestDTO.nombre());
+        empleado.setApellido(empleadoApiRequestDTO.apellido());
+        empleado.setDni(Integer.parseInt(empleadoApiRequestDTO.dni()));
+        empleado.setPuesto(empleadoApiRequestDTO.puesto());
+        
+        
+        //Creamos contacto y lo añadimos a empleado
+        Contacto contacto = Contacto.builder()
+        		.email(empleadoApiRequestDTO.email())
+        		.telefono(empleadoApiRequestDTO.telefono())
+        		.build();
+        empleado.setContacto(contacto);
+        
+        Empleado saved = empleadoRepository.save(empleado);
+        List<String> servicios = new ArrayList<>();
+        
+        Role rolEmpleado = roleRepository.findByType(RoleType.EMPLOYEE)
+        		.orElseThrow(() -> new RuntimeException("Rol EMPLOYEE no encontrado"));
+        
+        User user = User.builder()
+        		.username(empleadoApiRequestDTO.username())
+        		.password(empleadoApiRequestDTO.password())
+        		.active(true)
+        		.roleEntities(Set.of(rolEmpleado))        		
+        		.persona(saved)
+        		.build();
+        
+        userRepository.save(user);
+        
+        return new EmpleadoApiResponseDTO(
+        		saved.getIdPersona(),
+        		saved.getNombre(),
+        		saved.getApellido(),
+        		String.valueOf(saved.getDni()),
+        		contacto.getEmail(),
+        		contacto.getTelefono(),
+        		user.getUsername(),
+        		saved.getPuesto(),
+        		servicios
+        		);
+    }
+	
 	@Override
 	public EmpleadoResponseDTO findById(Integer idPersona) {
 		Empleado empleado = empleadoRepository.findById(idPersona)
@@ -106,6 +165,10 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	public EmpleadoApiResponseDTO findByIdApi(Integer idPersona) {
 		Empleado empleado = empleadoRepository.findById(idPersona)
 				.orElseThrow(() -> new EmpleadoNotFoundException(idPersona));
+		
+		List<String> servicios = empleado.getListaServicios().stream()
+				.map(e -> e.getNombre())
+				.toList();
 		//Mapeo manual
 	    return new EmpleadoApiResponseDTO(
 	            empleado.getIdPersona(),           
@@ -119,7 +182,7 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	            empleado.getUser() != null ? 
 	                empleado.getUser().getUsername() : null,
 	            empleado.getPuesto(),              
-	            Collections.emptySet()            // Set vacío de servicios
+	            servicios
 	        );
 	}
 	
@@ -131,8 +194,14 @@ public class EmpleadoServiceImp implements IEmpleadoService{
 	}
 	
 	@Override
-	public Page<EmpleadoResponseDTO> findAll(Pageable pageable) {
-    	return empleadoRepository.findAll(pageable)
+	public Page<EmpleadoResponseDTO> findAll(Pageable pageable, String sortBy) {
+		Sort sort = switch (sortBy.toLowerCase()) {
+        case "apellido" -> Sort.by("apellido").ascending();
+        case "dni" -> Sort.by("dni").ascending();
+        default -> Sort.by("idPersona").ascending();
+    	};
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+    	return empleadoRepository.findAll(sortedPageable)
     			.map(entity -> modelMapper.map(entity, EmpleadoResponseDTO.class));
 	}
 	

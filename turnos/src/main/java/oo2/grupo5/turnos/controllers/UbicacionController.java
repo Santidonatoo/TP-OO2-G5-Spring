@@ -40,9 +40,11 @@ public class UbicacionController {
     
     @GetMapping("/admin/list")
     @PreAuthorize("hasRole('ADMIN')")
-    public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable) {
-        Page<UbicacionResponseDTO> ubicaciones = ubicacionService.findAll(pageable);
+    public String listAll(Model model, @PageableDefault(size = 5) Pageable pageable,
+    		@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
+        Page<UbicacionResponseDTO> ubicaciones = ubicacionService.findAll(pageable, sortBy);
         model.addAttribute("ubicaciones", ubicaciones);
+        model.addAttribute("ordenActual", sortBy);        
         return ViewRouteHelper.UBICACION_ADMIN_LIST;
     }
 

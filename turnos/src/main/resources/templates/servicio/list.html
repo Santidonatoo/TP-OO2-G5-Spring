@@ -96,8 +96,23 @@
                 </tr>
             </tbody>
         </table>
+		<div class="paginacion" style="margin-top: 20px;">
+		    <span th:if="${servicios.hasPrevious()}">
+		        <a th:href="@{/servicio/list(page=${servicios.number - 1})}">Anterior</a>
+		    </span>
 
+		    <span th:each="i : ${#numbers.sequence(0, servicios.totalPages - 1)}" style="margin: 0 5px;">
+		        <a th:if="${i != servicios.number}"
+		           th:href="@{/servicio/list(page=${i})}"
+		           th:text="${i + 1}">1</a>
+		        <span th:if="${i == servicios.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
+		    </span>
+
+		    <span th:if="${servicios.hasNext()}">
+		        <a th:href="@{/servicio/list(page=${servicios.number + 1})}">Siguiente</a>
+		    </span> 
+		</div>
         <br>
-        <a th:href="@{/index}">Volver</a>
-</body>
-</html>
+        <a th:href="@{/index}">Volver</a> 
+</body> 
+</html> 

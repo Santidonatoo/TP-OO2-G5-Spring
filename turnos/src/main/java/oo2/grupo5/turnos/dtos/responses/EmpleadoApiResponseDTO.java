@@ -1,18 +1,37 @@
 package oo2.grupo5.turnos.dtos.responses;
 
-import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record EmpleadoApiResponseDTO(
-	    Integer idPersona,
+		
+		@JsonProperty("idPersona")
+		Integer idPersona,
+		
+		@JsonProperty("nombre")
 	    String nombre,
+	   
+	    @JsonProperty("apellido")
 	    String apellido,
+	   
+	    @JsonProperty("dni")
 	    String dni,
+	   
+	    @JsonProperty("email")
 	    String email,
+	    
+	    @JsonProperty("telefono")
 	    String telefono,
+	    
+	    @JsonProperty("username")
 	    String username,
+	    
+	    @JsonProperty("puesto")
 	    String puesto,
-	    Set<ServicioResponseDTO> servicios
+	    
+	    @JsonProperty("servicios")
+	    List<String> servicios
 		) {
 
 }
