@@ -4,6 +4,8 @@
     <title th:text="${empleadoRequestDTO.idPersona != null} ? 'Editar Empleado' : 'Nuevo Empleado'">Formulario Empleados</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" th:href="@{/css/base.css}">
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/form.css}">
 	<script>
 				document.addEventListener('DOMContentLoaded', function() {
@@ -134,8 +136,6 @@
     	<a th:href="@{/empleado/admin/list}">Volver a la lista</a>
 	</div>
 </form>
-
-
 
 </body>
 </html>
