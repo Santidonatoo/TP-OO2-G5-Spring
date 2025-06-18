@@ -1,101 +1,44 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-	<head>
-	    <title>Detalle del Cliente</title>
-	    <style>
-	        body {
-	            display: flex;
-	            flex-direction: column;
-	            justify-content: center;
-	            align-items: center;
-	            height: 100vh;
-	            background-color: #f8f9fa;
-	            font-family: Arial, sans-serif;
-	            padding: 20px;
-	        }
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <title>Detalle del Cliente</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/detalle.css}">
+</head>
+<body>
+    <div class="main-container detalle-container">
+        <h1>Detalle del Cliente</h1>
 
-	        .detalle-container {
-	            background: white;
-	            padding: 30px;
-	            border-radius: 10px;
-	            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-	            text-align: center;
-	            width: 90%;
-	            max-width: 600px;
-	        }
+        <div class="detalle-info">
+            <p><strong>Nombre:</strong> <span th:text="${cliente.nombre}"></span></p>
+            <p><strong>Apellido:</strong> <span th:text="${cliente.apellido}"></span></p>
+            <p><strong>DNI:</strong> <span th:text="${cliente.dni}"></span></p>
+            <p><strong>Fecha de nacimiento:</strong> <span th:text="${cliente.fechaDeNacimiento}"></span></p>
+            <p><strong>Último inicio de sesión:</strong> 
+                <span th:text="${#temporals.format(cliente.ultimoInicioSesion, 'yyyy-MM-dd / HH:mm')}"></span>
+            </p>
+        </div>
 
-	        h1 {
-	            color: #007bff;
-	            margin-bottom: 20px;
-	        }
+        <div class="contacto-container">
+            <h2>Contacto</h2>
+            <p><strong>Email:</strong> <span th:text="${cliente.contacto.email}"></span></p>
+            <p><strong>Teléfono:</strong> <span th:text="${cliente.contacto.telefono}"></span></p>
+        </div>
 
-	        p {
-	            font-size: 18px;
-	            color: #333;
-	            margin-bottom: 10px;
-	        }
+        <div class="action-buttons">
+            <a th:href="@{/cliente/edit/{idPersona}(idPersona=${cliente.idPersona})}" class="btn-edit">Editar</a>
 
-	        .servicios-container {
-	            margin-top: 20px;
-	            padding: 15px;
-	            border: 1px solid #ccc;
-	            border-radius: 5px;
-	            text-align: left;
-	        }
+            <form th:if="!${cliente.softDeleted}" th:action="@{/cliente/delete/{idPersona}(idPersona=${cliente.idPersona})}" method="post" style="display:inline;">
+                <button type="submit" class="btn-delete">Eliminar</button>
+            </form>
 
-	        .servicio-item {
-	            font-size: 16px;
-	            color: #333;
-	        }
-			button {
-				background-color: #dc3545;
-				color: white;
-				border: none;
-				cursor: pointer;
-			}
+            <form th:if="${cliente.softDeleted}" th:action="@{/cliente/restore/{idPersona}(idPersona=${cliente.idPersona})}" method="post" style="display:inline;">
+                <button type="submit" class="btn-restore">Restaurar</button>
+            </form>
 
-			button:hover {
-				background-color: #bb2d3b;
-			}
-	        a {
-	            display: inline-block;
-	            padding: 10px 15px;
-	            text-decoration: none;
-	            border-radius: 5px;
-	            background-color: #28a745;
-	            color: white;
-	            margin-top: 15px;
-	        }
-
-	        a:hover {
-	            background-color: #218838;
-	        }
-	    </style>
-	</head>
-	<body>
-	    <div class="detalle-container">
-	        <h1>Detalle del Cliente</h1>
-	        <p><strong>Nombre:</strong> <span th:text="${cliente.nombre}"></span>&nbsp;<strong>Apelldio:</strong><span th:text="${cliente.apellido}"></span></p>
-	        <p><strong>DNI:</strong> <span th:text="${cliente.dni}"></span></p>
-	        <p><strong>Fecha de nacimiento:</strong> <span th:text="${cliente.fechaDeNacimiento}"></span></p>
-			<p><strong>Ultimo inicio de sesion:</strong> <span th:text="${#temporals.format(cliente.ultimoInicioSesion, 'yyyy-MM-dd / HH:mm')}"></span></p>
-
-	        <div class="contacto-container">
-	            <h2>Contacto</h2>
-	            <p><strong>Email:</strong> <span th:text="${cliente.contacto.email}"></span></p>
-	            <p><strong>Teléfono:</strong> <span th:text="${cliente.contacto.telefono}"></span></p>
-	        </div>
-
-
-	        <br>
-	        <a th:href="@{/cliente/edit/{idPersona}(idPersona=${cliente.idPersona})}">Editar</a>
-			<form th:if="!${cliente.softDeleted}" th:action="@{/cliente/delete/{idPersona}(idPersona=${cliente.idPersona})}" method="post" style="display:inline;">
-				 <button type="submit">Eliminar</button>
-			</form>
-			<form th:if="${cliente.softDeleted}" th:action="@{/cliente/restore/{idPersona}(idPersona=${cliente.idPersona})}" method="post" style="display:inline;">
-				 <button type="submit">Restaurar</button>
-			</form>
-	        <a th:href="@{/cliente/admin/list}">Volver a la lista de clientes</a>
-	    </div>
-	</body>
-	</html>
+            <a th:href="@{/cliente/admin/list}" class="btn-volver">Volver a la lista</a>
+        </div>
+    </div>
+</body>
+</html>

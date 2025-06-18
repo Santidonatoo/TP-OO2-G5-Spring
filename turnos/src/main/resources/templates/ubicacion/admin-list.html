@@ -2,148 +2,100 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Lista de Ubicaciones</title>
-	<style>
-		        body {
-		            display: flex;
-		            flex-direction: column;
-		            justify-content: center;
-		            align-items: center;
-		            background-color: #f8f9fa;
-		            font-family: Arial, sans-serif;
-		            padding: 20px;
-		        }
-
-
-		        h1 {
-		            margin-bottom: 20px;
-		        }
-
-		        a, button {
-		            display: inline-block;
-		            padding: 10px;
-		            margin: 5px;
-		            text-decoration: none;
-		            border-radius: 5px;
-		            width: auto;
-		        }
-
-		        a {
-		            background-color: #28a745;
-		            color: white;
-		        }
-
-		        a:hover {
-		            background-color: #218838;
-		        }
-
-		        button {
-		            background-color: #dc3545;
-		            color: white;
-		            border: none;
-		            cursor: pointer;
-		        }
-
-		        button:hover {
-		            background-color: #bb2d3b;
-		        }
-
-		        table {
-		            width: 100%;
-		            border-collapse: collapse;
-		            margin-top: 20px;
-		        }
-
-		        th, td {
-		            padding: 10px;
-		            border: 1px solid #ddd;
-		            text-align: center;
-		        }
-
-		        th {
-		            background-color: #007bff;
-		            color: white;
-		        }
-
-		        .acciones {
-		            display: flex;
-		            justify-content: center;
-		            gap: 10px;
-		        }
-		    </style>
+	<link rel="stylesheet" th:href="@{/css/base.css}">
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
+	<link rel="stylesheet" th:href="@{/css/adminlist.css}">
 </head>
 <body>
-<h1>Ubicaciones disponibles</h1>
-<br>
-<a th:href="@{/ubicacion/form}">Nuevo</a>
-<a th:href="@{/ubicacion/list}">Ver activos</a>
-<form th:action="@{/ubicacion/buscar}" method="get">
-			<label for="idUbicacion">Buscar por ID:</label>
-			<input type="number" id="idUbicacion" name="idUbicacion" required />
-			<button type="submit">Buscar</button>
-		</form>
-		<div class="ordenamiento">
-				    <form method="get" th:action="@{/ubicacion/admin/list}" class="form-inline">
-				        <input type="hidden" name="page" th:value="${ubicaciones.number}" />
-				        
-				        <label for="orden" class="me-2">Ordenar por:</label>
-				        <select name="sortBy" id="orden" class="form-select d-inline w-auto me-2">
-				            <option value="id" th:selected="${ordenActual == 'id'}">ID</option>
-				            <option value="localidad" th:selected="${ordenActual == 'localidad'}">Localidad</option>
-				        </select>
-				        
-				        <button type="submit" class="btn btn-primary">Aplicar</button>
-				    </form>
-				</div>
-<table>
-    <thead>
-        <tr>
-			<th>ID</th>
-            <th>Localidad</th>
-            <th>Calle</th>
-            <th>Número</th>
-			<th>Eliminado</th>
-			<th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:each="ubicacion : ${ubicaciones}">
-			<td th:text="${ubicacion.idUbicacion}"></td>
-            <td th:text="${ubicacion.localidad}"></td>
-            <td th:text="${ubicacion.calle}"></td>
-            <td th:text="${ubicacion.numero}"></td>
-			<td th:text="${ubicacion.softDeleted} ? 'Sí' : 'No'"></td>
-		    <td>
-		       	<a th:href="@{/ubicacion/edit/{idUbicacion}(idUbicacion=${ubicacion.idUbicacion})}">Editar</a>
-		    	<form th:if="!${ubicacion.softDeleted}" th:action="@{/ubicacion/delete/{idUbicacion}(idUbicacion=${ubicacion.idUbicacion})}" method="post" style="display:inline;">
-		          	<button type="submit">Eliminar</button>
-		      	</form>
-		       	<form th:if="${ubicacion.softDeleted}" th:action="@{/ubicacion/restore/{idUbicacion}(idUbicacion=${ubicacion.idUbicacion})}" method="post" style="display:inline;">
-		          	<button type="submit">Restaurar</button>
-		       	</form>
-		  	</td>
-        </tr>
+	<div class="main-container">
+		<h1>Ubicaciones disponibles</h1>
 		
-    </tbody>
-</table>
-<div class="paginacion" style="margin-top: 20px;">
-		    <span th:if="${ubicaciones.hasPrevious()}">
-		        <a th:href="@{/ubicacion/admin/list(page=${ubicaciones.number - 1}, sortBy=${ordenActual})}">Anterior</a>
-		    </span>
-		    
-		    <span th:each="i : ${#numbers.sequence(0, ubicaciones.totalPages - 1)}" style="margin: 0 5px;">
-		        <a th:if="${i != ubicaciones.number}"
-		           th:href="@{/ubicacion/admin/list(page=${i}, sortBy=${ordenActual})}"
-		           th:text="${i + 1}">1</a>
-		        <span th:if="${i == ubicaciones.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
-		    </span>
+		<div class="action-buttons">
+			<a th:href="@{/ubicacion/form}">Nuevo</a>
+			<a th:href="@{/ubicacion/list}">Ver activos</a>
 
-		    <span th:if="${ubicaciones.hasNext()}">
-		        <a th:href="@{/ubicacion/admin/list(page=${ubicaciones.number + 1}, sortBy=${ordenActual})}">Siguiente</a>
-		    </span>
+			<div class="search-form">
+				<form th:action="@{/ubicacion/buscar}" method="get">
+					<label for="idUbicacion">Buscar por ID:</label>
+						<div class="search-input-group">
+							<input type="number" id="idUbicacion" name="idUbicacion" required />
+							<button type="submit">Buscar</button>
+						</div>
+				</form>
+			</div>
+			<div class="sort-form">
+				<form method="get" th:action="@{/ubicacion/admin/list}" class="form-inline">
+					<input type="hidden" name="page" th:value="${ubicaciones.number}" />
+					<label for="orden">Ordenar por:</label>
+			        <div class="sort-input-group">
+						<select name="sortBy" id="orden">
+							<option value="id" th:selected="${ordenActual == 'id'}">ID</option>
+							<option value="localidad" th:selected="${ordenActual == 'localidad'}">Localidad</option>
+						</select>
+			         	<button type="submit" class="btn btn-primary">Aplicar</button>
+			    	</div>
+			    </form>
+			</div>
 		</div>
-<br>
-<a th:href="@{/servicio/admin/list}">Ver servicios</a>
-<a th:href="@{/index}">Volver</a>
-
+		
+		<div class="table-container">    
+			<table>
+			    <thead>
+			        <tr>
+						<th>ID</th>
+			            <th>Localidad</th>
+			            <th>Calle</th>
+			            <th>Número</th>
+						<th>Eliminado</th>
+						<th>Acciones</th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			        <tr th:each="ubicacion : ${ubicaciones}">
+						<td th:text="${ubicacion.idUbicacion}"></td>
+			            <td th:text="${ubicacion.localidad}"></td>
+			            <td th:text="${ubicacion.calle}"></td>
+			            <td th:text="${ubicacion.numero}"></td>
+						<td>
+						 	<span class="status-badge" th:classappend="${ubicacion.softDeleted} ? 'deleted' : 'active'" 
+								 th:text="${ubicacion.softDeleted} ? 'Sí' : 'No'"></span>
+						</td>
+						<td>
+							<div class="acciones">
+						       	<a th:href="@{/ubicacion/edit/{idUbicacion}(idUbicacion=${ubicacion.idUbicacion})}" class="btn-edit">Editar</a>
+						       	<form th:if="!${ubicacion.softDeleted}" th:action="@{/ubicacion/delete/{idUbicacion}(idUbicacion=${ubicacion.idUbicacion})}" method="post" style="display:inline;">
+						      		<button type="submit" class="btn-delete">Eliminar</button>
+						        </form>
+						        <form th:if="${ubicacion.softDeleted}" th:action="@{/ubicacion/restore/{idUbicacion}(idUbicacion=${ubicacion.idUbicacion})}" method="post" style="display:inline;">
+						         	<button type="submit" class="btn-restore">Restaurar</button>
+						    	</form>
+							 </div>
+						</td>
+					    
+			        </tr>
+					
+			    </tbody>
+			</table>
+		</div>
+			        
+		<div class="paginacion">
+			<span th:if="${ubicaciones.hasPrevious()}">
+				<a th:href="@{/ubicacion/admin/list(page=${ubicaciones.number - 1}, sortBy=${ordenActual})}">Anterior</a>
+			</span>         
+				<span th:each="i : ${#numbers.sequence(0, ubicaciones.totalPages - 1)}">
+				  	<a th:if="${i != ubicaciones.number}"
+				        th:href="@{/ubicacion/admin/list(page=${i}, sortBy=${ordenActual})}"
+				    	th:text="${i + 1}">1</a>
+				<span th:if="${i == ubicaciones.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
+			</span>
+			<span th:if="${ubicaciones.hasNext()}">
+			   	<a th:href="@{/ubicacion/admin/list(page=${ubicaciones.number + 1}, sortBy=${ordenActual})}">Siguiente</a>
+			</span>
+		</div>
+			        
+		<div class="back-button">
+			<a th:href="@{/index}">Volver</a>
+		</div>
+	</div>
 </body>
 </html>

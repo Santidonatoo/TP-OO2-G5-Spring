@@ -2,171 +2,125 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Lista de Servicios para el rol ADMIN</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        a, button {
-            display: inline-block;
-            padding: 10px;
-            margin: 5px;
-            text-decoration: none;
-            border-radius: 5px;
-            width: auto;
-        }
-
-        a {
-            background-color: #28a745;
-            color: white;
-        }
-
-        a:hover {
-            background-color: #218838;
-        }
-
-        button {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #bb2d3b;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .acciones {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/adminlist.css}">
 </head>
 <body>
+    <div class="main-container">
         <h1>Todos los Servicios eliminados o no</h1>
 
-        <a th:href="@{/servicio/form}">Nuevo</a>
-        <a th:href="@{/servicio/list}">Ver activos</a>
-		
-		<form th:action="@{/servicio/buscar}" method="get">
-		    <label for="idServicio">Buscar por ID:</label>
-		    <input type="number" id="idServicio" name="idServicio" required />
-		    <button type="submit">Buscar</button>
-		</form>
-		<div class="ordenamiento">
-		    <form method="get" th:action="@{/servicio/admin/list}" class="form-inline">
-		        <input type="hidden" name="page" th:value="${servicios.number}" />
-		        
-		        <label for="orden" class="me-2">Ordenar por:</label>
-		        <select name="sortBy" id="orden" class="form-select d-inline w-auto me-2">
-		            <option value="id" th:selected="${ordenActual == 'id'}">ID</option>
-		            <option value="nombre" th:selected="${ordenActual == 'nombre'}">Nombre</option>
-		        </select>
-		        
-		        <button type="submit" class="btn btn-primary">Aplicar</button>
-		    </form>
-		</div>
-        <table>
-            <thead>
-                <tr>
-					<th>ID</th>
-                    <th>Nombre</th>
-                    <th>Duración</th>
-                    <th>Requiere Empleado</th>
-                    <th>Ubicación</th>
-					<th>Días y Horarios</th>
-                    <th>Eliminado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="servicio : ${servicios}">
-					<td th:text="${servicio.idServicio}"></td>
-                    <td th:text="${servicio.nombre}"></td>
-                    <td th:text="${servicio.duracion} + ' min'"></td>
-                    <td th:text="${servicio.requiereEmpleado} ? 'Sí' : 'No'"></td>
-                    <td th:text="${servicio.ubicacion != null} ? ${servicio.ubicacion.localidad} + ', ' + ${servicio.ubicacion.calle} + ' ' + ${servicio.ubicacion.numero} : 'Sin ubicación'"></td>
-					<td>
-						<div th:if="${servicio.listaDisponibilidades != null}">
-							<span th:each="disp : ${servicio.listaDisponibilidades}">
-								<span th:switch="${disp.diaSemana.toString().toUpperCase()}">
-									<span th:case="'MONDAY'">Lunes</span>
-									<span th:case="'TUESDAY'">Martes</span>
-									<span th:case="'WEDNESDAY'">Miércoles</span>
-									<span th:case="'THURSDAY'">Jueves</span>
-									<span th:case="'FRIDAY'">Viernes</span>
-									<span th:case="'SATURDAY'">Sábado</span>
-									<span th:case="'SUNDAY'">Domingo</span>
-									<span th:case="*">[[${disp.diaSemana}]]</span>
-								</span>
-								&nbsp;
-								<span th:text="${#temporals.format(disp.horaInicio, 'HH:mm')}"></span>
-								-
-								<span th:text="${#temporals.format(disp.horaFin, 'HH:mm')}"></span>
-								<br/>
-							</span>
-						</div>
-					</td>				
-                    <td th:text="${servicio.softDeleted} ? 'Sí' : 'No'"></td>
-                    <td class="acciones">
-                        <a th:href="@{/servicio/edit/{idServicio}(idServicio=${servicio.idServicio})}">Editar</a>
-                        <form th:if="!${servicio.softDeleted}" th:action="@{/servicio/delete/{idServicio}(idServicio=${servicio.idServicio})}" method="post">
-                            <button type="submit">Eliminar</button>
-                        </form>
-                        <form th:if="${servicio.softDeleted}" th:action="@{/servicio/restore/{idServicio}(idServicio=${servicio.idServicio})}" method="post">
-                            <button type="submit">Restaurar</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-		<div class="paginacion" style="margin-top: 20px;">
-		    <span th:if="${servicios.hasPrevious()}">
-		        <a th:href="@{/servicio/admin/list(page=${servicios.number - 1}, sortBy=${ordenActual})}">Anterior</a>
-		    </span>
-		    
-		    <span th:each="i : ${#numbers.sequence(0, servicios.totalPages - 1)}" style="margin: 0 5px;">
-		        <a th:if="${i != servicios.number}"
-		           th:href="@{/servicio/admin/list(page=${i}, sortBy=${ordenActual})}"
-		           th:text="${i + 1}">1</a>
-		        <span th:if="${i == servicios.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
-		    </span>
+        <div class="action-buttons">
+            <a th:href="@{/servicio/form}">Nuevo</a>
+            <a th:href="@{/servicio/list}">Ver activos</a>
 
-		    <span th:if="${servicios.hasNext()}">
-		        <a th:href="@{/servicio/admin/list(page=${servicios.number + 1}, sortBy=${ordenActual})}">Siguiente</a>
-		    </span>
-		</div>
+            <div class="search-form">
+                <form th:action="@{/servicio/buscar}" method="get">
+                    <label for="idServicio">Buscar por ID:</label>
+                    <div class="search-input-group">
+                        <input type="number" id="idServicio" name="idServicio" required />
+                        <button type="submit">Buscar</button>
+                    </div>
+                </form>
+            </div>
 
-        <br>
-        <a th:href="@{/index}">Volver</a>
+            <div class="sort-form">
+                <form method="get" th:action="@{/servicio/admin/list}">
+                    <input type="hidden" name="page" th:value="${servicios.number}" />
+                    <label for="orden">Ordenar por:</label>
+                    <div class="sort-input-group">
+                        <select name="sortBy" id="orden">
+                            <option value="id" th:selected="${ordenActual == 'id'}">ID</option>
+                            <option value="nombre" th:selected="${ordenActual == 'nombre'}">Nombre</option>
+                        </select>
+                        <button type="submit">Aplicar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Duración</th>
+                        <th>Requiere Empleado</th>
+                        <th>Ubicación</th>
+                        <th>Días y Horarios</th>
+                        <th>Eliminado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="servicio : ${servicios}">
+                        <td th:text="${servicio.idServicio}"></td>
+                        <td th:text="${servicio.nombre}"></td>
+                        <td th:text="${servicio.duracion} + ' min'"></td>
+                        <td th:text="${servicio.requiereEmpleado} ? 'Sí' : 'No'"></td>
+                        <td th:text="${servicio.ubicacion != null} ? ${servicio.ubicacion.localidad} + ', ' + ${servicio.ubicacion.calle} + ' ' + ${servicio.ubicacion.numero} : 'Sin ubicación'"></td>
+                        <td>
+                            <div th:if="${servicio.listaDisponibilidades != null}">
+                                <span th:each="disp : ${servicio.listaDisponibilidades}">
+                                    <span th:switch="${disp.diaSemana.toString().toUpperCase()}">
+                                        <span th:case="'MONDAY'">Lunes</span>
+                                        <span th:case="'TUESDAY'">Martes</span>
+                                        <span th:case="'WEDNESDAY'">Miércoles</span>
+                                        <span th:case="'THURSDAY'">Jueves</span>
+                                        <span th:case="'FRIDAY'">Viernes</span>
+                                        <span th:case="'SATURDAY'">Sábado</span>
+                                        <span th:case="'SUNDAY'">Domingo</span>
+                                        <span th:case="*">[[${disp.diaSemana}]]</span>
+                                    </span>
+                                    &nbsp;
+                                    <span th:text="${#temporals.format(disp.horaInicio, 'HH:mm')}"></span>
+                                    -
+                                    <span th:text="${#temporals.format(disp.horaFin, 'HH:mm')}"></span>
+                                    <br/>
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-badge" th:classappend="${servicio.softDeleted} ? 'deleted' : 'active'" 
+                                  th:text="${servicio.softDeleted} ? 'Sí' : 'No'"></span>
+                        </td>
+                        <td>
+                            <div class="acciones">
+                                <a th:href="@{/servicio/edit/{idServicio}(idServicio=${servicio.idServicio})}" class="btn-edit">Editar</a>
+                                <form th:if="!${servicio.softDeleted}" th:action="@{/servicio/delete/{idServicio}(idServicio=${servicio.idServicio})}" method="post" style="display:inline;">
+                                    <button type="submit" class="btn-delete">Eliminar</button>
+                                </form>
+                                <form th:if="${servicio.softDeleted}" th:action="@{/servicio/restore/{idServicio}(idServicio=${servicio.idServicio})}" method="post" style="display:inline;">
+                                    <button type="submit" class="btn-restore">Restaurar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="paginacion">
+            <span th:if="${servicios.hasPrevious()}">
+                <a th:href="@{/servicio/admin/list(page=${servicios.number - 1}, sortBy=${ordenActual})}">Anterior</a>
+            </span>
+
+            <span th:each="i : ${#numbers.sequence(0, servicios.totalPages - 1)}">
+                <a th:if="${i != servicios.number}"
+                   th:href="@{/servicio/admin/list(page=${i}, sortBy=${ordenActual})}"
+                   th:text="${i + 1}">1</a>
+                <span th:if="${i == servicios.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
+            </span>
+
+            <span th:if="${servicios.hasNext()}">
+                <a th:href="@{/servicio/admin/list(page=${servicios.number + 1}, sortBy=${ordenActual})}">Siguiente</a>
+            </span>
+        </div>
+
+        <div class="back-button">
+            <a th:href="@{/index}">Volver</a>
+        </div>
+    </div>
 </body>
 </html>

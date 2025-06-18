@@ -3,60 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Index</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 400px;
-        }
-
-        button, a {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
-            text-align: center;
-            border-radius: 5px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        a {
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
-        }
-
-        a:hover {
-            background-color: #218838;
-        }
-
-        .admin-links {
-            margin-top: 20px;
-        }
-    </style>
+	<link rel="stylesheet" th:href="@{/css/base.css}">
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
+	<link rel="stylesheet" th:href="@{/css/index.css}">
 </head>
 <body>
     <div class="container">
@@ -67,7 +16,7 @@
         </h1>
 
         <form th:action="@{/auth/logout}" method="post">
-            <button type="submit">Logout</button>
+            <button type="submit">Cerrar Sesion</button>
         </form>
         <a th:href="@{/servicio/list}">Ver Servicios</a>
 		

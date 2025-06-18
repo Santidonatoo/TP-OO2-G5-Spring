@@ -2,82 +2,59 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .error-message {
-            color: red;
-            margin-top: 10px;
-        }
-
-        .success-message {
-            color: green;
-            margin-top: 10px;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
 </head>
 <body>
+    <!-- Partículas decorativas -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
     <div class="container">
-        <h2>Login</h2>
+        <div class="login-header">
+            <h2>Bienvenido</h2>
+            <p class="subtitle">Ingresa a tu cuenta</p>
+        </div>
+        
         <form method="post" action="/auth/loginProcess" th:action="@{/auth/loginProcess}">
-            <input type="text" name="username" placeholder="Usuario" required />
-            <input type="password" name="password" placeholder="Contraseña" required />
-            <button type="submit">Login</button>
+            <div class="input-group user-input">
+                <input type="text" name="username" placeholder="Usuario" required />
+            </div>
+            
+            <div class="input-group password-input">
+                <input type="password" name="password" placeholder="Contraseña" required />
+            </div>
+            
+            <button type="submit" class="login-btn">
+                <span>Iniciar Sesión</span>
+            </button>
+            
             <div class="error-message" th:if="${error != null}">
+                <svg class="message-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
                 Usuario o contraseña incorrectos.
             </div>
+            
             <div class="success-message" th:if="${logout != null}">
+                <svg class="message-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
                 Sesión cerrada exitosamente.
             </div>
         </form>
-        <p>No tenés una cuenta? <a th:href="@{/auth/registro}">Registrate acá</a></p>
+        
+        <div class="register-link">
+            <p>¿No tenés una cuenta? <a th:href="@{/auth/registro}">Registrate acá</a></p>
+        </div>
     </div>
 </body>
 </html>

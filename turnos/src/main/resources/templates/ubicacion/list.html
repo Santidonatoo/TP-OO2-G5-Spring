@@ -1,98 +1,63 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-    <title>Lista de Ubicaciones todos los roles</title>
-	<style>
-	        body {
-	            display: flex;
-	            flex-direction: column;
-	            justify-content: center;
-	            align-items: center;
-	            background-color: #f8f9fa;
-	            font-family: Arial, sans-serif;
-	            padding: 20px;
-	        }
-
-
-	        h1 {
-	            margin-bottom: 20px;
-	        }
-
-	        a {
-	            display: inline-block;
-	            padding: 10px;
-	            margin: 5px;
-	            text-decoration: none;
-	            border-radius: 5px;
-	            background-color: #28a745;
-	            color: white;
-	        }
-
-	        a:hover {
-	            background-color: #218838;
-	        }
-
-	        table {
-	            width: 100%;
-	            border-collapse: collapse;
-	            margin-top: 20px;
-	        }
-
-	        th, td {
-	            padding: 10px;
-	            border: 1px solid #ddd;
-	            text-align: center;
-	        }
-
-	        th {
-	            background-color: #007bff;
-	            color: white;
-	        }
-	    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Ubicaciones</title>
+	<link rel="stylesheet" th:href="@{/css/base.css}">
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
+	<link rel="stylesheet" th:href="@{/css/list.css}">
 </head>
 <body>
-<h1>Ubicaciones que no estan eliminadas</h1>
-<br>
-    <div sec:authorize="hasRole('ADMIN')">
-       <a th:href="@{/ubicacion/form}">Nuevo</a>
-    	<a th:href="@{/ubicacion/admin/list}">Ver todo</a> 
+    <div class="main-container">
+        <h1>Ubicaciones que no están eliminadas</h1>
+        
+        <div class="action-buttons">
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/ubicacion/form}">Nuevo</a>
+                <a th:href="@{/ubicacion/admin/list}">Ver todo</a> 
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Localidad</th>
+                        <th>Calle</th>
+                        <th>Número</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="ubicacion : ${ubicaciones}">
+                        <td th:text="${ubicacion.localidad}"></td>
+                        <td th:text="${ubicacion.calle}"></td>
+                        <td th:text="${ubicacion.numero}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="paginacion">
+            <span th:if="${ubicaciones.hasPrevious()}">
+                <a th:href="@{/ubicacion/list(page=${ubicaciones.number - 1})}">Anterior</a>
+            </span>
+
+            <span th:each="i : ${#numbers.sequence(0, ubicaciones.totalPages - 1)}">
+                <a th:if="${i != ubicaciones.number}"
+                   th:href="@{/ubicacion/list(page=${i})}"
+                   th:text="${i + 1}">1</a>
+                <span th:if="${i == ubicaciones.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
+            </span>
+
+            <span th:if="${ubicaciones.hasNext()}">
+                <a th:href="@{/ubicacion/list(page=${ubicaciones.number + 1})}">Siguiente</a>
+            </span> 
+        </div>
+        
+        <div class="back-button">
+            <a th:href="@{/index}">Volver</a>
+        </div>
     </div>
-<br>
-<table>
-    <thead>
-        <tr>
-            <th>Localidad</th>
-			<th>Calle</th>
-			<th>Número</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:each="ubicacion : ${ubicaciones}">
-			<td th:text="${ubicacion.localidad}"></td>
-			<td th:text="${ubicacion.calle}"></td>
-			<td th:text="${ubicacion.numero}"></td>
-        </tr>
-    </tbody>
-</table>
-<div class="paginacion" style="margin-top: 20px;">
-		    <span th:if="${ubicaciones.hasPrevious()}">
-		        <a th:href="@{/ubicacion/list(page=${ubicaciones.number - 1})}">Anterior</a>
-		    </span>
-
-		    <span th:each="i : ${#numbers.sequence(0, ubicaciones.totalPages - 1)}" style="margin: 0 5px;">
-		        <a th:if="${i != ubicaciones.number}"
-		           th:href="@{/ubicacion/list(page=${i})}"
-		           th:text="${i + 1}">1</a>
-		        <span th:if="${i == ubicaciones.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
-		    </span>
-
-		    <span th:if="${ubicaciones.hasNext()}">
-		        <a th:href="@{/ubicacion/list(page=${ubicaciones.number + 1})}">Siguiente</a>
-		    </span> 
-		</div>
-<br>
-<br>
-<a th:href="@{/index}">Volver</a>
-
 </body>
 </html>

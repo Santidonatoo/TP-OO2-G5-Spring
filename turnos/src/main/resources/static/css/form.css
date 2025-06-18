@@ -1,0 +1,554 @@
+/* === BACKGROUND Y LAYOUT === */
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  overflow-x: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, -apple-system, BlinkMacSystemFont;
+  margin: 0;
+  padding: 20px 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Efecto de brillo en el fondo */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%);
+  animation: shimmer 8s infinite linear;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+/* === PARTÍCULAS FLOTANTES === */
+body::after {
+  content: '';
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.2), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.15), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.2), transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.1), transparent),
+    radial-gradient(2px 2px at 60px 60px, rgba(255,255,255,0.15), transparent);
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: float 6s ease-in-out infinite;
+  pointer-events: none;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px); 
+    opacity: 0.8; 
+  }
+  50% { 
+    transform: translateY(-20px); 
+    opacity: 1; 
+  }
+}
+
+/* === TÍTULO PRINCIPAL === */
+h1 {
+  color: #2c3e50;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+  text-shadow: none;
+}
+
+/* === CONTENEDOR DEL FORMULARIO === */
+form {
+  max-width: 700px;
+  width: 95%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 10;
+  animation: slideUp 0.8s ease-out;
+  margin: 20px 0;
+  transition: all 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+form:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 35px 70px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+/* === GRUPOS DE INPUTS === */
+.input-group {
+  margin-bottom: 25px;
+  position: relative;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+/* === INPUTS GENERALES === */
+input, select {
+  width: 100%;
+  padding: 15px 18px;
+  border: 2px solid #e1e8ed;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #fff;
+  transition: all 0.3s ease;
+  outline: none;
+  font-family: inherit;
+  color: #495057;
+  box-sizing: border-box;
+}
+
+input:focus, select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+input::placeholder {
+  color: #a0a8b0;
+  font-weight: 400;
+}
+
+/* === INPUTS ESPECÍFICOS === */
+input[type="date"] {
+  color: #495057;
+  cursor: pointer;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  color: #667eea;
+  cursor: pointer;
+  filter: invert(0.5) sepia(1) saturate(5) hue-rotate(230deg);
+}
+
+input[type="number"] {
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="email"] {
+  text-transform: lowercase;
+}
+
+input[type="password"] {
+  letter-spacing: 2px;
+}
+
+input[type="password"]::placeholder {
+  letter-spacing: normal;
+}
+
+/* === FIELDSETS === */
+fieldset {
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  border-radius: 16px;
+  padding: 25px;
+  margin: 30px 0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+fieldset:hover {
+  border-color: rgba(102, 126, 234, 0.4);
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+legend {
+  font-weight: 700;
+  color: #2c3e50;
+  font-size: 18px;
+  padding: 0 15px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+}
+
+/* === CONTENEDOR DE SERVICIOS === */
+.servicios-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.servicio-item {
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 12px;
+  padding: 15px;
+  border-left: 4px solid #667eea;
+  transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.servicio-item:hover {
+  background: rgba(102, 126, 234, 0.1);
+  transform: translateX(5px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.servicio-item input[type="checkbox"] {
+  width: auto;
+  margin-right: 10px;
+  transform: scale(1.2);
+  accent-color: #667eea;
+  cursor: pointer;
+}
+
+.servicio-item label {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #495057;
+  text-transform: none;
+  letter-spacing: normal;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.servicio-item label:hover {
+  color: #2c3e50;
+}
+
+/* === BOTÓN PRINCIPAL === */
+button[type="submit"] {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  margin-top: 20px;
+  font-family: inherit;
+}
+
+button[type="submit"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+}
+
+button[type="submit"]:active {
+  transform: translateY(-1px);
+}
+
+button[type="submit"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+button[type="submit"]:hover::before {
+  left: 100%;
+}
+
+/* === ENLACE VOLVER === */
+.volver-link {
+  text-align: center;
+  margin-top: 25px;
+  position: relative;
+  z-index: 10;
+}
+
+.volver-link a {
+  display: inline-block;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #6c757d, #495057);
+  color: white;
+  text-decoration: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+}
+
+.volver-link a:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(108, 117, 125, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.volver-link a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.volver-link a:hover::before {
+  left: 100%;
+}
+
+/* === MENSAJES DE ERROR === */
+div[th\\:if] {
+  color: #dc3545;
+  font-size: 13px;
+  margin-top: 8px;
+  margin-left: 5px;
+  font-weight: 500;
+  animation: slideIn 0.3s ease-out;
+  background: rgba(220, 53, 69, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border-left: 3px solid #dc3545;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* === CAMPOS HIDDEN === */
+input[type="hidden"] {
+  display: none;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  body {
+    padding: 10px 0;
+  }
+  
+  form {
+    width: 95%;
+    padding: 30px 25px;
+    margin: 15px 0;
+  }
+  
+  h1 {
+    font-size: 28px;
+    margin-bottom: 25px;
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  input, select {
+    padding: 14px 16px;
+    font-size: 16px;
+  }
+  
+  fieldset {
+    padding: 20px;
+    margin: 25px 0;
+  }
+  
+  legend {
+    font-size: 16px;
+    padding: 0 12px;
+  }
+  
+  .servicios-container {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .servicio-item {
+    padding: 12px;
+  }
+  
+  .servicio-item label {
+    font-size: 15px;
+  }
+  
+  button[type="submit"] {
+    padding: 16px;
+    font-size: 17px;
+  }
+  
+  .volver-link a {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  form {
+    width: 95%;
+    padding: 25px 20px;
+    margin: 10px 0;
+  }
+  
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .input-group {
+    margin-bottom: 18px;
+  }
+  
+  input, select {
+    padding: 13px 15px;
+    font-size: 15px;
+  }
+  
+  label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  
+  fieldset {
+    padding: 18px;
+    margin: 20px 0;
+  }
+  
+  legend {
+    font-size: 15px;
+    padding: 0 10px;
+  }
+  
+  .servicio-item {
+    padding: 10px;
+  }
+  
+  .servicio-item label {
+    font-size: 14px;
+  }
+  
+  button[type="submit"] {
+    padding: 15px;
+    font-size: 16px;
+  }
+  
+  .volver-link a {
+    padding: 11px 18px;
+    font-size: 14px;
+  }
+  
+  div[th\\:if] {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+/* === VALIDACIÓN EN TIEMPO REAL === */
+input:valid {
+  border-color: #28a745;
+}
+
+input:invalid:not(:placeholder-shown) {
+  border-color: #dc3545;
+}
+
+input:valid:not(:placeholder-shown) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2328a745' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 20px;
+}
+
+/* === LOADING ANIMATION PARA BOTÓN === */
+button[type="submit"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+button[type="submit"]:disabled::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@keyframes spin {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
+}

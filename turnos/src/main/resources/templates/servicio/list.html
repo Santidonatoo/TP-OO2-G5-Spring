@@ -1,118 +1,85 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-    <title>Lista de Servicios todos los roles</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        a {
-            display: inline-block;
-            padding: 10px;
-            margin: 5px;
-            text-decoration: none;
-            border-radius: 5px;
-            background-color: #28a745;
-            color: white;
-        }
-
-        a:hover {
-            background-color: #218838;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Servicios</title>
+	<link rel="stylesheet" th:href="@{/css/base.css}">
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
+	<link rel="stylesheet" th:href="@{/css/list.css}">
 </head>
 <body>
+    <div class="main-container">
         <h1>Servicios que no están eliminados</h1>
-
-        <div sec:authorize="hasRole('ADMIN')">
-            <a th:href="@{/servicio/form}">Nuevo</a>
-            <a th:href="@{/servicio/admin/list}">Ver todo</a>
+        
+        <div class="action-buttons">
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/servicio/form}">Nuevo</a>
+                <a th:href="@{/servicio/admin/list}">Ver todo</a>
+            </div>
         </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Duración</th>
+                        <th>Ubicación</th>
+                        <th>Días y Horarios</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="servicio : ${servicios}">
+                        <td th:text="${servicio.nombre}"></td>
+                        <td th:text="${servicio.duracion} + ' min'"></td>
+                        <td th:text="${servicio.ubicacion.localidad} + ', ' + ${servicio.ubicacion.calle} + ' ' + ${servicio.ubicacion.numero}"></td>
+                        <td>
+                            <div th:if="${servicio.listaDisponibilidades != null}">
+                                <span th:each="disp : ${servicio.listaDisponibilidades}">
+                                    <span th:switch="${disp.diaSemana.toString().toUpperCase()}">
+                                        <span th:case="'MONDAY'">Lunes</span>
+                                        <span th:case="'TUESDAY'">Martes</span>
+                                        <span th:case="'WEDNESDAY'">Miércoles</span>
+                                        <span th:case="'THURSDAY'">Jueves</span>
+                                        <span th:case="'FRIDAY'">Viernes</span>
+                                        <span th:case="'SATURDAY'">Sábado</span>
+                                        <span th:case="'SUNDAY'">Domingo</span>
+                                        <span th:case="*">[[${disp.diaSemana}]]</span>
+                                    </span>
+                                    &nbsp;
+                                    <span th:text="${#temporals.format(disp.horaInicio, 'HH:mm')}"></span>
+                                    -
+                                    <span th:text="${#temporals.format(disp.horaFin, 'HH:mm')}"></span> 
+                                    <br/>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="paginacion">
+            <span th:if="${servicios.hasPrevious()}">
+                <a th:href="@{/servicio/list(page=${servicios.number - 1})}">Anterior</a>
+            </span>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Duración</th>
-                    <th>Ubicación</th>
-					<th>Días y Horarios</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="servicio : ${servicios}">
-                    <td th:text="${servicio.nombre}"></td>
-                    <td th:text="${servicio.duracion} + ' min'"></td>
-                    <td th:text="${servicio.ubicacion.localidad} + ', ' + ${servicio.ubicacion.calle} + ' ' + ${servicio.ubicacion.numero}"></td>
-					<td>
-						<div th:if="${servicio.listaDisponibilidades != null}">
-							<span th:each="disp : ${servicio.listaDisponibilidades}">
-								<span th:switch="${disp.diaSemana.toString().toUpperCase()}">
-									<span th:case="'MONDAY'">Lunes</span>
-						            <span th:case="'TUESDAY'">Martes</span>
-						            <span th:case="'WEDNESDAY'">Miércoles</span>
-						            <span th:case="'THURSDAY'">Jueves</span>
-						            <span th:case="'FRIDAY'">Viernes</span>
-						            <span th:case="'SATURDAY'">Sábado</span>
-						            <span th:case="'SUNDAY'">Domingo</span>
-						            <span th:case="*">[[${disp.diaSemana}]]</span>
-								</span>
-						        &nbsp;
-								<span th:text="${#temporals.format(disp.horaInicio, 'HH:mm')}"></span>
-								-
-								<span th:text="${#temporals.format(disp.horaFin, 'HH:mm')}"></span> 
-								<br/>
-							</span>
-						</div>
-					</td>
-                </tr>
-            </tbody>
-        </table>
-		<div class="paginacion" style="margin-top: 20px;">
-		    <span th:if="${servicios.hasPrevious()}">
-		        <a th:href="@{/servicio/list(page=${servicios.number - 1})}">Anterior</a>
-		    </span>
+            <span th:each="i : ${#numbers.sequence(0, servicios.totalPages - 1)}">
+                <a th:if="${i != servicios.number}"
+                   th:href="@{/servicio/list(page=${i})}"
+                   th:text="${i + 1}">1</a>
+                <span th:if="${i == servicios.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
+            </span>
 
-		    <span th:each="i : ${#numbers.sequence(0, servicios.totalPages - 1)}" style="margin: 0 5px;">
-		        <a th:if="${i != servicios.number}"
-		           th:href="@{/servicio/list(page=${i})}"
-		           th:text="${i + 1}">1</a>
-		        <span th:if="${i == servicios.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
-		    </span>
-
-		    <span th:if="${servicios.hasNext()}">
-		        <a th:href="@{/servicio/list(page=${servicios.number + 1})}">Siguiente</a>
-		    </span> 
-		</div>
-        <br>
-        <a th:href="@{/index}">Volver</a> 
-</body> 
-</html> 
+            <span th:if="${servicios.hasNext()}">
+                <a th:href="@{/servicio/list(page=${servicios.number + 1})}">Siguiente</a>
+            </span> 
+        </div>
+        
+        <div class="back-button">
+            <a th:href="@{/index}">Volver</a>
+        </div>
+    </div>
+</body>
+</html>
