@@ -2,80 +2,66 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="es">
 <head>
     <title>Lista de Turnos</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        a {
-            display: inline-block;
-            padding: 10px;
-            margin: 5px;
-            text-decoration: none;
-            border-radius: 5px;
-            background-color: #28a745;
-            color: white;
-        }
-
-        a:hover {
-            background-color: #218838;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-    </style>
+	<link rel="stylesheet" th:href="@{/css/base.css}">
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
+	<link rel="stylesheet" th:href="@{/css/adminlist.css}">
 </head>
 <body>
-    <h1>Lista de Turnos</h1>
+	<div class="main-container">
+	    <h1>Lista de Turnos</h1>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Estado</th>
-                <th>Cliente</th>
-                <th>Empleado</th>
-                <th>Servicio</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="turno : ${turnos}">
-                <td th:text="${#temporals.format(turno.datosTurno.fecha, 'dd/MM/yyyy')}"></td>
-                <td th:text="${#temporals.format(turno.hora, 'HH:mm')}"></td>
-                <td th:text="${turno.estado}"></td>
-                <td th:text="${turno.datosTurno.cliente != null ? turno.datosTurno.cliente.nombre : 'No asignado'}"></td>
-                <td th:text="${turno.datosTurno.empleado != null ? turno.datosTurno.empleado.nombre : 'No asignado'}"></td>
-                <td th:text="${turno.datosTurno.servicio.nombre}"></td>
-            </tr>
-        </tbody>
-    </table>
+	    <div class="action-buttons">
+	        <div sec:authorize="hasRole('ADMIN')">
+	            <a th:href="@{/turno/form}">Nuevo</a>
+	            <a th:href="@{/turno/admin/list}">Ver todo</a>
+	        </div>
+	    </div>
 
-    <br>
-    <a th:href="@{/index}">Volver</a>
+	    <div class="table-container">
+	        <table>
+	            <thead>
+	                <tr>
+	                    <th>Fecha</th>
+	                    <th>Hora</th>
+	                    <th>Estado</th>
+	                    <th>Cliente</th>
+	                    <th>Empleado</th>
+	                    <th>Servicio</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+	                <tr th:each="turno : ${turnos}">
+	                    <td th:text="${#temporals.format(turno.datosTurno.fecha, 'dd/MM/yyyy')}"></td>
+	                    <td th:text="${#temporals.format(turno.hora, 'HH:mm')}"></td>
+	                    <td th:text="${turno.estado}"></td>
+	                    <td th:text="${turno.datosTurno.cliente != null ? turno.datosTurno.cliente.nombre : 'No asignado'}"></td>
+	                    <td th:text="${turno.datosTurno.empleado != null ? turno.datosTurno.empleado.nombre : 'No asignado'}"></td>
+	                    <td th:text="${turno.datosTurno.servicio.nombre}"></td>
+	                </tr>
+	            </tbody>
+	        </table>
+	    </div>
+
+	    <div class="paginacion">
+	        <span th:if="${turnos.hasPrevious()}">
+	            <a th:href="@{/turno/list(page=${turnos.number - 1})}">Anterior</a>
+	        </span>
+
+	        <span th:each="i : ${#numbers.sequence(0, turnos.totalPages - 1)}">
+	            <a th:if="${i != turnos.number}"
+	               th:href="@{/turno/list(page=${i})}"
+	               th:text="${i + 1}">1</a>
+	            <span th:if="${i == turnos.number}" style="font-weight: bold;" th:text="${i + 1}">1</span>
+	        </span>
+
+	        <span th:if="${turnos.hasNext()}">
+	            <a th:href="@{/turno/list(page=${turnos.number + 1})}">Siguiente</a>
+	        </span>
+	    </div>
+
+	    <div class="back-button">
+	        <a th:href="@{/index}">Volver</a>
+	    </div>
+	</div>
 </body>
 </html>

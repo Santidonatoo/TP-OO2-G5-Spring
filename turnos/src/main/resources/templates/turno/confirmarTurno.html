@@ -3,89 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <title>Confirmar Turno</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-            color: #343a40;
-        }
-
-        .confirmation-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 350px;
-            text-align: center;
-        }
-
-        h2 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #495057;
-        }
-
-        .button-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .confirm-button {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .confirm-button:hover {
-            background-color: #218838;
-        }
-
-        .cancel-button {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .cancel-button:hover {
-            background-color: #c82333;
-        }
-    </style>
+	<link rel="stylesheet" th:href="@{/css/base.css}">
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
+	<link rel="stylesheet" th:href="@{/css/confirmar.css}">
 </head>
 <body>
-    <h1>Confirme su turno!</h1>
-    <div class="confirmation-container">
-        <h2>Servicio: <span th:text="${servicio}"></span></h2>  
-		<h2 th:if="${empleado != null}">Empleado: <span th:text="${empleado.nombre + ' ' + empleado.apellido}"></span></h2>
-		<h2 th:if="${empleado == null}">Empleado: No asignado</h2>
-        <h2>Fecha: <span th:text="${datosTurno.fecha}"></span></h2>
-        <h2>Horario: <span th:text="${turno.hora}"></span></h2>
-
-        <div class="button-container">
-            <form th:action="@{/turno/turno-exitoso}" method="post">
-                <button type="submit" class="confirm-button">Confirmar</button>
-            </form>
-            <form th:action="@{/index}" method="post">
-                <button type="submit" class="cancel-button">Cancelar</button>
-            </form>
-        </div>
-    </div>
+	<div class="main-container">
+	      <h1>¡Confirme su turno!</h1>
+	      
+	      <div class="confirmation-container">
+	          <!-- Información del turno -->
+	          <div class="info-item">
+	              <span class="label">Servicio:</span>
+	              <span class="value" th:text="${servicio}">Corte de cabello</span>
+	          </div>
+	          
+	          <div class="info-item" th:if="${empleado != null}">
+	              <span class="label">Empleado:</span>
+	              <span class="value" th:text="${empleado.nombre + ' ' + empleado.apellido}">Juan Pérez</span>
+	          </div>
+	          
+	          <div class="info-item" th:if="${empleado == null}">
+	              <span class="label">Empleado:</span>
+	              <span class="value">No asignado</span>
+	          </div>
+	          
+	          <div class="info-item">
+	              <span class="label">Fecha:</span>
+	              <span class="value" th:text="${datosTurno.fecha}">2024-01-15</span>
+	          </div>
+	          
+	          <div class="info-item">
+	              <span class="label">Horario:</span>
+	              <span class="value" th:text="${turno.hora}">14:30</span>
+	          </div>
+	          
+	          <!-- Botones de acción -->
+	          <div class="button-container">
+	              <form th:action="@{/turno/turno-exitoso}" method="post">
+	                  <button type="submit" class="confirm-button">Confirmar Turno</button>
+	              </form>
+	              <form th:action="@{/index}" method="get">
+	                  <button type="submit" class="cancel-button">Cancelar</button>
+	              </form>
+	          </div>
+	      </div>
+	  </div>
 </body>
 </html>
