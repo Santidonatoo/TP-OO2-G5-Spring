@@ -85,7 +85,7 @@
 
         <div class="input-group">
             <label>Teléfono:</label>
-            <input type="text" th:field="*{contacto.telefono}" placeholder="Ej: +54 11 1234-5678" required />
+            <input type="text" th:field="*{contacto.telefono}" placeholder="Telefono" required />
             <div th:if="${#fields.hasErrors('contacto.telefono')}" th:errors="*{contacto.telefono}"></div>
         </div>
     </fieldset>
