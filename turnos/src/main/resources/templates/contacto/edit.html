@@ -1,88 +1,31 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-    <title>Editar Contacto</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        .edit-container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        label, input {
-            display: block;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-
-        input {
-            padding: 10px;
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .button-group {
-            margin-top: 20px;
-        }
-
-        button, a {
-            display: inline-block;
-            padding: 10px 15px;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        a {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        a:hover {
-            background-color: #c82333;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Editar Contacto</title>
+  <!-- Enlazamos los estilos externos -->
+  <link rel="stylesheet" th:href="@{/css/base.css}">
+  <link rel="stylesheet" th:href="@{/css/layout.css}">
+  <link rel="stylesheet" th:href="@{/css/detalle.css}">
 </head>
 <body>
-    <div class="edit-container">
-        <h1>Editar Contacto</h1>
-        <form th:action="@{/contacto/save}" method="post">
-            <label for="mail">Correo electrónico:</label>
-            <input type="email" id="mail" name="mail" th:value="${contacto.email}" required>
-
-            <label for="telefono">Teléfono:</label>
-            <input type="text" id="telefono" name="telefono" th:value="${contacto.telefono}" required>
-
-            <div class="button-group">
-                <button type="submit">Guardar</button>
-                <a th:href="@{/contacto/mis-datosContacto}">Cancelar</a>
-            </div>
-        </form>
-    </div>
+  <div class="main-container detalle-container">
+    <h1>Editar Contacto</h1>
+    <form th:action="@{/contacto/save}" method="post">
+      <!-- Agrupamos cada campo en un bloque similar a 'detalle-info' para mantener la estética -->
+      <div class="detalle-info">
+        <label for="mail">Correo electrónico:</label>
+        <input type="email" id="mail" name="mail" th:value="${contacto.email}" required>
+      </div>
+      <div class="detalle-info">
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono" name="telefono" th:value="${contacto.telefono}" required>
+      </div>
+      <div class="action-buttons">
+        <button type="submit" class="btn-edit">Guardar</button>
+        <a th:href="@{/contacto/mis-datosContacto}" class="btn-volver">Cancelar</a>
+      </div>
+    </form>
+  </div>
 </body>
 </html>
