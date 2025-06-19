@@ -1,165 +1,100 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <title th:text="${clienteRequestDTO.idPersona != null} ? 'Editar Cliente' : 'Nuevo Cliente'">Formulario Clientes</title>
-	<style>
-		       body {
-		           display: flex;
-		           flex-direction: column;
-		           align-items: center;
-		           background-color: #f8f9fa;
-		           font-family: Arial, sans-serif;
-		           padding: 20px;
-		       }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/form.css}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fechaInput = document.querySelector('input[type="date"]');
+            if (fechaInput) {
+                const today = new Date().toISOString().split('T')[0];
+                fechaInput.setAttribute('max', today);
 
-		       h1 {
-		           margin-bottom: 20px;
-		       }
+                fechaInput.addEventListener('input', function() {
+                    const selectedDate = new Date(this.value);
+                    const currentDate = new Date();
+                    currentDate.setHours(0, 0, 0, 0);
+                    if (selectedDate > currentDate) {
+                        this.value = '';
+                        alert('No se pueden seleccionar fechas futuras');
+                    }
+                });
 
-		       form {
-		           width: 90%;
-		           max-width: 600px;
-		           padding: 20px;
-		           background: white;
-		           border-radius: 10px;
-		           box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-		       }
-
-		       label {
-		           display: block;
-		           margin-top: 10px;
-		           font-weight: bold;
-		       }
-
-		       input, select {
-		           width: 100%;
-		           padding: 8px;
-		           margin-top: 5px;
-		           border: 1px solid #ccc;
-		           border-radius: 5px;
-		       }
-
-		       button {
-		           background-color: #007bff;
-		           color: white;
-		           padding: 10px 20px;
-		           border: none;
-		           border-radius: 5px;
-		           cursor: pointer;
-		           margin-top: 15px;
-		           width: 100%;
-		       }
-
-		       button:hover {
-		           background-color: #0056b3;
-		       }
-
-		       a {
-		           display: inline-block;
-		           margin-top: 20px;
-		           color: #007bff;
-		           text-decoration: none;
-		       }
-
-		       a:hover {
-		           text-decoration: underline;
-		       }
-
-		       fieldset {
-		           border: 1px solid #ccc;
-		           padding: 10px;
-		           margin-top: 15px;
-		           border-radius: 5px;
-		       }
-
-		       legend {
-		           font-weight: bold;
-		       }
-			   
-		   </style>
-			<script>
-		       document.addEventListener('DOMContentLoaded', function() {
-		           const fechaInput = document.querySelector('input[type="date"]');
-		           if (fechaInput) {
-		               // Establecer la fecha máxima
-		               const today = new Date().toISOString().split('T')[0];
-		               fechaInput.setAttribute('max', today);
-		               
-		               // Prevenir selección de fechas futuras
-		               fechaInput.addEventListener('input', function() {
-		                   const selectedDate = new Date(this.value);
-		                   const currentDate = new Date();
-		                   currentDate.setHours(0, 0, 0, 0);
-		                   
-		                   if (selectedDate > currentDate) {
-		                       this.value = '';
-		                       alert('No se pueden seleccionar fechas futuras');
-		                   }
-		               });
-		               
-		               // Prevenir navegación con teclado a fechas futuras
-		               fechaInput.addEventListener('keydown', function(e) {
-		                   // Prevenir el uso de flechas para ir a fechas futuras
-		                   if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
-		                       const currentValue = this.value;
-		                       setTimeout(() => {
-		                           const newValue = this.value;
-		                           const selectedDate = new Date(newValue);
-		                           const currentDate = new Date();
-		                           currentDate.setHours(0, 0, 0, 0);
-		                           
-		                           if (selectedDate > currentDate) {
-		                               this.value = currentValue;
-		                           }
-		                       }, 0);
-		                   }
-		               });
-		           }
-		       });
-		   </script>
-	</head>
+                fechaInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
+                        const currentValue = this.value;
+                        setTimeout(() => {
+                            const newValue = this.value;
+                            const selectedDate = new Date(newValue);
+                            const currentDate = new Date();
+                            currentDate.setHours(0, 0, 0, 0);
+                            if (selectedDate > currentDate) {
+                                this.value = currentValue;
+                            }
+                        }, 0);
+                    }
+                });
+            }
+        });
+    </script>
+</head>
 <body>
-<h1 th:text="${clienteRequestDTO.idPersona != null} ? 'Editar Cliente' : 'Nuevo Cliente'"></h1>
-<br>
 
 <form th:action="${clienteRequestDTO.idPersona != null} ? @{/cliente/update/{idPersona}(idPersona=${clienteRequestDTO.idPersona})} : @{/cliente/save}" 
       method="post" th:object="${clienteRequestDTO}">
-    
+    <h1 th:text="${clienteRequestDTO.idPersona != null} ? 'Editar Cliente' : 'Nuevo Cliente'"></h1>
     <input type="hidden" th:if="${clienteRequestDTO.idPersona != null}" th:field="*{idPersona}" />
 
-    <label>Nombre:</label>
-    <input type="text" th:field="*{nombre}" required />
-    <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+    <div class="input-group">
+        <label>Nombre:</label>
+        <input type="text" th:field="*{nombre}" placeholder="Ej: Juan" required />
+        <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+    </div>
 
-    <label>Apellido:</label>
-    <input type="text" th:field="*{apellido}" required />
-    <div th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></div>
+    <div class="input-group">
+        <label>Apellido:</label>
+        <input type="text" th:field="*{apellido}" placeholder="Ej: Pérez" required />
+        <div th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></div>
+    </div>
 
-    <label>Dni:</label>
-    <input type="number" th:field="*{dni}" required />
-    <div th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
-    
-    <div th:if="${clienteRequestDTO.idPersona == null}">
-	    <label>Fecha de nacimiento:</label>
-	    <input type="date" th:field="*{fechaDeNacimiento}" 
-	           th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" 
-	           required />
-	    <div th:if="${#fields.hasErrors('fechaDeNacimiento')}" th:errors="*{fechaDeNacimiento}"></div>
-	</div>
-	
-	<label>Email:</label>
-	<input type="email" th:field="*{contacto.email}" required />
-	<div th:if="${#fields.hasErrors('contacto.email')}" th:errors="*{contacto.email}"></div>
+    <div class="input-group">
+        <label>DNI:</label>
+        <input type="number" th:field="*{dni}" placeholder="Ej: 12345678" required />
+        <div th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
+    </div>
 
-	 <label>Teléfono:</label>
-	 <input type="text" th:field="*{contacto.telefono}" required />
-	 <div th:if="${#fields.hasErrors('contacto.telefono')}" th:errors="*{contacto.telefono}"></div>
+    <div class="input-group" th:if="${clienteRequestDTO.idPersona == null}">
+        <label>Fecha de nacimiento:</label>
+        <input type="date" th:field="*{fechaDeNacimiento}" 
+               th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required />
+        <div th:if="${#fields.hasErrors('fechaDeNacimiento')}" th:errors="*{fechaDeNacimiento}"></div>
+    </div>
 
-	
-    <button type="submit">Guardar</button>
+    <fieldset>
+        <legend>Información de Contacto</legend>
+
+        <div class="input-group">
+            <label>Email:</label>
+            <input type="email" th:field="*{contacto.email}" placeholder="ejemplo@correo.com" required />
+            <div th:if="${#fields.hasErrors('contacto.email')}" th:errors="*{contacto.email}"></div>
+        </div>
+
+        <div class="input-group">
+            <label>Teléfono:</label>
+            <input type="text" th:field="*{contacto.telefono}" placeholder="Ej: +54 11 1234-5678" required />
+            <div th:if="${#fields.hasErrors('contacto.telefono')}" th:errors="*{contacto.telefono}"></div>
+        </div>
+    </fieldset>
+
+    <button type="submit">Guardar Cliente</button>
+    <div class="volver-link">
+        <a th:href="@{/cliente/admin/list}">Volver</a>
+    </div>
 </form>
 
-<br>
-<a th:href="@{/cliente/admin/list}">Volver</a>
 </body>
 </html>
