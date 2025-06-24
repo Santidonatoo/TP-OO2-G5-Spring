@@ -1,35 +1,68 @@
-Bienvenidos! Esta la primera entrega del grupo 5 sobre Spring framework de java, para la asignatura Orientacion a Objetos 2.
+# Trabajo Práctico - Spring Framework (Java)
+
+¡Bienvenidos! Este es nuestro trabajo práctico sobre **Spring Framework** de Java, para la materia **Orientación a Objetos II** en la **Universidad Nacional de Lanús**.
+
+En el mismo se realizó un **sistema de turnos en Java** usando el framework **Spring**. Se evaluó el uso de diferentes herramientas de Spring:
+
+- Spring Web  
+- Spring Data JPA  
+- Thymeleaf  
+- Spring Security  
+- Java Mail Sender  
+- Swagger
+
+---
+
+## Instrucciones para ejecutar el proyecto
+
 En este README vamos a explicar lo necesario para poder utilizar este proyecto en sus computadoras.
 
-Lo primero a tener en cuenta es ciertas configuraciones de anteriores al proyecto:
+---
 
-- Version de Java 21 o superior.
+### Requisitos previos
 
-- Maven 3 o superior.
+Lo primero a tener en cuenta son ciertas configuraciones previas al proyecto:
 
-- Plugin de lombok configurado en su IDE.
+- Versión de Java 21 o superior.  
+- Maven 3 o superior.  
+- Plugin de Lombok configurado en su IDE.  
+- MySQL como base de datos.
 
-- MySQL como Base de Datos.
+---
 
-luego hay que asignar las variables de entorno necesarias para que la configuracion del yml este completa.
+### Variables de entorno
 
-- EMAIL_PASSWORD: vgcoistvzuipffme
+Luego, hay que asignar las variables de entorno necesarias para que la configuración del archivo `application.yml` esté completa:
 
-- EMAIL_USERNAME: sistturnosgrupo5@gmail.com
+- `EMAIL_PASSWORD`: vgcoistvzuipffme  
+- `EMAIL_USERNAME`: sistturnosgrupo5@gmail.com  
+- `PASSWORD`: Tu usuario local de MySQL  
+- `USERNAME`: Tu contraseña local de MySQL  
+- `DB_URL`: Acá deberían crear un *schema* en MySQL y poner la URL de la misma. Ejemplo:  
+  `"jdbc:mysql://localhost:3306/bd-turnos-tp-oo2-spring"`
 
-- PASSWORD: Tu usuario local de mySql
+---
 
-- USERNAME: Tu contraseña local de mySql
+### Ejecutar la aplicación
 
-- DB_URL: aca deberian crear un schema en mySql y poner la url de la misma, como ejemplo: "jdbc:mysql://localhost:3306/bd-turnos-tp-oo2-spring"
+Una vez que ya están todas las variables de entorno configuradas, se bootea la aplicación y debería indicar que está abierta en el puerto `8080`.
 
-Una vez que ya estan todas las variables de entorno se bootea la aplicacion y deberia decir que esta abierta en el puerto 8080.
+Abrir el navegador e ir a la siguiente URL:  
+[http://localhost:8080](http://localhost:8080)
 
-Abrir el navegador e ir a la siguiente url: http://localhost:8080
+---
 
-Para registrarse como empleado se puede hacer desde la pantalla de login, pero para crear nuevos servicios, empleados y ubicaciones hay que usar la configuracion de admin. La misma es la siguiente 
+### Usuarios y autenticación
 
-- Usuario: admin
-  
-- Contraseña: abc1234
+Para registrarse como empleado se puede hacer desde la pantalla de login, pero para crear nuevos servicios, empleados y ubicaciones hay que usar la configuración de administrador. La misma es:
+
+- **Usuario:** admin  
+- **Contraseña:** abc1234
+
+---
+
+### Documentación (Swagger)
+
+El Swagger se puede ver en esta dirección una vez que el proyecto esté corriendo de forma local:  
+[http://localhost:8080/swagger-ui/index.html#/](http://localhost:8080/swagger-ui/index.html#/)
 
