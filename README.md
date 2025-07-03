@@ -54,7 +54,7 @@ Abrir el navegador e ir a la siguiente URL:
 
 ### Usuarios y autenticación
 
-Para registrarse como empleado se puede hacer desde la pantalla de login, pero para crear nuevos servicios, empleados y ubicaciones hay que usar la configuración de administrador. La misma es:
+Para registrarse como cliente se puede hacer desde la pantalla de login, pero para crear nuevos servicios, empleados y ubicaciones hay que usar la configuración de administrador. La misma es:
 
 - **Usuario:** admin  
 - **Contraseña:** abc1234
